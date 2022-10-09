@@ -6,14 +6,14 @@ import 'package:noted_mobile/components/common/header_widget.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
-class ForgotPasswordPage extends StatefulWidget {
-  const ForgotPasswordPage({Key? key}) : super(key: key);
+class ChangePasswordPage extends StatefulWidget {
+  const ChangePasswordPage({Key? key}) : super(key: key);
 
   @override
-  ForgotPasswordPageState createState() => ForgotPasswordPageState();
+  State<ChangePasswordPage> createState() => _ChangePasswordPageState();
 }
 
-class ForgotPasswordPageState extends State<ForgotPasswordPage> {
+class _ChangePasswordPageState extends State<ChangePasswordPage> {
   final _formKey = GlobalKey<FormState>();
 
   void resetButton(RoundedLoadingButtonController controller) async {
@@ -27,6 +27,9 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
     double headerHeight = 300;
     final RoundedLoadingButtonController btnController =
         RoundedLoadingButtonController();
+
+    TextEditingController passwordController = TextEditingController();
+    TextEditingController confirmPasswordController = TextEditingController();
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -50,7 +53,7 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: const [
                           Text(
-                            'Forgot Password?',
+                            'Create a New Password',
                             style: TextStyle(
                                 fontSize: 35,
                                 fontWeight: FontWeight.bold,
@@ -60,7 +63,7 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             height: 10,
                           ),
                           Text(
-                            'Enter the email address associated with your account.',
+                            'Enter a new password for your account.',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black54),
@@ -69,7 +72,7 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             height: 10,
                           ),
                           Text(
-                            'We will email you a verification code to check your authenticity.',
+                            'Password must be at least 8 characters long.',
                             style: TextStyle(
                               color: Colors.black38,
                             ),
@@ -86,15 +89,33 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             decoration:
                                 ThemeHelper().inputBoxDecorationShaddow(),
                             child: TextFormField(
+                              obscureText: true,
+                              controller: passwordController,
                               decoration: ThemeHelper().textInputDecoration(
-                                  "Email", "Enter your email"),
+                                  "Password", "Enter a new password"),
                               validator: (val) {
-                                if (val!.isEmpty) {
-                                  return "Email can't be empty";
-                                } else if (!RegExp(
-                                        r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$")
-                                    .hasMatch(val)) {
-                                  return "Enter a valid email address";
+                                if (val!.length < 8) {
+                                  return 'Password must be at least 8 characters long.';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 20.0),
+                          Container(
+                            decoration:
+                                ThemeHelper().inputBoxDecorationShaddow(),
+                            child: TextFormField(
+                              obscureText: true,
+                              controller: confirmPasswordController,
+                              decoration: ThemeHelper().textInputDecoration(
+                                  "Confirm Password",
+                                  "Confirm your new password"),
+                              validator: (val) {
+                                if (val!.length < 8) {
+                                  return 'Password must be at least 8 characters long.';
+                                } else if (val != passwordController.text) {
+                                  return 'Passwords do not match.';
                                 }
                                 return null;
                               },
@@ -107,8 +128,14 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             successColor: Colors.green.shade900,
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
-                                Navigator.pushReplacementNamed(
-                                    context, '/forgot-password-verification');
+                                btnController.success();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text('Password Changed')));
+                                Timer(const Duration(seconds: 3), () {
+                                  Navigator.pushNamedAndRemoveUntil(
+                                      context, '/login', (route) => false);
+                                });
                               } else {
                                 btnController.error();
                                 resetButton(btnController);

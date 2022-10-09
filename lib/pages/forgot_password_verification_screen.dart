@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:noted_mobile/pages/profile_screen.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 import '../components/common/header_widget.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
@@ -16,12 +19,20 @@ class ForgotPasswordVerificationPage extends StatefulWidget {
 class ForgotPasswordVerificationPageState
     extends State<ForgotPasswordVerificationPage> {
   final _formKey = GlobalKey<FormState>();
-  final bool _pinSuccess = false;
+  bool _pinSuccess = false;
+
+  void resetButton(RoundedLoadingButtonController controller) async {
+    Timer(const Duration(seconds: 3), () {
+      controller.reset();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     double headerHeight = 300;
     TextEditingController textEditingController = TextEditingController();
+    final RoundedLoadingButtonController btnController =
+        RoundedLoadingButtonController();
 
     return Scaffold(
         backgroundColor: Colors.white,
@@ -102,6 +113,13 @@ class ForgotPasswordVerificationPageState
                               beforeTextPaste: (text) {
                                 return true;
                               },
+                              validator: (val) {
+                                if (val!.length < 4) {
+                                  return 'Please enter a valid code';
+                                } else {
+                                  return null;
+                                }
+                              },
                               appContext: context,
                             ),
                             const SizedBox(height: 50.0),
@@ -136,35 +154,27 @@ class ForgotPasswordVerificationPageState
                               ),
                             ),
                             const SizedBox(height: 40.0),
-                            Container(
-                              decoration:
-                                  ThemeHelper().buttonBoxDecoration(context),
-                              child: ElevatedButton(
-                                style: ThemeHelper().buttonStyle(),
-                                onPressed: _pinSuccess
-                                    ? () {
-                                        Navigator.of(
-                                                context)
-                                            .pushAndRemoveUntil(
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        const ProfilePage()),
-                                                (Route<dynamic> route) =>
-                                                    false);
-                                      }
-                                    : null,
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(40, 10, 40, 10),
-                                  child: Text(
-                                    "Verify".toUpperCase(),
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
+                            RoundedLoadingButton(
+                              color: Colors.grey.shade900,
+                              errorColor: Colors.redAccent,
+                              successColor: Colors.green.shade900,
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  Navigator.pushNamed(
+                                      context, '/change-password');
+                                } else {
+                                  btnController.error();
+                                  resetButton(btnController);
+                                }
+                              },
+                              controller: btnController,
+                              width: 200,
+                              child: Text(
+                                'Verify'.toUpperCase(),
+                                style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
                               ),
                             ),
                           ],

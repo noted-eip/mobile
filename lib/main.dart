@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:noted_mobile/data/api_helper.dart';
+import 'package:noted_mobile/data/dio_singleton.dart';
+import 'package:noted_mobile/pages/change_password.dart';
 import 'package:noted_mobile/pages/folder_detail_page.dart';
 import 'package:noted_mobile/pages/folders_list_screen.dart';
 import 'package:noted_mobile/pages/forgot_password_screen.dart';
@@ -14,6 +17,8 @@ import 'package:noted_mobile/data/user_provider.dart';
 import 'package:provider/provider.dart';
 
 void main() {
+  init();
+  singleton.get<APIHelper>().initApiClient();
   runApp(const MyApp());
 }
 
@@ -49,6 +54,7 @@ class MyApp extends StatelessWidget {
           '/forgot-password': (context) => const ForgotPasswordPage(),
           '/forgot-password-verification': (context) =>
               const ForgotPasswordVerificationPage(),
+          '/change-password': (context) => const ChangePasswordPage(),
           '/latest-files': (context) => const LatestFilesList(),
           '/folders': (context) => const FoldersListPage(),
           '/folder-detail': (context) => const FolderDetailPage(),
