@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:noted_mobile/components/common/loading_button.dart';
 import 'package:noted_mobile/data/api_helper.dart';
 import 'package:noted_mobile/data/dio_singleton.dart';
 import 'package:noted_mobile/data/user_provider.dart';
@@ -84,6 +83,7 @@ class LoginPageState extends State<LoginPage> {
         );
         return;
       }
+      if (!mounted) return;
 
       final userInfos = user['data']['account'];
 
@@ -100,6 +100,7 @@ class LoginPageState extends State<LoginPage> {
       );
       controller.success();
       resetButton(controller);
+      Navigator.of(context).pushReplacementNamed('/home');
     } on DioError catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(e.toString()),
@@ -153,7 +154,11 @@ class LoginPageState extends State<LoginPage> {
                               .textInputDecoration('Email', 'Enter your Email'),
                           validator: (val) {
                             if (val!.isEmpty) {
-                              return 'Please enter your email';
+                              return "Please enter your email";
+                            } else if (!RegExp(
+                                    r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$")
+                                .hasMatch(val)) {
+                              return "Enter a valid email address";
                             }
                             return null;
                           },
