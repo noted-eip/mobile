@@ -74,34 +74,31 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       key: _formKey,
                       child: Column(
                         children: [
-                          GestureDetector(
-                            child: Stack(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(100),
-                                    border: Border.all(
-                                        width: 5, color: Colors.white),
-                                    color: Colors.white,
-                                    boxShadow: const [
-                                      BoxShadow(
-                                        color: Colors.black12,
-                                        blurRadius: 20,
-                                        offset: Offset(5, 5),
-                                      ),
-                                    ],
-                                  ),
-                                  child: const Image(
-                                    image:
-                                        AssetImage('./images/noted_logo.png'),
-                                    fit: BoxFit.fill,
-                                    height: 80.0,
-                                    width: 80.0,
-                                  ),
+                          Stack(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(100),
+                                  border:
+                                      Border.all(width: 5, color: Colors.white),
+                                  color: Colors.white,
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 20,
+                                      offset: Offset(5, 5),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
+                                child: const Image(
+                                  image: AssetImage('./images/noted_logo.png'),
+                                  fit: BoxFit.fill,
+                                  height: 80.0,
+                                  width: 80.0,
+                                ),
+                              ),
+                            ],
                           ),
                           const SizedBox(
                             height: 30,
