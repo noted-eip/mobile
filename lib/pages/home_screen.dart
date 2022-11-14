@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:noted_mobile/components/common/drawer.dart';
+import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:noted_mobile/components/home_infos_widget.dart';
 import 'package:noted_mobile/components/latest_files_widget.dart';
 import 'package:noted_mobile/components/latest_folders_widget.dart';
@@ -54,7 +54,6 @@ class _HomePageState extends State<HomePage> {
       });
     }
     return Scaffold(
-      drawer: const CustomDrawer(drawerFontSize: 14, drawerIconSize: 14),
       appBar: AppBar(
         title: const Text('NOTED', style: TextStyle(color: Colors.black)),
         backgroundColor: Colors.white,
@@ -65,7 +64,7 @@ class _HomePageState extends State<HomePage> {
               color: Colors.black,
             ),
             onPressed: () {
-              Scaffold.of(context).openDrawer();
+              ZoomDrawer.of(context)!.toggle();
             },
             tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
           );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:noted_mobile/components/common/custom_drawer.dart';
 import 'package:noted_mobile/data/api_helper.dart';
 import 'package:noted_mobile/data/dio_singleton.dart';
 import 'package:noted_mobile/pages/change_password.dart';
@@ -6,7 +7,6 @@ import 'package:noted_mobile/pages/folder_detail_page.dart';
 import 'package:noted_mobile/pages/folders_list_screen.dart';
 import 'package:noted_mobile/pages/forgot_password_screen.dart';
 import 'package:noted_mobile/pages/forgot_password_verification_screen.dart';
-import 'package:noted_mobile/pages/home_screen.dart';
 import 'package:noted_mobile/pages/latest_files_screen.dart';
 import 'package:noted_mobile/pages/login_screen.dart';
 import 'package:noted_mobile/pages/note_detail_screen.dart';
@@ -48,7 +48,8 @@ class MyApp extends StatelessWidget {
         routes: {
           '/splash': (context) => const SplashScreen(),
           '/login': (context) => const LoginPage(),
-          '/home': (context) => const HomePage(),
+          // '/home': (context) => const HomePage(),
+          '/home': (context) => const MyCustomDrawer(),
           '/profile': (context) => const ProfilePage(),
           '/register': (context) => const RegistrationPage(),
           '/forgot-password': (context) => const ForgotPasswordPage(),

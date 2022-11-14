@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 
 class BaseContainer extends StatelessWidget {
   const BaseContainer(
@@ -32,16 +33,21 @@ class BaseContainer extends StatelessWidget {
                   color: secondaryColor ?? Colors.grey.shade900,
                 ),
                 onPressed: () {
-                  Navigator.pop(context);
+                  if (Navigator.canPop(context)) {
+                    Navigator.pop(context);
+                  } else {
+                    ZoomDrawer.of(context)!.toggle();
+                  }
                 },
               ),
               largeTitle: titleWidget,
               trailing: IconButton(
-                  onPressed: (() {
-                    Navigator.pushNamed(context, '/profile');
-                  }),
-                  icon: Icon(Icons.person,
-                      size: 24, color: secondaryColor ?? Colors.grey.shade900)),
+                onPressed: (() {
+                  Navigator.pushNamed(context, '/profile');
+                }),
+                icon: Icon(Icons.person,
+                    size: 24, color: secondaryColor ?? Colors.grey.shade900),
+              ),
             ),
           ],
           body: body,

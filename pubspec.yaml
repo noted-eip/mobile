@@ -45,6 +45,7 @@ dependencies:
   json_annotation: ^4.6.0
   json_serializable: ^6.3.2
   build_runner: ^2.2.1
+  flutter_zoom_drawer: ^3.0.3
 
 dev_dependencies:
   flutter_test:
