@@ -25,6 +25,56 @@ class _RegistrationPageState extends State<RegistrationPage> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _userNameController = TextEditingController();
 
+  final List<dynamic> oAuth = [
+    {
+      'name': 'Google',
+      'icon': FontAwesomeIcons.google,
+      'color': Colors.red,
+      'controller': RoundedLoadingButtonController(),
+      'onPressed': () {},
+    },
+    {
+      'name': 'Facebook',
+      'icon': FontAwesomeIcons.facebook,
+      'color': Colors.blue,
+      'controller': RoundedLoadingButtonController(),
+      'onPressed': () {},
+    },
+    {
+      'name': 'Github',
+      'icon': FontAwesomeIcons.apple,
+      'color': Colors.black,
+      'controller': RoundedLoadingButtonController(),
+      'onPressed': () {},
+    },
+  ];
+
+  List<Widget> buildOAuthButtons() {
+    List<Widget> buttons = [];
+
+    for (int i = 0; i < oAuth.length; i++) {
+      buttons.add(
+        RoundedLoadingButton(
+          height: 48,
+          width: 48,
+          borderRadius: 16,
+          color: oAuth[i]['color'],
+          controller: oAuth[i]['controller'],
+          onPressed: () {
+            oAuth[i]['controller'].error();
+            resetButton(oAuth[i]['controller']);
+          },
+          child: Icon(
+            oAuth[i]['icon'],
+            color: Colors.white,
+          ),
+        ),
+      );
+    }
+
+    return buttons;
+  }
+
   Future<void> signUp(Map<String, String> data, BuildContext context) async {
     try {
       var dio = Dio();
@@ -50,6 +100,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
     });
   }
 
+  bool _obscureText = true;
+
   @override
   Widget build(BuildContext context) {
     final RoundedLoadingButtonController btnController =
@@ -74,42 +126,48 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       key: _formKey,
                       child: Column(
                         children: [
-                          Stack(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(100),
-                                  border:
-                                      Border.all(width: 5, color: Colors.white),
-                                  color: Colors.white,
-                                  boxShadow: const [
-                                    BoxShadow(
-                                      color: Colors.black12,
-                                      blurRadius: 20,
-                                      offset: Offset(5, 5),
-                                    ),
-                                  ],
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100),
+                              border: Border.all(width: 5, color: Colors.white),
+                              color: Colors.white,
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Colors.black12,
+                                  blurRadius: 20,
+                                  offset: Offset(5, 5),
                                 ),
-                                child: const Image(
-                                  image: AssetImage('./images/noted_logo.png'),
-                                  fit: BoxFit.fill,
-                                  height: 80.0,
-                                  width: 80.0,
-                                ),
-                              ),
-                            ],
+                              ],
+                            ),
+                            child: const Image(
+                              image: AssetImage('./images/noted_logo.png'),
+                              fit: BoxFit.fill,
+                              height: 80.0,
+                              width: 80.0,
+                            ),
                           ),
-                          const SizedBox(
-                            height: 30,
+                          const SizedBox(height: 24),
+                          const Text(
+                            'Create your Noted Account',
+                            style: TextStyle(color: Colors.grey, fontSize: 24),
                           ),
+                          const SizedBox(height: 32),
                           Container(
                             decoration:
                                 ThemeHelper().inputBoxDecorationShaddow(),
                             child: TextFormField(
+                              autofocus: true,
                               controller: _userNameController,
-                              decoration: ThemeHelper().textInputDecoration(
-                                  'Username', 'Enter your username'),
+                              decoration: ThemeHelper()
+                                  .textInputDecoration(
+                                      'Username', 'Enter your username')
+                                  .copyWith(
+                                    prefixIcon: const Icon(
+                                      Icons.person_outline,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
                               validator: (val) {
                                 if ((val!.isEmpty)) {
                                   return "Enter an username";
@@ -124,15 +182,22 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 ThemeHelper().inputBoxDecorationShaddow(),
                             child: TextFormField(
                               controller: _emailController,
-                              decoration: ThemeHelper().textInputDecoration(
-                                  "E-mail address", "Enter your email"),
-                              keyboardType: TextInputType.emailAddress,
+                              decoration: ThemeHelper()
+                                  .textInputDecoration(
+                                      'Email', 'Enter your Email')
+                                  .copyWith(
+                                    prefixIcon: const Icon(
+                                      Icons.mail_outline,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
                               validator: (val) {
-                                if ((val!.isEmpty) ||
-                                    (val.isNotEmpty) &&
-                                        !RegExp(r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$")
-                                            .hasMatch(val)) {
-                                  return "Please enter a valid email address";
+                                if (val!.isEmpty) {
+                                  return "Please enter an email adress";
+                                } else if (!RegExp(
+                                        r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$")
+                                    .hasMatch(val)) {
+                                  return "Enter a valid email address";
                                 }
                                 return null;
                               },
@@ -144,9 +209,30 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 ThemeHelper().inputBoxDecorationShaddow(),
                             child: TextFormField(
                               controller: _passwordController,
-                              obscureText: true,
-                              decoration: ThemeHelper().textInputDecoration(
-                                  "Password*", "Enter your password"),
+                              obscureText: _obscureText,
+                              decoration: ThemeHelper()
+                                  .textInputDecoration(
+                                      "Password*", "Enter your password")
+                                  .copyWith(
+                                    prefixIcon: const Icon(
+                                        Icons.lock_outline_rounded,
+                                        color: Colors.grey),
+                                    suffixIcon: IconButton(
+                                      splashColor: Colors.transparent,
+                                      highlightColor: Colors.transparent,
+                                      icon: Icon(
+                                        _obscureText
+                                            ? Icons.visibility_outlined
+                                            : Icons.visibility_off_outlined,
+                                        color: Colors.grey,
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          _obscureText = !_obscureText;
+                                        });
+                                      },
+                                    ),
+                                  ),
                               validator: (val) {
                                 if (val!.isEmpty) {
                                   return "Please enter your password";
@@ -155,7 +241,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                               },
                             ),
                           ),
-                          const SizedBox(height: 15.0),
+                          const SizedBox(height: 16.0),
                           FormField<bool>(
                             builder: (state) {
                               return Column(
@@ -216,84 +302,57 @@ class _RegistrationPageState extends State<RegistrationPage> {
                               }
                             },
                             controller: btnController,
-                            width: 200,
+                            width: MediaQuery.of(context).size.width,
+                            height: 48,
+                            borderRadius: 16,
                             child: Text(
-                              'Register'.toUpperCase(),
+                              'Create'.toUpperCase(),
                               style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white),
                             ),
                           ),
-                          const SizedBox(height: 30.0),
+                          const SizedBox(height: 32.0),
                           const Text(
                             "Or create account using social media",
                             style: TextStyle(color: Colors.grey),
                           ),
-                          const SizedBox(height: 25.0),
-                          RoundedLoadingButton(
-                            color: Colors.redAccent,
-                            errorColor: Colors.redAccent,
-                            successColor: Colors.green.shade900,
-                            onPressed: () {
-                              //TODO: Add google sign in
-                              // signInWithGoogle().whenComplete(() {
-                              //   Navigator.of(context).push(
-                              //     MaterialPageRoute(
-                              //       builder: (context) {
-                              //         return const HomeScreen();
-                              //       },
-                              //     ),
-                              //   );
-                              // });
-
-                              btnController2.error();
-                              resetButton(btnController2);
-                            },
-                            controller: btnController2,
-                            width: 200,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const FaIcon(
-                                  FontAwesomeIcons.googlePlus,
-                                  size: 25,
-                                  color: Colors.white,
-                                ),
-                                const SizedBox(width: 10),
-                                Text(
-                                  "Google".toUpperCase(),
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ],
-                            ),
+                          const SizedBox(height: 24.0),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ...buildOAuthButtons(),
+                            ],
                           ),
                           const SizedBox(
-                            width: 30.0,
+                            width: 32.0,
                           ),
                           Container(
                             margin: const EdgeInsets.fromLTRB(10, 20, 10, 20),
-                            child: Text.rich(TextSpan(children: [
-                              const TextSpan(text: "Already have an account? "),
+                            child: Text.rich(
                               TextSpan(
-                                text: 'Login',
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = () {
-                                    Navigator.pushNamedAndRemoveUntil(
-                                        context, '/login', (route) => false);
-                                  },
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .secondary),
+                                children: [
+                                  const TextSpan(
+                                      text: "Already have an account? "),
+                                  TextSpan(
+                                    text: 'Login',
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () {
+                                        Navigator.pushNamedAndRemoveUntil(
+                                            context,
+                                            '/login',
+                                            (route) => false);
+                                      },
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary),
+                                  ),
+                                ],
                               ),
-                            ])),
+                            ),
                           ),
                         ],
                       ),

@@ -318,14 +318,14 @@ class LoginPageState extends State<LoginPage> {
                           "Or sign in account using social media",
                           style: TextStyle(color: Colors.grey),
                         ),
-                        const SizedBox(height: 25.0),
+                        const SizedBox(height: 24.0),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             ...buildOAuthButtons(),
                           ],
                         ),
-                        const SizedBox(height: 30.0),
+                        const SizedBox(height: 32.0),
                         Container(
                           margin: const EdgeInsets.fromLTRB(10, 20, 10, 20),
                           child: Text.rich(
