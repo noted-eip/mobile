@@ -18,7 +18,7 @@ class ForgotPasswordVerificationPage extends StatefulWidget {
 class ForgotPasswordVerificationPageState
     extends State<ForgotPasswordVerificationPage> {
   final _formKey = GlobalKey<FormState>();
-  bool _pinSuccess = false;
+  // bool _pinSuccess = false;
 
   void resetButton(RoundedLoadingButtonController controller) async {
     Timer(const Duration(seconds: 3), () {

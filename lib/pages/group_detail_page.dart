@@ -5,7 +5,6 @@ import 'package:noted_mobile/components/group_info_widget.dart';
 import 'package:noted_mobile/data/fake_groups_list.dart';
 import 'package:noted_mobile/data/group.dart';
 
-// TODO:
 //ajouter un scroll sur la page entière et faire disparaitre le header
 //avec l'effet d'apple en gardant le nom du fichier dans l'app bar
 // Voir pour refaire le design de la page
