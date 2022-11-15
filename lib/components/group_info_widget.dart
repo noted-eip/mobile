@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:noted_mobile/data/fake_folders_list.dart';
-import 'package:noted_mobile/data/folder.dart';
+import 'package:noted_mobile/data/fake_groups_list.dart';
+import 'package:noted_mobile/data/group.dart';
 import 'package:noted_mobile/utils/constant.dart';
 
-class FolderInfos extends StatelessWidget {
-  const FolderInfos({Key? key, required this.folderId}) : super(key: key);
-  final String folderId;
+class GroupInfos extends StatelessWidget {
+  const GroupInfos({Key? key, required this.groupId}) : super(key: key);
+  final String groupId;
 
-  Folder get folder =>
-      kFakeFoldersList.firstWhere((element) => element.id == folderId);
+  Group get group =>
+      kFakeGroupsList.firstWhere((element) => element.id == groupId);
 
   String formatDate(DateTime date) {
     return "${date.day}/${date.month}/${date.year} : ${date.hour}h${date.minute}";
@@ -34,7 +34,7 @@ class FolderInfos extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    folder.nbNotes.toString(),
+                    group.nbNotes.toString(),
                     style: const TextStyle(
                         color: Colors.white,
                         fontSize: 40,
@@ -63,7 +63,7 @@ class FolderInfos extends StatelessWidget {
                     width: 10,
                   ),
                   Text(
-                    folder.author,
+                    group.author,
                     style: const TextStyle(
                         color: Colors.grey,
                         fontSize: 20,
@@ -90,7 +90,7 @@ class FolderInfos extends StatelessWidget {
                     width: 10,
                   ),
                   Text(
-                    formatDate(folder.createdAt),
+                    formatDate(group.createdAt),
                     style: const TextStyle(color: Colors.white),
                   ),
                 ],
@@ -106,7 +106,7 @@ class FolderInfos extends StatelessWidget {
                     width: 10,
                   ),
                   Text(
-                    formatDate(folder.updatedAt),
+                    formatDate(group.updatedAt),
                     style: const TextStyle(color: Colors.white),
                   ),
                 ],

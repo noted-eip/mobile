@@ -1,6 +1,6 @@
 import 'package:noted_mobile/data/note.dart';
 
-class Folder {
+class Group {
   final String title;
   final int nbNotes;
   final List<Note> notes;
@@ -9,7 +9,7 @@ class Folder {
   final DateTime createdAt;
   final DateTime updatedAt;
 
-  Folder({
+  Group({
     required this.title,
     required this.nbNotes,
     required this.notes,
@@ -19,8 +19,8 @@ class Folder {
     required this.updatedAt,
   });
 
-  factory Folder.fromJson(Map<String, dynamic> json) {
-    return Folder(
+  factory Group.fromJson(Map<String, dynamic> json) {
+    return Group(
       title: json['title'],
       nbNotes: json['nbNotes'],
       notes: json['notes'],

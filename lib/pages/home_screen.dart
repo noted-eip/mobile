@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:noted_mobile/components/home_infos_widget.dart';
 import 'package:noted_mobile/components/latest_files_widget.dart';
-import 'package:noted_mobile/components/latest_folders_widget.dart';
+import 'package:noted_mobile/components/latest_groups_widget.dart';
 import 'package:noted_mobile/data/user.dart';
 import 'package:noted_mobile/data/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -71,10 +71,8 @@ class _HomePageState extends State<HomePage> {
         }),
         actions: [
           IconButton(
-              onPressed: (() {
-                Navigator.pushNamed(context, '/profile');
-              }),
-              icon: const Icon(Icons.person, color: Colors.black)),
+              onPressed: (() {}),
+              icon: const Icon(Icons.send, color: Colors.black)),
         ],
         elevation: 0,
       ),
@@ -82,7 +80,7 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           children: const [
             HomeInfos(),
-            LatestFolders(),
+            LatestGroups(),
             LatestFiles(),
           ],
         ),

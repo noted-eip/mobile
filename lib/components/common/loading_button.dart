@@ -34,9 +34,9 @@ class _CustomButtonState extends State<CustomButton> {
     });
   }
 
-  test() {
-    print('methodInPage2');
-  }
+  // test() {
+  //   print('methodInPage2');
+  // }
 
   @override
   Widget build(BuildContext context) {

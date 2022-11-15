@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:noted_mobile/components/common/header_widget.dart';
+import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:noted_mobile/data/user_provider.dart';
+import 'package:noted_mobile/utils/constant.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -21,65 +22,39 @@ class _ProfilePageState extends State<ProfilePage> {
     );
     return Scaffold(
       appBar: AppBar(
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(16),
+              bottomRight: Radius.circular(16),
+            ),
+            color: kPrimaryColor,
+          ),
+        ),
         title: const Text(
           "Profile Page",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        elevation: 0.5,
+        elevation: 0,
+        backgroundColor: Colors.transparent,
         iconTheme: const IconThemeData(color: Colors.white),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: <Color>[
-                Theme.of(context).primaryColor,
-                Theme.of(context).colorScheme.secondary,
-              ])),
-        ),
         actions: [
-          Container(
-            margin: const EdgeInsets.only(
-              top: 16,
-              right: 16,
-            ),
-            child: Stack(
-              children: <Widget>[
-                const Icon(Icons.notifications),
-                Positioned(
-                  right: 0,
-                  child: Container(
-                    padding: const EdgeInsets.all(1),
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    constraints: const BoxConstraints(
-                      minWidth: 12,
-                      minHeight: 12,
-                    ),
-                    child: const Text(
-                      '5',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 8,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                )
-              ],
-            ),
+          IconButton(
+            icon: const Icon(Icons.edit),
+            onPressed: () {},
           )
         ],
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () {
+            ZoomDrawer.of(context)!.toggle();
+          },
+        ),
       ),
       body: SingleChildScrollView(
-        child: Stack(
+        child: Column(
           children: [
-            const SizedBox(
-              height: 100,
-              child: HeaderWidget(100, false, Icons.house_rounded),
-            ),
+            const SizedBox(height: 32),
             Container(
               alignment: Alignment.center,
               margin: const EdgeInsets.fromLTRB(25, 10, 25, 10),
@@ -89,13 +64,13 @@ class _ProfilePageState extends State<ProfilePage> {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(100),
+                      borderRadius: BorderRadius.circular(16),
                       border: Border.all(width: 5, color: Colors.white),
                       color: Colors.white,
                       boxShadow: const [
                         BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 20,
+                          color: Colors.black26,
+                          blurRadius: 10,
                           offset: Offset(5, 5),
                         ),
                       ],
@@ -107,60 +82,87 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   const SizedBox(
-                    height: 20,
+                    height: 32,
                   ),
-                  Text(
-                    userProvider.username,
-                    style: const TextStyle(
-                        fontSize: 22, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      children: <Widget>[
-                        Container(
-                          padding:
-                              const EdgeInsets.only(left: 8.0, bottom: 4.0),
+                  Column(
+                    children: <Widget>[
+                      Container(
+                        alignment: Alignment.topLeft,
+                        child: const Text(
+                          "User Information",
+                          style: TextStyle(
+                            color: Colors.black87,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                          ),
+                          textAlign: TextAlign.left,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      Card(
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(16)),
+                        ),
+                        elevation: 5,
+                        child: Container(
                           alignment: Alignment.topLeft,
-                          child: const Text(
-                            "User Information",
-                            style: TextStyle(
-                              color: Colors.black87,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 16,
-                            ),
-                            textAlign: TextAlign.left,
+                          padding: const EdgeInsets.all(8),
+                          child: Column(
+                            children: <Widget>[
+                              Column(
+                                children: <Widget>[
+                                  ...ListTile.divideTiles(
+                                    color: Colors.grey,
+                                    tiles: [
+                                      ListTile(
+                                        leading: const Icon(Icons.person),
+                                        title: const Text("Username"),
+                                        subtitle: Text(
+                                          userProvider.username,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              )
+                            ],
                           ),
                         ),
-                        Card(
-                          child: Container(
-                            alignment: Alignment.topLeft,
-                            padding: const EdgeInsets.all(15),
-                            child: Column(
-                              children: <Widget>[
-                                Column(
-                                  children: <Widget>[
-                                    ...ListTile.divideTiles(
-                                      color: Colors.grey,
-                                      tiles: [
-                                        ListTile(
-                                          leading: const Icon(Icons.email),
-                                          title: const Text("Email"),
-                                          subtitle: Text(userProvider.email),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                )
-                              ],
-                            ),
+                      ),
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      Card(
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(16)),
+                        ),
+                        elevation: 5,
+                        child: Container(
+                          alignment: Alignment.topLeft,
+                          padding: const EdgeInsets.all(8),
+                          child: Column(
+                            children: <Widget>[
+                              Column(
+                                children: <Widget>[
+                                  ...ListTile.divideTiles(
+                                    color: Colors.grey,
+                                    tiles: [
+                                      ListTile(
+                                        leading: const Icon(Icons.email),
+                                        title: const Text("Email"),
+                                        subtitle: Text(userProvider.email),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              )
+                            ],
                           ),
-                        )
-                      ],
-                    ),
+                        ),
+                      ),
+                    ],
                   )
                 ],
               ),

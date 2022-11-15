@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:noted_mobile/components/note_card_widget.dart';
-import 'package:noted_mobile/data/fake_folders_list.dart';
-import 'package:noted_mobile/data/folder.dart';
+import 'package:noted_mobile/data/fake_groups_list.dart';
+import 'package:noted_mobile/data/group.dart';
 
 class LatestFilesList extends StatelessWidget {
   const LatestFilesList({Key? key}) : super(key: key);
@@ -38,19 +38,19 @@ class LatestFilesList extends StatelessWidget {
                 const SizedBox(
                   height: 20,
                 ),
-                ..._buildList(kFakeFoldersList, context),
+                ..._buildList(kFakeGroupsList, context),
               ],
             ),
           ),
         ));
   }
 
-  List<Widget> _buildList(List<Folder> folders, BuildContext context) {
+  List<Widget> _buildList(List<Group> groups, BuildContext context) {
     List<Widget> widgets = [];
-    for (var folder in folders) {
+    for (var group in groups) {
       widgets.add(
         Text(
-          folder.title,
+          group.title,
           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
         ),
       );
@@ -60,7 +60,7 @@ class LatestFilesList extends StatelessWidget {
         ),
       );
 
-      for (var note in folder.notes) {
+      for (var note in group.notes) {
         widgets.add(NoteCard(
           title: note.title,
           authorId: note.authorId,

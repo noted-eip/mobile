@@ -27,27 +27,25 @@ class BaseContainer extends StatelessWidget {
               brightness: Brightness.light,
               border: null,
               backgroundColor: primaryColor ?? Colors.white,
-              leading: IconButton(
-                icon: Icon(
-                  CupertinoIcons.back,
-                  color: secondaryColor ?? Colors.grey.shade900,
-                ),
-                onPressed: () {
-                  if (Navigator.canPop(context)) {
-                    Navigator.pop(context);
-                  } else {
-                    ZoomDrawer.of(context)!.toggle();
-                  }
-                },
-              ),
+              // leading: IconButton(
+              //   icon: Icon(
+              //     Navigator.canPop(context) ? CupertinoIcons.back : Icons.menu,
+              //     color: secondaryColor ?? Colors.grey.shade900,
+              //   ),
+              //   onPressed: () {
+              //     if (Navigator.canPop(context)) {
+              //       Navigator.pop(context);
+              //     } else {
+              //       ZoomDrawer.of(context)!.toggle();
+              //     }
+              //   },
+              // ),
               largeTitle: titleWidget,
-              trailing: IconButton(
-                onPressed: (() {
-                  Navigator.pushNamed(context, '/profile');
-                }),
-                icon: Icon(Icons.person,
-                    size: 24, color: secondaryColor ?? Colors.grey.shade900),
-              ),
+              // trailing: IconButton(
+              //   onPressed: (() {}),
+              //   icon: Icon(Icons.send,
+              //       size: 24, color: secondaryColor ?? Colors.grey.shade900),
+              // ),
             ),
           ],
           body: body,

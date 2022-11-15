@@ -1,8 +1,8 @@
 import 'package:noted_mobile/data/fake_note.dart';
-import 'package:noted_mobile/data/folder.dart';
+import 'package:noted_mobile/data/group.dart';
 
-Folder kFakeFolder1 = Folder(
-  title: 'Folder 1',
+Group kFakeGroup1 = Group(
+  title: 'Group 1',
   nbNotes: 2,
   notes: [
     kFakeNote1,
@@ -14,8 +14,8 @@ Folder kFakeFolder1 = Folder(
   updatedAt: DateTime.now(),
 );
 
-Folder kFakeFolder2 = Folder(
-  title: 'Folder 2',
+Group kFakeGroup2 = Group(
+  title: 'Group 2',
   nbNotes: 2,
   notes: [
     kFakeNote1,
@@ -27,8 +27,8 @@ Folder kFakeFolder2 = Folder(
   updatedAt: DateTime.now(),
 );
 
-Folder kFakeFolder3 = Folder(
-  title: 'Folder 3',
+Group kFakeGroup3 = Group(
+  title: 'Group 3',
   nbNotes: 2,
   notes: [
     kFakeNote1,

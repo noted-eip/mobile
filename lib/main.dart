@@ -3,8 +3,8 @@ import 'package:noted_mobile/components/common/custom_drawer.dart';
 import 'package:noted_mobile/data/api_helper.dart';
 import 'package:noted_mobile/data/dio_singleton.dart';
 import 'package:noted_mobile/pages/change_password.dart';
-import 'package:noted_mobile/pages/folder_detail_page.dart';
-import 'package:noted_mobile/pages/folders_list_screen.dart';
+import 'package:noted_mobile/pages/group_detail_page.dart';
+import 'package:noted_mobile/pages/groups_list_screen.dart';
 import 'package:noted_mobile/pages/forgot_password_screen.dart';
 import 'package:noted_mobile/pages/forgot_password_verification_screen.dart';
 import 'package:noted_mobile/pages/latest_files_screen.dart';
@@ -57,8 +57,8 @@ class MyApp extends StatelessWidget {
               const ForgotPasswordVerificationPage(),
           '/change-password': (context) => const ChangePasswordPage(),
           '/latest-files': (context) => const LatestFilesList(),
-          '/folders': (context) => const FoldersListPage(),
-          '/folder-detail': (context) => const FolderDetailPage(),
+          '/groups': (context) => const GroupsListPage(),
+          '/group-detail': (context) => const GroupDetailPage(),
           '/note-detail': (context) => const NoteDetail(),
         },
       ),

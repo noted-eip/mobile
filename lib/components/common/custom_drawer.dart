@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_zoom_drawer/config.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
-import 'package:noted_mobile/pages/folders_list_screen.dart';
+import 'package:noted_mobile/pages/groups_list_screen.dart';
 import 'package:noted_mobile/pages/latest_files_screen.dart';
 import 'package:noted_mobile/pages/profile_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -42,7 +42,7 @@ class _MyCustomDrawerState extends State<MyCustomDrawer> {
       case MyMenuItems.home:
         return const HomePage();
       case MyMenuItems.groups:
-        return const FoldersListPage();
+        return const GroupsListPage();
       case MyMenuItems.notes:
         return const LatestFilesList();
       case MyMenuItems.profil:

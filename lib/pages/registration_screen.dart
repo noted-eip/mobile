@@ -106,8 +106,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
   Widget build(BuildContext context) {
     final RoundedLoadingButtonController btnController =
         RoundedLoadingButtonController();
-    final RoundedLoadingButtonController btnController2 =
-        RoundedLoadingButtonController();
 
     return Scaffold(
       backgroundColor: Colors.white,
