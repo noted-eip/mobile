@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:noted_mobile/utils/constant.dart';
 
 class NoteCard extends StatelessWidget {
   const NoteCard({
     Key? key,
     this.title = 'file Name',
     this.description = 'file Description',
-    this.color = Colors.grey,
+    this.color = kPrimaryColor,
     this.icon = Icons.description,
     this.id = 'file Id',
     this.authorId = 'file User Id',

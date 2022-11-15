@@ -9,23 +9,24 @@ class NotesList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      // color: Colors.white,
-      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(32),
       height: 500,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           const Text("Notes List",
-              style: TextStyle(fontSize: 20, color: Colors.white)),
-          const SizedBox(
-            height: 10,
-          ),
+              style: TextStyle(fontSize: 20, color: Colors.black)),
           Expanded(
             child: ListView.builder(
               itemBuilder: (context, index) {
                 Note note = notes[index];
                 return NoteCard(
-                  baseColor: Colors.white,
                   title: note.title,
                   authorId: note.authorId,
                   onTap: () {

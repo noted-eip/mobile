@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:noted_mobile/utils/constant.dart';
 
 class FolderCard extends StatelessWidget {
   const FolderCard({
     Key? key,
     this.folderName = 'Folder Name',
     this.folderDescription = 'Folder Description',
-    this.folderColor = Colors.grey,
+    this.folderColor = kPrimaryColor,
     this.folderIcon = Icons.folder,
     this.folderId = 'Folder Id',
     this.folderUserId = 'Folder User Id',
@@ -56,8 +57,10 @@ class FolderCard extends StatelessWidget {
             ),
             displaySeeMore
                 ? const SizedBox()
-                : Text('$folderNotesCount notes',
-                    style: const TextStyle(fontSize: 15, color: Colors.white)),
+                : Text(
+                    '$folderNotesCount notes',
+                    style: const TextStyle(fontSize: 15, color: Colors.white),
+                  ),
           ],
         ),
       ),

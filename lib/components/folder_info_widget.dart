@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:noted_mobile/data/fake_folders_list.dart';
 import 'package:noted_mobile/data/folder.dart';
+import 'package:noted_mobile/utils/constant.dart';
 
 class FolderInfos extends StatelessWidget {
   const FolderInfos({Key? key, required this.folderId}) : super(key: key);
@@ -17,10 +18,10 @@ class FolderInfos extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 220,
-      decoration: BoxDecoration(
-        color: Colors.grey.shade900,
-        borderRadius: const BorderRadius.only(
-            bottomLeft: Radius.circular(30), bottomRight: Radius.circular(30)),
+      decoration: const BoxDecoration(
+        color: kPrimaryColor,
+        borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(16), bottomRight: Radius.circular(16)),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(

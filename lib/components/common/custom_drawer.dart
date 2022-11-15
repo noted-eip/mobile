@@ -172,7 +172,7 @@ class _MenuScreenState extends State<MenuScreen> {
 
   Widget _buildMenuItem(MyMenuItem item) => ListTile(
         selected: widget.currentItem == item,
-        selectedTileColor: Colors.deepPurple,
+        selectedTileColor: Colors.black,
         textColor: Colors.white,
         iconColor: Colors.white,
         onTap: () {
