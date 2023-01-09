@@ -20,16 +20,20 @@ class Block {
   factory Block.fromJson(Map<String, dynamic> json) {
     return Block(
       id: json['id'],
-      type: json['type'] == 'heading_1'
+      type: json['type'] == 'TYPE_HEADING_1'
           ? BlockType.heading1
-          : json['type'] == 'heading_2'
+          : json['type'] == 'TYPE_HEADING_2'
               ? BlockType.heading2
-              : json['type'] == 'heading_3'
+              : json['type'] == 'TYPE_HEADING_3'
                   ? BlockType.heading3
-                  : json['type'] == 'paragraph'
+                  : json['type'] == 'TYPE_PARAGRAPH'
                       ? BlockType.paragraph
                       : BlockType.unknown,
-      text: json['text'],
+      text: json['type'] == 'TYPE_HEADING_1' ||
+              json['type'] == 'TYPE_HEADING_2' ||
+              json['type'] == 'TYPE_HEADING_3'
+          ? json['heading']
+          : json['paragraph'],
     );
   }
 

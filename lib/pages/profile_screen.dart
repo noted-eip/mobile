@@ -162,6 +162,38 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         ),
                       ),
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      Card(
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(16)),
+                        ),
+                        elevation: 5,
+                        child: Container(
+                          alignment: Alignment.topLeft,
+                          padding: const EdgeInsets.all(8),
+                          child: Column(
+                            children: <Widget>[
+                              Column(
+                                children: <Widget>[
+                                  ...ListTile.divideTiles(
+                                    color: Colors.grey,
+                                    tiles: [
+                                      ListTile(
+                                        leading: const Icon(Icons.info),
+                                        title: const Text("ID"),
+                                        subtitle:
+                                            SelectableText(userProvider.id),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
                     ],
                   )
                 ],

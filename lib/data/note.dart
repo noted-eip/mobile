@@ -4,7 +4,7 @@ class Note {
   String id;
   String authorId;
   String title;
-  List<Block> blocks;
+  List<Block>? blocks;
 
   Note({
     required this.id,
@@ -18,11 +18,13 @@ class Note {
       id: json['id'],
       authorId: json['author_id'],
       title: json['title'],
-      blocks: List<Block>.from(
-        json['blocks'].map(
-          (block) => Block.fromJson(block),
-        ),
-      ),
+      blocks: json['blocks'] == null
+          ? null
+          : List<Block>.from(
+              json['blocks'].map(
+                (block) => Block.fromJson(block),
+              ),
+            ),
     );
   }
 
@@ -31,7 +33,9 @@ class Note {
       'id': id,
       'author_id': authorId,
       'title': title,
-      'blocks': blocks.map((block) => block.toJson()).toList(),
+      'blocks': blocks == null
+          ? null
+          : blocks!.map((block) => block.toJson()).toList(),
     };
   }
 }

@@ -2,7 +2,7 @@ class Endpoints {
   Endpoints._();
 
   // base url
-  static const String kBaseUrl = "https://noted-rojasdiego.koyeb.app";
+  // static const String kBaseUrl = "https://noted-rojasdiego.koyeb.app";
 
   // receiveTimeout
   static const int receiveTimeout = 5000;

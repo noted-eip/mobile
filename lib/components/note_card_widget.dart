@@ -9,7 +9,7 @@ class NoteCard extends StatelessWidget {
     this.color = kPrimaryColor,
     this.icon = Icons.description,
     this.id = 'file Id',
-    this.authorId = 'file User Id',
+    this.authorId = 'Username',
     this.createdAt,
     this.updateAt,
     this.onTap,
@@ -80,7 +80,7 @@ class NoteCard extends StatelessWidget {
                           ),
                           const SizedBox(width: 5),
                           Text(
-                            authorId!,
+                            authorId!.substring(5),
                             style: TextStyle(
                                 fontSize: 15, color: baseColor ?? Colors.black),
                           ),

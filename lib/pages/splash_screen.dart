@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:noted_mobile/data/user_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -48,6 +50,19 @@ class SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(
+      context,
+      listen: false,
+    );
+
+    if (_isLogged) {
+      Future.delayed(Duration.zero, () {
+        userProvider.setToken(prefs?.getString('token') ?? '');
+        userProvider.setUsername(prefs?.getString('username') ?? '');
+        userProvider.setEmail(prefs?.getString('email') ?? '');
+        userProvider.setID(prefs?.getString('id') ?? '');
+      });
+    }
     return Scaffold(
       body: Container(
         color: Theme.of(context).colorScheme.secondary,

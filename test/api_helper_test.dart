@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:dio/dio.dart';
-import 'package:noted_mobile/data/api_helper.dart';
+import 'package:noted_mobile/data/services/api_helper.dart';
 import 'package:mockito/mockito.dart';
 
 class DioAdapterMock extends Mock implements HttpClientAdapter {}

@@ -46,6 +46,7 @@ dependencies:
   json_serializable: ^6.3.2
   build_runner: ^2.2.1
   flutter_zoom_drawer: ^3.0.3
+  flutter_slidable: ^2.0.0
 
 dev_dependencies:
   flutter_test:

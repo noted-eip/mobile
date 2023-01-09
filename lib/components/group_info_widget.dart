@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:noted_mobile/data/fake_groups_list.dart';
 import 'package:noted_mobile/data/group.dart';
-import 'package:noted_mobile/utils/constant.dart';
 
 class GroupInfos extends StatelessWidget {
-  const GroupInfos({Key? key, required this.groupId}) : super(key: key);
-  final String groupId;
-
-  Group get group =>
-      kFakeGroupsList.firstWhere((element) => element.id == groupId);
+  const GroupInfos({Key? key, required this.group}) : super(key: key);
+  final NewGroup group;
 
   String formatDate(DateTime date) {
     return "${date.day}/${date.month}/${date.year} : ${date.hour}h${date.minute}";
@@ -19,7 +14,7 @@ class GroupInfos extends StatelessWidget {
     return Container(
       height: 220,
       decoration: const BoxDecoration(
-        color: kPrimaryColor,
+        color: Colors.white,
         borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(16), bottomRight: Radius.circular(16)),
       ),
@@ -34,19 +29,19 @@ class GroupInfos extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    group.nbNotes.toString(),
-                    style: const TextStyle(
-                        color: Colors.white,
+                    "NB",
+                    style: TextStyle(
+                        color: Colors.grey.shade900,
                         fontSize: 40,
                         fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(
                     width: 10,
                   ),
-                  const Text(
+                  Text(
                     "Notes",
                     style: TextStyle(
-                        color: Colors.white,
+                        color: Colors.grey.shade900,
                         fontSize: 20,
                         fontWeight: FontWeight.bold),
                   ),
@@ -55,59 +50,56 @@ class GroupInfos extends StatelessWidget {
               Row(
                 children: [
                   const Icon(
-                    Icons.person,
+                    Icons.info_outlined,
                     color: Colors.grey,
                     size: 20,
                   ),
                   const SizedBox(
                     width: 10,
                   ),
-                  Text(
-                    group.author,
-                    style: const TextStyle(
-                        color: Colors.grey,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold),
+                  SizedBox(
+                    width: 150,
+                    child: Text(
+                      group.name,
+                      style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
+                      overflow: TextOverflow.clip,
+                    ),
                   ),
                 ],
               ),
             ],
           ),
-          const SizedBox(
-            height: 10,
+          Text("Group Description",
+              style: TextStyle(
+                  color: Colors.grey.shade900,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold)),
+          Text(
+            group.description,
+            style: TextStyle(
+              color: Colors.grey.shade900,
+              fontSize: 16,
+            ),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.schedule,
-                    color: Colors.white,
+                    color: Colors.grey.shade900,
                     size: 20,
                   ),
                   const SizedBox(
                     width: 10,
                   ),
                   Text(
-                    formatDate(group.createdAt),
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  const Icon(
-                    Icons.update,
-                    color: Colors.white,
-                    size: 20,
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Text(
-                    formatDate(group.updatedAt),
-                    style: const TextStyle(color: Colors.white),
+                    group.created_at,
+                    style: TextStyle(color: Colors.grey.shade900),
                   ),
                 ],
               ),

@@ -2,8 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:noted_mobile/data/api_helper.dart';
-import 'package:noted_mobile/data/dio_singleton.dart';
+import 'package:noted_mobile/data/services/api_helper.dart';
+import 'package:noted_mobile/data/services/dio_singleton.dart';
 import 'package:noted_mobile/data/user_provider.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
 import 'package:provider/provider.dart';
@@ -176,183 +176,181 @@ class LoginPageState extends State<LoginPage> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Center(
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: SafeArea(
-            child: Container(
-              margin: const EdgeInsets.fromLTRB(32, 10, 32, 10),
-              child: Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(100),
-                      border: Border.all(width: 5, color: Colors.white),
-                      color: Colors.white,
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 20,
-                          offset: Offset(5, 5),
-                        ),
-                      ],
-                    ),
-                    child: const Image(
-                      image: AssetImage('./images/noted_logo.png'),
-                      fit: BoxFit.fill,
-                      height: 80.0,
-                      width: 80.0,
-                    ),
+      body: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: SafeArea(
+          child: Container(
+            margin: const EdgeInsets.fromLTRB(32, 10, 32, 10),
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(100),
+                    border: Border.all(width: 5, color: Colors.white),
+                    color: Colors.white,
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 20,
+                        offset: Offset(5, 5),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 24),
-                  const Text(
-                    'Signin into your account',
-                    style: TextStyle(color: Colors.grey, fontSize: 24),
+                  child: const Image(
+                    image: AssetImage('./images/noted_logo.png'),
+                    fit: BoxFit.fill,
+                    height: 80.0,
+                    width: 80.0,
                   ),
-                  const SizedBox(height: 32.0),
-                  Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        TextFormField(
-                          controller: _emailController,
-                          decoration: ThemeHelper()
-                              .textInputDecoration('Email', 'Enter your Email')
-                              .copyWith(
-                                prefixIcon: const Icon(
-                                  Icons.mail_outline,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                          validator: (val) {
-                            if (val!.isEmpty) {
-                              return "Please enter your email";
-                            } else if (!RegExp(
-                                    r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$")
-                                .hasMatch(val)) {
-                              return "Enter a valid email address";
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 30.0),
-                        TextFormField(
-                          controller: _passwordController,
-                          obscureText: _obscureText,
-                          decoration: ThemeHelper()
-                              .textInputDecoration(
-                                  'Password', 'Enter your password')
-                              .copyWith(
-                                prefixIcon: const Icon(
-                                    Icons.lock_outline_rounded,
-                                    color: Colors.grey),
-                                suffixIcon: IconButton(
-                                  splashColor: Colors.transparent,
-                                  highlightColor: Colors.transparent,
-                                  icon: Icon(
-                                    _obscureText
-                                        ? Icons.visibility_outlined
-                                        : Icons.visibility_off_outlined,
-                                    color: Colors.grey,
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      _obscureText = !_obscureText;
-                                    });
-                                  },
-                                ),
-                              ),
-                          validator: (val) {
-                            if (val!.isEmpty) {
-                              return 'Please enter your password';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 16.0),
-                        Container(
-                          margin: const EdgeInsets.fromLTRB(10, 0, 10, 20),
-                          alignment: Alignment.topRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pushNamed(context, '/forgot-password');
-                            },
-                            child: const Text(
-                              "Forgot your password?",
-                              style: TextStyle(
+                ),
+                const SizedBox(height: 24),
+                const Text(
+                  'Signin into your account',
+                  style: TextStyle(color: Colors.grey, fontSize: 24),
+                ),
+                const SizedBox(height: 32.0),
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: _emailController,
+                        decoration: ThemeHelper()
+                            .textInputDecoration('Email', 'Enter your Email')
+                            .copyWith(
+                              prefixIcon: const Icon(
+                                Icons.mail_outline,
                                 color: Colors.grey,
                               ),
                             ),
-                          ),
-                        ),
-                        const SizedBox(height: 30.0),
-                        RoundedLoadingButton(
-                          color: Colors.grey.shade900,
-                          errorColor: Colors.redAccent,
-                          successColor: Colors.green.shade900,
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              login({
-                                "email": _emailController.text,
-                                "password": _passwordController.text
-                              }, context, btnController);
-                            } else {
-                              btnController.error();
-                              resetButton(btnController);
-                            }
-                          },
-                          controller: btnController,
-                          width: MediaQuery.of(context).size.width,
-                          borderRadius: 16,
-                          child: Text(
-                            'Sign In'.toUpperCase(),
-                            style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                          ),
-                        ),
-                        const SizedBox(height: 30.0),
-                        const Text(
-                          "Or sign in account using social media",
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                        const SizedBox(height: 24.0),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            ...buildOAuthButtons(),
-                          ],
-                        ),
-                        const SizedBox(height: 32.0),
-                        Container(
-                          margin: const EdgeInsets.fromLTRB(10, 20, 10, 20),
-                          child: Text.rich(
-                            TextSpan(
-                              children: [
-                                const TextSpan(text: "Don't have an account? "),
-                                TextSpan(
-                                  text: 'Create',
-                                  recognizer: TapGestureRecognizer()
-                                    ..onTap = () {
-                                      Navigator.pushNamed(context, '/register');
-                                    },
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary),
+                        validator: (val) {
+                          if (val!.isEmpty) {
+                            return "Please enter your email";
+                          } else if (!RegExp(
+                                  r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$")
+                              .hasMatch(val)) {
+                            return "Enter a valid email address";
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 30.0),
+                      TextFormField(
+                        controller: _passwordController,
+                        obscureText: _obscureText,
+                        decoration: ThemeHelper()
+                            .textInputDecoration(
+                                'Password', 'Enter your password')
+                            .copyWith(
+                              prefixIcon: const Icon(Icons.lock_outline_rounded,
+                                  color: Colors.grey),
+                              suffixIcon: IconButton(
+                                splashColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
+                                icon: Icon(
+                                  _obscureText
+                                      ? Icons.visibility_outlined
+                                      : Icons.visibility_off_outlined,
+                                  color: Colors.grey,
                                 ),
-                              ],
+                                onPressed: () {
+                                  setState(() {
+                                    _obscureText = !_obscureText;
+                                  });
+                                },
+                              ),
+                            ),
+                        validator: (val) {
+                          if (val!.isEmpty) {
+                            return 'Please enter your password';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16.0),
+                      Container(
+                        margin: const EdgeInsets.fromLTRB(10, 0, 10, 20),
+                        alignment: Alignment.topRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(context, '/forgot-password');
+                          },
+                          child: const Text(
+                            "Forgot your password?",
+                            style: TextStyle(
+                              color: Colors.grey,
                             ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: 30.0),
+                      RoundedLoadingButton(
+                        color: Colors.grey.shade900,
+                        errorColor: Colors.redAccent,
+                        successColor: Colors.green.shade900,
+                        onPressed: () {
+                          // Navigator.of(context).pushReplacementNamed('/home');
+                          if (_formKey.currentState!.validate()) {
+                            login({
+                              "email": _emailController.text,
+                              "password": _passwordController.text
+                            }, context, btnController);
+                          } else {
+                            btnController.error();
+                            resetButton(btnController);
+                          }
+                        },
+                        controller: btnController,
+                        width: MediaQuery.of(context).size.width,
+                        borderRadius: 16,
+                        child: Text(
+                          'Sign In'.toUpperCase(),
+                          style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
+                        ),
+                      ),
+                      const SizedBox(height: 30.0),
+                      const Text(
+                        "Or sign in account using social media",
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                      const SizedBox(height: 24.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ...buildOAuthButtons(),
+                        ],
+                      ),
+                      const SizedBox(height: 32.0),
+                      Container(
+                        margin: const EdgeInsets.fromLTRB(10, 20, 10, 20),
+                        child: Text.rich(
+                          TextSpan(
+                            children: [
+                              const TextSpan(text: "Don't have an account? "),
+                              TextSpan(
+                                text: 'Create',
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    Navigator.pushNamed(context, '/register');
+                                  },
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .secondary),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

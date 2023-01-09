@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
-import 'package:noted_mobile/data/api_helper.dart';
+import 'package:noted_mobile/data/services/api_helper.dart';
 
 final singleton = GetIt.instance;
 
