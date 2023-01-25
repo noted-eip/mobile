@@ -1,397 +1,39 @@
-import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:noted_mobile/components/common/base_container.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
+import 'package:noted_mobile/components/create_group_modal.dart';
 import 'package:noted_mobile/components/group_card_widget.dart';
-import 'package:noted_mobile/components/invite_form_widget.dart';
-import 'package:noted_mobile/data/services/api_helper.dart';
-import 'package:noted_mobile/data/services/dio_singleton.dart';
-import 'package:noted_mobile/data/group.dart';
-import 'package:noted_mobile/data/user.dart';
-import 'package:noted_mobile/data/user_provider.dart';
-import 'package:noted_mobile/pages/group_detail_page.dart';
+import 'package:noted_mobile/data/models/group/group.dart';
+import 'package:noted_mobile/data/providers/group_provider.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
-import 'package:provider/provider.dart';
-import 'package:rounded_loading_button/rounded_loading_button.dart';
 
-class GroupsListPage extends StatefulWidget {
-  const GroupsListPage({Key? key}) : super(key: key);
+//TODO: delay  when refresh indicator is shown
 
-  @override
-  State<GroupsListPage> createState() => _GroupsListPageState();
-}
+class AppNavigationBar extends StatelessWidget {
+  const AppNavigationBar({required this.onPressed, super.key});
 
-class _GroupsListPageState extends State<GroupsListPage> {
-  final _formKey = GlobalKey<FormState>();
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
-  final RoundedLoadingButtonController btnController =
-      RoundedLoadingButtonController();
-
-  Future<String?> getAccountId(String tkn, String email) async {
-    final api = singleton.get<APIHelper>();
-
-    try {
-      final response = await api.get('/accounts/by-email/$email',
-          headers: {"Authorization": "Bearer $tkn"});
-
-      if (response['statusCode'] != 200) {
-        if (!mounted) {
-          return null;
-        }
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(response['error'].toString()),
-        ));
-        return null;
-      }
-
-      return response['data']['account']['id'].toString();
-    } on DioError catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(e.response!.data['error'].toString()),
-      ));
-      return null;
-    }
-  }
-
-  Future<bool> inviteMember(String tkn, String groupId, String email) async {
-    final api = singleton.get<APIHelper>();
-
-    String? userId = await getAccountId(tkn, email);
-
-    if (userId == null) {
-      return false;
-    }
-
-    try {
-      final response = await api.post('/invites', headers: {
-        "Authorization": "Bearer $tkn"
-      }, body: {
-        "group_id": groupId,
-        "recipient_account_id": userId,
-      });
-
-      if (response['statusCode'] != 200) {
-        if (!mounted) {
-          return false;
-        }
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(response['error'].toString()),
-        ));
-        return false;
-      }
-    } on DioError catch (e) {
-      if (!mounted) {
-        return false;
-      }
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(e.toString()),
-      ));
-      return false;
-    }
-    return true;
-  }
-
-  Future<void> createGroup(String userTkn) async {
-    PageController pageController = PageController(initialPage: 0);
-    int pageIndex = 0;
-    String buttonText = "Next";
-
-    final Widget page1 = Column(
-      children: [
-        const Text(
-          "Create Group",
-          style: TextStyle(
-              color: Colors.black, fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(
-          height: 32,
-        ),
-        Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _titleController,
-                decoration: ThemeHelper()
-                    .textInputDecoration('Group Title', 'Enter a Title'),
-                validator: (val) {
-                  if (val!.isEmpty) {
-                    return "Please enter a Title";
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 30.0),
-              TextFormField(
-                minLines: 3,
-                maxLines: 3,
-                controller: _descriptionController,
-                decoration: ThemeHelper().textInputDecoration(
-                    'Group Description', 'Enter a Description'),
-                validator: (val) {
-                  if (val!.isEmpty) {
-                    return 'Please enter a Description';
-                  }
-                  return null;
-                },
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-
-    final List<TextEditingController> controller = [];
-    final List<String> roles = [];
-    final roleformKey = GlobalKey<FormState>();
-
-    final Widget page2 = Column(
-      children: [
-        const Text(
-          "Invite Members",
-          style: TextStyle(
-              color: Colors.black, fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(
-          height: 32,
-        ),
-        Expanded(
-            child: Form(
-          key: roleformKey,
-          child: InviteForm(
-            controller: controller,
-            selectedRoles: roles,
-          ),
-        )),
-      ],
-    );
-
-    final List<Widget> pages = [page1, page2];
-
-    showModalBottomSheet(
-        backgroundColor: Colors.transparent,
-        context: context,
-        isScrollControlled: true,
-        builder: (context) {
-          return Container(
-            padding: const EdgeInsets.all(32),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(16),
-                topRight: Radius.circular(16),
-              ),
-            ),
-            child: SafeArea(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TextButton(
-                    onPressed: (() {
-                      Navigator.pop(context);
-                      _descriptionController.clear();
-                      _titleController.clear();
-                    }),
-                    child: const Text(
-                      "Fermer",
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 32,
-                  ),
-                  Expanded(
-                      child: PageView(
-                    onPageChanged: (value) {
-                      setState(() {
-                        pageIndex = value;
-                        if (pageIndex == 2) {
-                          buttonText = "Create";
-                        } else {
-                          buttonText = "Next";
-                        }
-                      });
-                    },
-                    controller: pageController,
-                    physics: const NeverScrollableScrollPhysics(),
-                    children: pages,
-                  )),
-                  RoundedLoadingButton(
-                    color: Colors.grey.shade900,
-                    errorColor: Colors.redAccent,
-                    successColor: Colors.green.shade900,
-                    onPressed: () async {
-                      if (pageIndex == 0) {
-                        if (_formKey.currentState!.validate()) {
-                          pageController.nextPage(
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeIn);
-                          btnController.success();
-                          Future.delayed(const Duration(seconds: 1), () {
-                            btnController.reset();
-                          });
-                        } else {
-                          btnController.error();
-                          Future.delayed(const Duration(seconds: 1), () {
-                            btnController.reset();
-                          });
-                        }
-                      } else if (pageIndex == 1) {
-                        if (roleformKey.currentState!.validate()) {
-                          String? groupId = await apiCall(
-                              userTkn,
-                              _titleController.text,
-                              _descriptionController.text,
-                              context,
-                              btnController);
-                          if (groupId != null) {
-                            controller.asMap().forEach((index, value) async {
-                              await inviteMember(userTkn, groupId, value.text);
-                            });
-
-                            //TODO: change role of member from roles
-                          } else {
-                            btnController.error();
-                            Future.delayed(const Duration(seconds: 1), () {
-                              btnController.reset();
-                            });
-                          }
-
-                          btnController.success();
-                          Future.delayed(const Duration(seconds: 1), () {
-                            btnController.reset();
-                          });
-                          _descriptionController.clear();
-                          _titleController.clear();
-                          if (mounted) {
-                            Navigator.pop(context);
-                          }
-                          setState(() {});
-                        }
-                      }
-                    },
-                    controller: btnController,
-                    width: MediaQuery.of(context).size.width,
-                    borderRadius: 16,
-                    child: Text(
-                      buttonText.toUpperCase(),
-                      style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        });
-  }
-
-  Future<String?> apiCall(
-      String userTkn,
-      String groupTitle,
-      String groupDescription,
-      BuildContext context,
-      RoundedLoadingButtonController btnController) async {
-    final api = singleton.get<APIHelper>();
-
-    try {
-      final response = await api.post('/groups',
-          headers: {"Authorization": "Bearer $userTkn"},
-          body: {"name": groupTitle, "description": groupDescription});
-
-      if (response['statusCode'] != 200) {
-        if (!mounted) {
-          return null;
-        }
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to create group'),
-          ),
-        );
-        btnController.error();
-        Future.delayed(const Duration(seconds: 1), () {
-          btnController.reset();
-        });
-      } else {
-        if (!mounted) {
-          return null;
-        }
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Group created successfully'),
-          ),
-        );
-        btnController.success();
-        Future.delayed(const Duration(seconds: 1), () {
-          btnController.reset();
-        });
-        return response["data"]["group"]["id"];
-      }
-    } on DioError catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-        ),
-      );
-      btnController.error();
-      Future.delayed(const Duration(seconds: 1), () {
-        btnController.reset();
-      });
-    }
-    return null;
-  }
-
-  Future<List<NewGroup>?> getGroups(User fromUser) async {
-    List<NewGroup> groupsList = [];
-    final api = singleton.get<APIHelper>();
-
-    try {
-      final groups = await api.get(
-        "/groups",
-        headers: {"Authorization": "Bearer ${fromUser.token}"},
-        queryParams: {
-          "account_id": fromUser.id,
-        },
-      );
-
-      if (groups['statusCode'] != 200) {
-        if (!mounted) {
-          return null;
-        }
-      }
-
-      if (groups['data'] == null ||
-          groups['data'] != null && groups['data']["groups"] == null) {
-        return [];
-      }
-
-      for (var group in groups['data']["groups"]) {
-        groupsList.add(NewGroup.fromJson(group));
-      }
-
-      return groupsList;
-    } on DioError catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(e.toString()),
-      ));
-      return null;
-    }
-  }
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(
-      context,
-      listen: false,
-    );
-    return BaseContainer(
-      titleWidget: Row(
+    return CupertinoSliverNavigationBar(
+      border: Border.all(color: CupertinoColors.white),
+      backgroundColor: Colors.white,
+      leading: Material(
+        color: Colors.transparent,
+        child: IconButton(
+          icon: Icon(
+            Icons.menu,
+            color: Colors.grey.shade900,
+          ),
+          onPressed: () {
+            ZoomDrawer.of(context)!.toggle();
+          },
+        ),
+      ),
+      largeTitle: Row(
         children: [
           const Text(
             "My Groups",
@@ -400,9 +42,7 @@ class _GroupsListPageState extends State<GroupsListPage> {
           Material(
             color: Colors.transparent,
             child: IconButton(
-              onPressed: () {
-                createGroup(userProvider.token);
-              },
+              onPressed: () => onPressed(),
               icon: const Icon(
                 Icons.add,
                 size: 32,
@@ -411,81 +51,244 @@ class _GroupsListPageState extends State<GroupsListPage> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.only(top: 0, left: 20, right: 20, bottom: 20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Expanded(
-              child: FutureBuilder<List<NewGroup>?>(
-                  future: getGroups(
-                    User(
-                      email: userProvider.email,
-                      id: userProvider.id,
-                      token: userProvider.token,
-                      username: userProvider.username,
-                    ),
+      trailing: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Material(
+            color: Colors.transparent,
+            child: IconButton(
+              onPressed: (() {
+                if (kDebugMode) {
+                  print("Send button pressed");
+                }
+                Navigator.pushNamed(context, "/notif");
+              }),
+              icon: Icon(Icons.send, size: 24, color: Colors.grey.shade900),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class GroupsListPage extends ConsumerStatefulWidget {
+  const GroupsListPage({super.key});
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _GroupsListPageState();
+}
+
+class _GroupsListPageState extends ConsumerState<GroupsListPage> {
+  Future<void> openCreateGroupModal() async {
+    showModalBottomSheet(
+      backgroundColor: Colors.transparent,
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return const CreateGroupModal();
+      },
+    );
+  }
+
+  Widget buildSearchBar() {
+    return TextField(
+      decoration: ThemeHelper().textInputDecoration('', 'Search ...').copyWith(
+          prefixIcon: const Icon(
+            Icons.search_outlined,
+            color: Colors.grey,
+          ),
+          floatingLabelBehavior: FloatingLabelBehavior.always),
+      onChanged: (value) {
+        ref.read(searchProvider.notifier).update((state) => value);
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final AsyncValue<List<Group>?> groups = ref.watch(groupsProvider);
+
+    return Scaffold(
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: CupertinoPageScaffold(
+          child: RefreshIndicator(
+            triggerMode: RefreshIndicatorTriggerMode.onEdge,
+            displacement: 60,
+            edgeOffset:
+                kToolbarHeight + 16 + MediaQuery.of(context).padding.top + 100,
+            onRefresh: () async {
+              return await Future.delayed(
+                const Duration(milliseconds: 200),
+              ).then((value) => ref.invalidate(groupsProvider));
+            },
+            child: CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: <Widget>[
+                AppNavigationBar(
+                  onPressed: () {
+                    openCreateGroupModal();
+                  },
+                ),
+                SliverPersistentHeader(
+                  pinned: true,
+                  delegate: OurDelegate(
+                    closedHeight: 16,
+                    openHeight: 16,
+                    toolBarHeight: kToolbarHeight,
+                    child: buildSearchBar(),
                   ),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      if (snapshot.data!.isEmpty) {
-                        return RefreshIndicator(
-                          onRefresh: () async {
-                            setState(() {});
-                          },
-                          child: ListView(children: const [
-                            Center(
-                              child: Text("No groups found"),
-                            ),
-                          ]),
-                        );
-                      }
-                      return RefreshIndicator(
-                        onRefresh: () async {
-                          setState(() {});
-                        },
-                        child: GridView.builder(
-                          padding: EdgeInsets.zero,
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2),
-                          itemCount: snapshot.data!.length,
-                          itemBuilder: (context, index) {
-                            return GroupCard(
-                              groupName: snapshot.data![index].name,
-                              groupDescription:
-                                  snapshot.data![index].description,
-                              groupNotesCount: 0,
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => GroupDetailPage(
-                                      groupId: snapshot.data![index].id,
-                                    ),
-                                  ),
-                                );
-                              },
-                            );
-                          },
+                ),
+                groups.when(
+                  data: (data) {
+                    if (data == null || data.isEmpty) {
+                      final media = MediaQuery.of(context);
+                      final bodyHeight = media.size.height -
+                          media.padding.top -
+                          16 -
+                          media.viewPadding.top -
+                          media.viewPadding.bottom -
+                          media.padding.bottom -
+                          kToolbarHeight;
+
+                      return SliverSafeArea(
+                        top: false,
+                        sliver: SliverFixedExtentList(
+                          itemExtent: bodyHeight,
+                          delegate: SliverChildBuilderDelegate(
+                            (BuildContext context, int index) {
+                              return const Material(
+                                color: Colors.transparent,
+                                child: Center(
+                                  child: Text("No groups found",
+                                      style: TextStyle(fontSize: 18)),
+                                ),
+                              );
+                            },
+                            childCount: 1,
+                          ),
                         ),
                       );
-                    } else if (snapshot.hasError) {
-                      return const Center(
-                        child: Text("Error"),
-                      );
-                    } else {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
                     }
-                  }),
+
+                    return SliverSafeArea(
+                      top: false,
+                      minimum: const EdgeInsets.all(16),
+                      sliver: SliverGrid(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                            final group = data[index].data;
+                            return Material(
+                              color: Colors.transparent,
+                              child: GroupCard(
+                                groupName: group.name,
+                                groupDescription: group.description,
+                                groupNotesCount: 0,
+                                onTap: () async {
+                                  final res = await Navigator.pushNamed(
+                                      context, "/group-detail",
+                                      arguments: group.id);
+
+                                  if (res == true) {
+                                    ref.invalidate(groupsProvider);
+                                    ref.invalidate(latestGroupsProvider);
+                                  }
+                                },
+                              ),
+                            );
+                          },
+                          childCount: data.length,
+                        ),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                        ),
+                      ),
+                    );
+                  },
+                  loading: () => SliverSafeArea(
+                    top: false,
+                    minimum: const EdgeInsets.all(16),
+                    sliver: SliverGrid(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          return const GroupCard.empty();
+                        },
+                        childCount: 6,
+                      ),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                      ),
+                    ),
+                  ),
+                  error: (error, stack) => SliverSafeArea(
+                    sliver: SliverGrid(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          return const GroupCard.empty();
+                        },
+                        childCount: 6,
+                      ),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
   }
+}
+
+class OurDelegate extends SliverPersistentHeaderDelegate {
+  double toolBarHeight;
+  double closedHeight;
+  double openHeight;
+  Widget child;
+
+  OurDelegate({
+    required this.toolBarHeight,
+    required this.closedHeight,
+    required this.openHeight,
+    required this.child,
+  });
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        height: toolBarHeight + openHeight,
+        color: Colors.white,
+        padding: const EdgeInsets.only(
+          top: 16,
+          left: 16,
+          right: 16,
+          bottom: 16,
+        ),
+        child: child,
+      ),
+    );
+  }
+
+  @override
+  double get maxExtent => toolBarHeight + openHeight;
+
+  @override
+  double get minExtent => toolBarHeight + closedHeight;
+
+  @override
+  bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) => true;
 }

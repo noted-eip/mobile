@@ -1,18 +1,17 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:noted_mobile/data/user_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+class SplashScreen extends ConsumerStatefulWidget {
+  const SplashScreen({super.key});
 
   @override
-  SplashScreenState createState() => SplashScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _SplashScreenState();
 }
 
-class SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends ConsumerState<SplashScreen> {
   bool _isVisible = false;
   SharedPreferences? prefs;
   bool _isLogged = false;
@@ -29,10 +28,22 @@ class SplashScreenState extends State<SplashScreen> {
     super.initState();
   }
 
-  SplashScreenState() {
+  _SplashScreenState() {
     Timer(const Duration(milliseconds: 2000), () {
       setState(() {
         if (_isLogged) {
+          final user = ref.read(userProvider);
+          user.setToken(prefs?.getString('token') ?? '');
+          user.setName(
+            prefs?.getString('name') ?? '',
+          );
+          user.setEmail(
+            prefs?.getString('email') ?? '',
+          );
+          user.setID(
+            prefs?.getString('id') ?? '',
+          );
+
           Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
         } else {
           Navigator.pushNamedAndRemoveUntil(
@@ -50,19 +61,21 @@ class SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(
-      context,
-      listen: false,
-    );
-
-    if (_isLogged) {
-      Future.delayed(Duration.zero, () {
-        userProvider.setToken(prefs?.getString('token') ?? '');
-        userProvider.setUsername(prefs?.getString('username') ?? '');
-        userProvider.setEmail(prefs?.getString('email') ?? '');
-        userProvider.setID(prefs?.getString('id') ?? '');
-      });
-    }
+    // final user = ref.read(userProvider);
+    // if (_isLogged) {
+    //   Future.delayed(Duration.zero, () {
+    //     user.setToken(prefs?.getString('token') ?? '');
+    //     user.setName(
+    //       prefs?.getString('name') ?? '',
+    //     );
+    //     user.setEmail(
+    //       prefs?.getString('email') ?? '',
+    //     );
+    //     user.setID(
+    //       prefs?.getString('id') ?? '',
+    //     );
+    //   });
+    // }
     return Scaffold(
       body: Container(
         color: Theme.of(context).colorScheme.secondary,

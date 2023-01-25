@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:noted_mobile/data/user_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:noted_mobile/data/providers/provider_list.dart';
 
-class HomeInfos extends StatelessWidget {
-  const HomeInfos({Key? key}) : super(key: key);
+class HomeInfos extends ConsumerWidget {
+  const HomeInfos({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(
-      context,
-      listen: true,
-    );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.read(userProvider);
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      padding: const EdgeInsets.all(16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -25,13 +22,12 @@ class HomeInfos extends StatelessWidget {
                   style: const TextStyle(fontSize: 20, color: Colors.black),
                   children: <TextSpan>[
                     TextSpan(
-                        text: userProvider.username == ''
-                            ? 'Username !\n'
-                            : '${userProvider.username} !\n',
+                        text: user.name == '' ? 'Name !\n' : '${user.name} !\n',
                         style: const TextStyle(fontWeight: FontWeight.bold)),
                     const TextSpan(
-                        text: 'Let\'s write our first note !',
-                        style: TextStyle(color: Colors.grey)),
+                      text: 'Let\'s start to write our story !',
+                      style: TextStyle(color: Colors.grey),
+                    ),
                   ],
                 ),
               )

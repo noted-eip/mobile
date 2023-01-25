@@ -15,9 +15,9 @@ class Note {
 
   factory Note.fromJson(Map<String, dynamic> json) {
     return Note(
-      id: json['id'],
-      authorId: json['author_id'],
-      title: json['title'],
+      id: json['id'] ?? '',
+      authorId: json['author_id'] ?? '',
+      title: json['title'] ?? '',
       blocks: json['blocks'] == null
           ? null
           : List<Block>.from(

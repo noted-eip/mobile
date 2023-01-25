@@ -1,30 +1,29 @@
-import 'package:dio/dio.dart';
+import 'dart:async';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:noted_mobile/data/services/api_helper.dart';
-import 'package:noted_mobile/data/services/dio_singleton.dart';
-import 'package:noted_mobile/data/user_provider.dart';
+import 'package:noted_mobile/data/providers/account_provider.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
-import 'package:provider/provider.dart';
-import 'dart:async';
-import 'package:jwt_decode/jwt_decode.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+class LoginPage extends ConsumerStatefulWidget {
+  const LoginPage({super.key});
 
   @override
-  LoginPageState createState() => LoginPageState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _LoginPageState();
 }
 
-class LoginPageState extends State<LoginPage> {
+class _LoginPageState extends ConsumerState<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  SharedPreferences? prefs;
-
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final RoundedLoadingButtonController btnController =
+      RoundedLoadingButtonController();
+
+  SharedPreferences? prefs;
+  bool _obscureText = true;
 
   final List<dynamic> oAuth = [
     {
@@ -76,104 +75,41 @@ class LoginPageState extends State<LoginPage> {
     return buttons;
   }
 
-  void setUserInfos(
-    String token,
-    String id,
-    String email,
-    String userName,
-  ) async {
-    prefs = await SharedPreferences.getInstance();
-    prefs!.setString('token', token);
-    prefs!.setString('id', id);
-    prefs!.setString('email', email);
-    prefs!.setString('username', userName);
-  }
-
-  Future<void> login(Map<String, String> data, BuildContext context,
-      RoundedLoadingButtonController controller) async {
-    final userProvider = Provider.of<UserProvider>(
-      context,
-      listen: false,
-    );
-
-    final api = singleton.get<APIHelper>();
-
-    try {
-      final auth = await api.post("/authenticate", body: data);
-
-      if (auth['statusCode'] != 200) {
-        controller.error();
-        resetButton(controller);
-        if (!mounted) return;
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(auth['error']),
-          ),
-        );
-        return;
-      }
-
-      final token = auth['data']['token'];
-
-      Map<String, dynamic> payload = Jwt.parseJwt(token);
-
-      final user = await api.get("/accounts/${payload['uid']}",
-          headers: {"Authorization": "Bearer $token"});
-
-      if (user['statusCode'] != 200) {
-        controller.error();
-        resetButton(controller);
-        if (!mounted) return;
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(user['error']),
-          ),
-        );
-        return;
-      }
-      if (!mounted) return;
-
-      final userInfos = user['data']['account'];
-
-      userProvider.setToken(token);
-      userProvider.setID(payload['uid']);
-      userProvider.setEmail(userInfos['email']);
-      userProvider.setUsername(userInfos['name']);
-
-      setUserInfos(
-        token,
-        payload['uid'],
-        userInfos['email'],
-        userInfos['name'],
-      );
-      controller.success();
-      resetButton(controller);
-      Navigator.of(context).pushReplacementNamed('/home');
-    } on DioError catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(e.toString()),
-      ));
-      controller.error();
-      resetButton(controller);
-      return;
-    }
-  }
-
   void resetButton(RoundedLoadingButtonController controller) async {
     Timer(const Duration(seconds: 3), () {
       controller.reset();
     });
   }
 
-  bool _obscureText = true;
+  Future<void> login(
+    String email,
+    String password,
+  ) async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        final loginRes = await ref.read(accountClientProvider).login(
+              _emailController.text,
+              _passwordController.text,
+              ref,
+            );
+        if (loginRes && mounted) {
+          Navigator.of(context).pushReplacementNamed('/home');
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(e.toString())));
+        btnController.error();
+        resetButton(btnController);
+        return;
+      }
+    } else {
+      btnController.error();
+      resetButton(btnController);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final RoundedLoadingButtonController btnController =
-        RoundedLoadingButtonController();
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -289,17 +225,11 @@ class LoginPageState extends State<LoginPage> {
                         color: Colors.grey.shade900,
                         errorColor: Colors.redAccent,
                         successColor: Colors.green.shade900,
-                        onPressed: () {
-                          // Navigator.of(context).pushReplacementNamed('/home');
-                          if (_formKey.currentState!.validate()) {
-                            login({
-                              "email": _emailController.text,
-                              "password": _passwordController.text
-                            }, context, btnController);
-                          } else {
-                            btnController.error();
-                            resetButton(btnController);
-                          }
+                        onPressed: () async {
+                          login(
+                            _emailController.text,
+                            _passwordController.text,
+                          );
                         },
                         controller: btnController,
                         width: MediaQuery.of(context).size.width,

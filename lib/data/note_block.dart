@@ -6,6 +6,8 @@ enum BlockType {
   paragraph,
 }
 
+// TODO: Add new type of block like code, image, link, etc.
+
 class Block {
   final String id;
   final BlockType type;
@@ -19,7 +21,7 @@ class Block {
 
   factory Block.fromJson(Map<String, dynamic> json) {
     return Block(
-      id: json['id'],
+      id: json['id'] ?? '',
       type: json['type'] == 'TYPE_HEADING_1'
           ? BlockType.heading1
           : json['type'] == 'TYPE_HEADING_2'
@@ -32,8 +34,8 @@ class Block {
       text: json['type'] == 'TYPE_HEADING_1' ||
               json['type'] == 'TYPE_HEADING_2' ||
               json['type'] == 'TYPE_HEADING_3'
-          ? json['heading']
-          : json['paragraph'],
+          ? json['heading'] ?? ''
+          : json['paragraph'] ?? '',
     );
   }
 

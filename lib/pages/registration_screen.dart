@@ -1,29 +1,32 @@
 import 'dart:async';
 
-import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:noted_mobile/utils/constant.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:noted_mobile/data/providers/account_provider.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
-class RegistrationPage extends StatefulWidget {
-  const RegistrationPage({Key? key}) : super(key: key);
+class RegistrationPage extends ConsumerStatefulWidget {
+  const RegistrationPage({super.key});
 
   @override
-  State<StatefulWidget> createState() {
-    return _RegistrationPageState();
-  }
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _RegistrationPageState();
 }
 
-class _RegistrationPageState extends State<RegistrationPage> {
+class _RegistrationPageState extends ConsumerState<RegistrationPage> {
   final _formKey = GlobalKey<FormState>();
-  bool checkedValue = false;
-  bool checkboxValue = false;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _userNameController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final RoundedLoadingButtonController btnController =
+      RoundedLoadingButtonController();
+
+  bool checkedValue = false;
+  bool checkboxValue = false;
 
   final List<dynamic> oAuth = [
     {
@@ -75,22 +78,33 @@ class _RegistrationPageState extends State<RegistrationPage> {
     return buttons;
   }
 
-  Future<void> signUp(Map<String, String> data, BuildContext context) async {
-    try {
-      var dio = Dio();
-      Response response = await dio.post("$kBaseUrl/accounts", data: data);
+  Future<void> createAccount(String name, String email, String password) async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        final loginRes = await ref
+            .read(accountClientProvider)
+            .createAccount(name, email, password);
 
-      if (response.statusCode == 200 && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("Account created"),
+        if (loginRes != null && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Account created"),
+          ));
+          Navigator.pushNamedAndRemoveUntil(
+              context, '/login', (Route<dynamic> route) => false);
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(e.toString()),
         ));
-        Navigator.pushNamedAndRemoveUntil(
-            context, '/login', (Route<dynamic> route) => false);
+        if (kDebugMode) {
+          print(e);
+        }
+        btnController.error();
+        resetButton(btnController);
       }
-    } on DioError catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(e.response!.data["error"] ?? "Something went wrong"),
-      ));
+    } else {
+      btnController.error();
+      resetButton(btnController);
     }
   }
 
@@ -104,9 +118,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   @override
   Widget build(BuildContext context) {
-    final RoundedLoadingButtonController btnController =
-        RoundedLoadingButtonController();
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
@@ -156,10 +167,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 ThemeHelper().inputBoxDecorationShaddow(),
                             child: TextFormField(
                               autofocus: true,
-                              controller: _userNameController,
+                              controller: _nameController,
                               decoration: ThemeHelper()
                                   .textInputDecoration(
-                                      'Username', 'Enter your username')
+                                      'Name', 'Enter your name')
                                   .copyWith(
                                     prefixIcon: const Icon(
                                       Icons.person_outline,
@@ -168,7 +179,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                   ),
                               validator: (val) {
                                 if ((val!.isEmpty)) {
-                                  return "Enter an username";
+                                  return "Enter an name";
                                 }
                                 return null;
                               },
@@ -247,6 +258,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                   Row(
                                     children: <Widget>[
                                       Checkbox(
+                                          fillColor: MaterialStateProperty.all(
+                                              Colors.grey.shade900),
                                           value: checkboxValue,
                                           onChanged: (value) {
                                             setState(() {
@@ -287,17 +300,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             color: Colors.grey.shade900,
                             errorColor: Colors.redAccent,
                             successColor: Colors.green.shade900,
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                signUp({
-                                  "name": _userNameController.text,
-                                  "email": _emailController.text,
-                                  "password": _passwordController.text
-                                }, context);
-                              } else {
-                                btnController.error();
-                                resetButton(btnController);
-                              }
+                            onPressed: () async {
+                              await createAccount(
+                                  _nameController.text,
+                                  _emailController.text,
+                                  _passwordController.text);
                             },
                             controller: btnController,
                             width: MediaQuery.of(context).size.width,

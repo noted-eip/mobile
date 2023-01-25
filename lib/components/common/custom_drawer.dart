@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_zoom_drawer/config.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:noted_mobile/pages/groups_list_screen.dart';
-import 'package:noted_mobile/pages/latest_files_screen.dart';
+import 'package:noted_mobile/pages/notes_list_screen.dart';
 import 'package:noted_mobile/pages/profile_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -44,7 +45,7 @@ class _MyCustomDrawerState extends State<MyCustomDrawer> {
       case MyMenuItems.groups:
         return const GroupsListPage();
       case MyMenuItems.notes:
-        return const LatestFilesList();
+        return const LatestsFilesList();
       case MyMenuItems.profil:
         return const ProfilePage();
       default:
@@ -79,7 +80,7 @@ class MyMenuItems {
   ];
 }
 
-class MenuScreen extends StatefulWidget {
+class MenuScreen extends ConsumerStatefulWidget {
   const MenuScreen(
       {Key? key, required this.currentItem, required this.onSelected})
       : super(key: key);
@@ -87,10 +88,10 @@ class MenuScreen extends StatefulWidget {
   final ValueChanged<MyMenuItem> onSelected;
 
   @override
-  State<MenuScreen> createState() => _MenuScreenState();
+  ConsumerState<MenuScreen> createState() => _MenuScreenState();
 }
 
-class _MenuScreenState extends State<MenuScreen> {
+class _MenuScreenState extends ConsumerState<MenuScreen> {
   SharedPreferences? prefs;
 
   @override
@@ -155,7 +156,7 @@ class _MenuScreenState extends State<MenuScreen> {
               onTap: () {
                 prefs!.remove('token');
                 prefs!.remove('email');
-                prefs!.remove('username');
+                prefs!.remove('name');
                 prefs!.remove('id');
 
                 Navigator.pushNamedAndRemoveUntil(

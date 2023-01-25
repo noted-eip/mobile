@@ -24,6 +24,26 @@ class ThemeHelper {
     );
   }
 
+  InputDecoration textInputProfile(
+      {String labelText = "",
+      String hintText = "",
+      Widget? prefixIcon,
+      Widget? suffixIcon}) {
+    return InputDecoration(
+      labelText: labelText,
+      labelStyle: const TextStyle(
+        color: Colors.black87,
+        fontWeight: FontWeight.w500,
+        height: 0.5,
+        fontSize: 24,
+      ),
+      hintText: hintText,
+      prefixIcon: prefixIcon,
+      suffixIcon: suffixIcon,
+      floatingLabelBehavior: FloatingLabelBehavior.always,
+    );
+  }
+
   BoxDecoration inputBoxDecorationShaddow() {
     return BoxDecoration(boxShadow: [
       BoxShadow(
@@ -58,8 +78,6 @@ class ThemeHelper {
           c2,
         ],
       ),
-
-      // color: c2,
       borderRadius: BorderRadius.circular(30),
     );
   }

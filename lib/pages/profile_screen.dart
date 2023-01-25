@@ -1,47 +1,160 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
-import 'package:noted_mobile/data/user_provider.dart';
-import 'package:noted_mobile/utils/constant.dart';
-import 'package:provider/provider.dart';
+import 'package:noted_mobile/components/common/custom_alerte.dart';
+import 'package:noted_mobile/data/models/account/account.dart';
+import 'package:noted_mobile/data/providers/account_provider.dart';
+import 'package:noted_mobile/data/providers/provider_list.dart';
+import 'package:noted_mobile/utils/theme_helper.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 
-class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+class ProfilePage extends ConsumerStatefulWidget {
+  const ProfilePage({super.key});
 
   @override
-  State<StatefulWidget> createState() {
-    return _ProfilePageState();
-  }
+  ConsumerState<ConsumerStatefulWidget> createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _ProfilePageState extends ConsumerState<ProfilePage> {
+  TextEditingController nameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController();
+  final RoundedLoadingButtonController _btnControllerSave =
+      RoundedLoadingButtonController();
+  final RoundedLoadingButtonController _btnControllerDeleteAccount =
+      RoundedLoadingButtonController();
+
+  bool isPasswordVisible = false;
+  bool isConfirmPasswordVisible = false;
+
+  bool isEditing = false;
+  bool isPasswordChanged = false;
+  bool isNameChanged = false;
+
+  void updateAccount() async {
+    if (nameController.text != ref.read(userProvider).name &&
+        nameController.text.length >= 4) {
+      if (kDebugMode) {
+        print("name changed");
+      }
+
+      try {
+        final Account? updatedAccount = await ref
+            .read(accountClientProvider)
+            .updateAccount(nameController.text, ref.read(userProvider).token,
+                ref.read(userProvider).id, ref);
+
+        if (updatedAccount != null) {
+          _btnControllerSave.success();
+          Future.delayed(const Duration(seconds: 1), () {
+            setState(() {
+              isEditing = false;
+            });
+          });
+        } else {
+          _btnControllerSave.error();
+          Future.delayed(const Duration(seconds: 1), () {
+            _btnControllerSave.reset();
+          });
+        }
+      } catch (e) {
+        _btnControllerSave.error();
+        Future.delayed(const Duration(seconds: 1), () {
+          _btnControllerSave.reset();
+        });
+        if (kDebugMode) {
+          print(e);
+        }
+      }
+    }
+
+    if (passwordController.text == confirmPasswordController.text &&
+        passwordController.text.isNotEmpty) {
+      if (kDebugMode) {
+        print("password changed");
+      }
+      _btnControllerSave.reset();
+    }
+    if (kDebugMode) {
+      print("noting changed");
+    }
+    Future.delayed(const Duration(seconds: 1), () {
+      _btnControllerSave.reset();
+    });
+  }
+
+  void deleteAccount() async {
+    await showDialog(
+      context: context,
+      builder: ((context) {
+        return CustomAlertDialog(
+          title: "Delete Account",
+          content: "Are you sure you want to delete your account ?",
+          onConfirm: () async {
+            try {
+              var res = await ref.read(accountClientProvider).deleteAccount(
+                    ref.read(userProvider).id,
+                    ref.read(userProvider).token,
+                  );
+
+              if (res == true) {
+                _btnControllerDeleteAccount.success();
+                if (mounted) {
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, '/login', (r) => false);
+                }
+              }
+            } catch (e) {
+              _btnControllerDeleteAccount.error();
+            }
+          },
+          onCancel: () async {
+            _btnControllerDeleteAccount.reset();
+            Navigator.pop(context);
+          },
+        );
+      }),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    nameController.text = ref.read(userProvider).name;
+    emailController.text = ref.read(userProvider).email;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(
-      context,
-      listen: false,
-    );
+    final MediaQueryData mediaQuery = MediaQuery.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(16),
-              bottomRight: Radius.circular(16),
-            ),
-            color: kPrimaryColor,
-          ),
-        ),
-        title: const Text(
+        title: Text(
           "Profile Page",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(
+              color: Colors.grey.shade900, fontWeight: FontWeight.bold),
         ),
         elevation: 0,
         backgroundColor: Colors.transparent,
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: Colors.grey.shade900),
         actions: [
           IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () {},
+            icon: Icon(isEditing ? Icons.close : Icons.edit),
+            onPressed: () {
+              if (isEditing) {
+                nameController.text = ref.read(userProvider).name;
+                passwordController.clear();
+                confirmPasswordController.clear();
+              }
+              setState(() {
+                isEditing = !isEditing;
+                isNameChanged = false;
+                isPasswordChanged = false;
+              });
+            },
           )
         ],
         leading: IconButton(
@@ -51,155 +164,188 @@ class _ProfilePageState extends State<ProfilePage> {
           },
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 32),
-            Container(
-              alignment: Alignment.center,
-              margin: const EdgeInsets.fromLTRB(25, 10, 25, 10),
-              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-              child: Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(width: 5, color: Colors.white),
-                      color: Colors.white,
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 10,
-                          offset: Offset(5, 5),
-                        ),
-                      ],
-                    ),
-                    child: Icon(
-                      Icons.person,
-                      size: 80,
-                      color: Colors.grey.shade300,
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 32,
-                  ),
-                  Column(
-                    children: <Widget>[
-                      Container(
-                        alignment: Alignment.topLeft,
-                        child: const Text(
-                          "User Information",
-                          style: TextStyle(
-                            color: Colors.black87,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 16,
-                          ),
-                          textAlign: TextAlign.left,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      Card(
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(16)),
-                        ),
-                        elevation: 5,
-                        child: Container(
-                          alignment: Alignment.topLeft,
-                          padding: const EdgeInsets.all(8),
-                          child: Column(
-                            children: <Widget>[
-                              Column(
-                                children: <Widget>[
-                                  ...ListTile.divideTiles(
-                                    color: Colors.grey,
-                                    tiles: [
-                                      ListTile(
-                                        leading: const Icon(Icons.person),
-                                        title: const Text("Username"),
-                                        subtitle: Text(
-                                          userProvider.username,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      Card(
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(16)),
-                        ),
-                        elevation: 5,
-                        child: Container(
-                          alignment: Alignment.topLeft,
-                          padding: const EdgeInsets.all(8),
-                          child: Column(
-                            children: <Widget>[
-                              Column(
-                                children: <Widget>[
-                                  ...ListTile.divideTiles(
-                                    color: Colors.grey,
-                                    tiles: [
-                                      ListTile(
-                                        leading: const Icon(Icons.email),
-                                        title: const Text("Email"),
-                                        subtitle: Text(userProvider.email),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      Card(
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(16)),
-                        ),
-                        elevation: 5,
-                        child: Container(
-                          alignment: Alignment.topLeft,
-                          padding: const EdgeInsets.all(8),
-                          child: Column(
-                            children: <Widget>[
-                              Column(
-                                children: <Widget>[
-                                  ...ListTile.divideTiles(
-                                    color: Colors.grey,
-                                    tiles: [
-                                      ListTile(
-                                        leading: const Icon(Icons.info),
-                                        title: const Text("ID"),
-                                        subtitle:
-                                            SelectableText(userProvider.id),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                        ),
+      body: SizedBox(
+        height: mediaQuery.size.height - kToolbarHeight,
+        child: SingleChildScrollView(
+          child: Container(
+            width: mediaQuery.size.width,
+            height: mediaQuery.size.height -
+                kToolbarHeight -
+                mediaQuery.padding.top -
+                mediaQuery.viewPadding.top,
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(width: 5, color: Colors.white),
+                    color: Colors.grey.shade900,
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 10,
+                        offset: Offset(5, 5),
                       ),
                     ],
-                  )
-                ],
-              ),
-            )
-          ],
+                  ),
+                  child: Icon(
+                    Icons.person,
+                    size: 80,
+                    color: Colors.grey.shade300,
+                  ),
+                ),
+                const SizedBox(
+                  height: 32,
+                ),
+                TextField(
+                  decoration: ThemeHelper().textInputProfile(
+                    labelText: "Name",
+                    hintText: "Enter your name",
+                    prefixIcon: const Icon(Icons.person),
+                  ),
+                  enabled: isEditing,
+                  controller: nameController,
+                  onChanged: (value) {
+                    if (nameController.text != ref.read(userProvider).name &&
+                        nameController.text.length >= 4) {
+                      setState(() {
+                        isNameChanged = true;
+                      });
+                    } else {
+                      setState(() {
+                        isNameChanged = false;
+                      });
+                    }
+                  },
+                ),
+                const SizedBox(
+                  height: 16,
+                ),
+                TextField(
+                  decoration: ThemeHelper().textInputProfile(
+                    labelText: "Email",
+                    hintText: "Enter your email",
+                    prefixIcon: const Icon(Icons.email),
+                  ),
+                  enabled: false, //isEditing,
+                  controller: emailController,
+                ),
+                const SizedBox(
+                  height: 16,
+                ),
+                if (isEditing)
+                  Column(
+                    children: [
+                      TextField(
+                        decoration: ThemeHelper().textInputProfile(
+                          labelText: "Password",
+                          hintText: "••••",
+                          prefixIcon: const Icon(Icons.lock),
+                          suffixIcon: IconButton(
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            icon: Icon(
+                              isPasswordVisible
+                                  ? Icons.visibility_outlined
+                                  : Icons.visibility_off_outlined,
+                              color: Colors.grey,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                isPasswordVisible = !isPasswordVisible;
+                              });
+                            },
+                          ),
+                        ),
+                        obscureText: isPasswordVisible,
+                        controller: passwordController,
+                      ),
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      TextField(
+                        decoration: ThemeHelper().textInputProfile(
+                          labelText: "Confirm Password",
+                          hintText: "••••",
+                          prefixIcon: const Icon(Icons.lock),
+                          suffixIcon: IconButton(
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            icon: Icon(
+                              isConfirmPasswordVisible
+                                  ? Icons.visibility_outlined
+                                  : Icons.visibility_off_outlined,
+                              color: Colors.grey,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                isConfirmPasswordVisible =
+                                    !isConfirmPasswordVisible;
+                              });
+                            },
+                          ),
+                        ),
+                        onChanged: (value) {
+                          if (passwordController.text ==
+                                  confirmPasswordController.text &&
+                              passwordController.text.length >= 6) {
+                            setState(() {
+                              isPasswordChanged = true;
+                            });
+                          } else {
+                            setState(() {
+                              isPasswordChanged = false;
+                            });
+                          }
+                        },
+                        obscureText: isConfirmPasswordVisible,
+                        controller: confirmPasswordController,
+                      ),
+                    ],
+                  ),
+                const Spacer(),
+                if (isEditing && !isNameChanged && !isPasswordChanged)
+                  RoundedLoadingButton(
+                    color: Colors.redAccent,
+                    errorColor: Colors.redAccent,
+                    successColor: Colors.green.shade900,
+                    onPressed: () async {
+                      deleteAccount();
+                    },
+                    controller: _btnControllerDeleteAccount,
+                    borderRadius: 16,
+                    child: const Text(
+                      'DELETE',
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
+                    ),
+                  ),
+                if (isEditing && (isNameChanged || isPasswordChanged))
+                  RoundedLoadingButton(
+                    color: Colors.grey.shade900,
+                    errorColor: Colors.redAccent,
+                    successColor: Colors.green.shade900,
+                    onPressed: () async {
+                      updateAccount();
+                    },
+                    controller: _btnControllerSave,
+                    borderRadius: 16,
+                    child: const Text(
+                      'SAVE',
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
+                    ),
+                  ),
+              ],
+            ),
+          ),
         ),
       ),
     );

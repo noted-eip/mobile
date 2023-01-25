@@ -92,7 +92,7 @@ class ForgotPasswordVerificationPageState
                             autoFocus: true,
                             autoDismissKeyboard: true,
                             keyboardType: TextInputType.number,
-                            length: 4,
+                            length: 6,
                             obscureText: false,
                             animationType: AnimationType.fade,
                             pinTheme: PinTheme(
@@ -181,9 +181,10 @@ class ForgotPasswordVerificationPageState
                             child: Text(
                               'Verify'.toUpperCase(),
                               style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ],
