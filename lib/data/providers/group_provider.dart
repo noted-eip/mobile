@@ -2,16 +2,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/data/clients/group_client.dart';
 import 'package:noted_mobile/data/models/group/group.dart';
 import 'package:noted_mobile/data/models/group/group_data.dart';
+import 'package:noted_mobile/data/providers/cache_timeout.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
 
 final groupClientProvider = Provider<GroupClient>((ref) => GroupClient());
 
-final groupsProvider = FutureProvider<List<Group>?>((ref) async {
+final groupsProvider = FutureProvider.autoDispose<List<Group>?>((ref) async {
   final account = ref.watch(userProvider);
   final search = ref.watch(searchProvider);
   final grouplist = await ref
       .watch(groupClientProvider)
       .listGroups(account.id, account.token, offset: 0, limit: 20);
+
+  cacheTimeout(ref, 'fetchGroups');
 
   if (search == "") {
     return grouplist;
@@ -25,30 +28,37 @@ final groupsProvider = FutureProvider<List<Group>?>((ref) async {
 
 final searchProvider = StateProvider((ref) => '');
 
-final latestGroupsProvider = FutureProvider<List<Group>?>((ref) async {
+final latestGroupsProvider =
+    FutureProvider.autoDispose<List<Group>?>((ref) async {
   final account = ref.watch(userProvider);
   final grouplist = await ref
       .watch(groupClientProvider)
       .listGroups(account.id, account.token, offset: 0, limit: 2);
 
+  cacheTimeout(ref, 'fetchLatestGroups');
+
   return grouplist;
 });
 
 final groupProvider =
-    FutureProvider.family<Group?, String>((ref, groupId) async {
+    FutureProvider.autoDispose.family<Group?, String>((ref, groupId) async {
   final account = ref.watch(userProvider);
   final group =
       await ref.watch(groupClientProvider).getGroup(groupId, account.token);
 
+  cacheTimeout(ref, 'fetchGroup $groupId');
+
   return group;
 });
 
-final groupMembersProvider =
-    FutureProvider.family<List<GroupMember>?, String>((ref, groupId) async {
+final groupMembersProvider = FutureProvider.autoDispose
+    .family<List<GroupMember>?, String>((ref, groupId) async {
   final account = ref.watch(userProvider);
   final groupMembers = await ref
       .watch(groupClientProvider)
       .listGroupMembers(groupId, account.token);
+
+  cacheTimeout(ref, 'fetchGroupMembers $groupId');
 
   return groupMembers;
 });
