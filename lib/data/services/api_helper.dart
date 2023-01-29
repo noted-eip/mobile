@@ -3,54 +3,19 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:noted_mobile/data/services/api_execption.dart';
+import 'package:noted_mobile/data/services/api_response.dart';
 import 'package:noted_mobile/utils/constant.dart';
-
-class Failure {
-  final String message;
-
-  Failure({required this.message});
-
-  @override
-  String toString() => message;
-}
-
-class ApiResponse {
-  final int? statusCode;
-  final dynamic data;
-  final String? error;
-
-  ApiResponse({this.statusCode, this.data, this.error});
-
-  factory ApiResponse.fromJson(Map<String, dynamic> json) {
-    return ApiResponse(
-      statusCode: json['statusCode'],
-      data: json['data'],
-      error: json['error'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'statusCode': statusCode,
-      'data': data,
-      'error': error,
-    };
-  }
-}
 
 class APIHelper {
   final Dio dio;
 
   APIHelper({required this.dio});
 
-  //for api helper testing only
   APIHelper.test({required this.dio});
 
-  // ignore: unused_element
   void initApiClient() {
     print("initApiClient");
     dio.options.baseUrl = kBaseUrl;
-    // ..options.headers.addAll({'parameter': 'parameter'})
   }
 
   Future<ApiResponse> get(String url,

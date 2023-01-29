@@ -8,6 +8,7 @@ import 'package:noted_mobile/data/models/account/account.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:noted_mobile/data/services/api_helper.dart';
 import 'package:noted_mobile/data/services/dio_singleton.dart';
+import 'package:noted_mobile/data/services/failure.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountClient {
@@ -68,6 +69,7 @@ class AccountClient {
       if (kDebugMode) {
         print("Dio error catch : ${e.response!.data['error'].toString()}");
       }
+
       throw Failure(message: e.response!.data['error'].toString());
     }
   }

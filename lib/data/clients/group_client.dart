@@ -5,6 +5,7 @@ import 'package:noted_mobile/data/models/group/group.dart';
 import 'package:noted_mobile/data/models/group/group_data.dart';
 import 'package:noted_mobile/data/services/api_helper.dart';
 import 'package:noted_mobile/data/services/dio_singleton.dart';
+import 'package:noted_mobile/data/services/failure.dart';
 
 class GroupClient {
   Future<Group?> createGroup(
@@ -143,7 +144,7 @@ class GroupClient {
     }
   }
 
-  Future<GroupMember?> getGroupMembers(
+  Future<GroupMember?> getGroupMember(
       String groupId, String memberId, String token) async {
     final api = singleton.get<APIHelper>();
 

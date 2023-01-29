@@ -2,9 +2,10 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:noted_mobile/data/models/invite/invite.dart';
 import 'package:noted_mobile/data/services/api_helper.dart';
 import 'package:noted_mobile/data/services/dio_singleton.dart';
-import 'package:noted_mobile/pages/notification_page.dart';
+import 'package:noted_mobile/data/services/failure.dart';
 
 class InviteClient {
   Future<Invite?> sendInvite(

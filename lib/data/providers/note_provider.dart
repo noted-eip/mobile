@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/data/clients/note_client.dart';
-import 'package:noted_mobile/data/note.dart';
+import 'package:noted_mobile/data/models/note/note.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
 
 final noteClientProvider = Provider<NoteClient>((ref) => NoteClient());

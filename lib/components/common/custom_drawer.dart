@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_zoom_drawer/config.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
-import 'package:noted_mobile/pages/groups_list_screen.dart';
-import 'package:noted_mobile/pages/notes_list_screen.dart';
-import 'package:noted_mobile/pages/profile_screen.dart';
+import 'package:noted_mobile/pages/groups/groups_list_screen.dart';
+import 'package:noted_mobile/pages/notes/notes_list_screen.dart';
+import 'package:noted_mobile/pages/account/profile_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../pages/home_screen.dart';
+import '../../pages/home/home_screen.dart';
 
 class MyCustomDrawer extends StatefulWidget {
   const MyCustomDrawer({Key? key}) : super(key: key);

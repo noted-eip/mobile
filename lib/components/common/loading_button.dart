@@ -5,37 +5,64 @@ import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 typedef AsyncCallBack = Future<void> Function();
 
+void resetButton(RoundedLoadingButtonController controller) async {
+  Timer(const Duration(seconds: 3), () {
+    controller.reset();
+  });
+}
+
 class LoadingButton extends StatefulWidget {
-  const LoadingButton({super.key, required this.onPressed, required this.text});
+  const LoadingButton({
+    super.key,
+    required this.onPressed,
+    this.text,
+    required this.btnController,
+    this.color,
+    this.width,
+    this.child,
+    this.animateOnTap,
+  });
 
   final AsyncCallBack onPressed;
-  final String text;
+  final RoundedLoadingButtonController btnController;
+  final String? text;
+  final bool? animateOnTap;
+  final Color? color;
+  final double? width;
+
+  final Widget? child;
 
   @override
   State<LoadingButton> createState() => _LoadingButtonState();
 }
 
 class _LoadingButtonState extends State<LoadingButton> {
-  final RoundedLoadingButtonController btnController =
-      RoundedLoadingButtonController();
   @override
   Widget build(BuildContext context) {
     return RoundedLoadingButton(
-      color: Colors.grey.shade900,
+      animateOnTap: widget.animateOnTap ?? true,
+      color: widget.color ?? Colors.grey.shade900,
       errorColor: Colors.redAccent,
       successColor: Colors.green.shade900,
       onPressed: () async {
         await widget.onPressed();
       },
-      controller: btnController,
-      width: MediaQuery.of(context).size.width,
+      controller: widget.btnController,
+      width: widget.width ?? MediaQuery.of(context).size.width,
       height: 48,
       borderRadius: 16,
-      child: Text(
-        widget.text.toUpperCase(),
-        style: const TextStyle(
-            fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
-      ),
+      child: widget.child != null
+          ? widget.child!
+          : widget.text != null
+              ? Text(
+                  widget.text!.toUpperCase(),
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                )
+              : const SizedBox.shrink(),
     );
   }
 }

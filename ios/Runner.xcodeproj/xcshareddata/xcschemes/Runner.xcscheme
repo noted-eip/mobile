@@ -40,7 +40,8 @@
       </Testables>
    </TestAction>
    <LaunchAction
-      buildConfiguration = "Debug"
+      buildConfiguration = "Release"
+      intentQueryString = "ouvre l&apos;app noted"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
@@ -62,6 +63,7 @@
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Profile"
+      intentQueryString = "ouvre l&apos;app noted"
       shouldUseLaunchSchemeArgsEnv = "YES"
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"

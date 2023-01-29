@@ -28,8 +28,8 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> {
           Radius.circular(16.0),
         ),
       ),
-      title: const Text("Delete Group"),
-      content: const Text("Are you sure you want to delete this group?"),
+      title: Text(widget.title),
+      content: Text(widget.content),
       actions: [
         TextButton(
           onPressed: () {

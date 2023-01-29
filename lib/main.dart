@@ -4,18 +4,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/components/common/custom_drawer.dart';
 import 'package:noted_mobile/data/services/api_helper.dart';
 import 'package:noted_mobile/data/services/dio_singleton.dart';
-import 'package:noted_mobile/pages/change_password.dart';
-import 'package:noted_mobile/pages/group_detail_page.dart';
-import 'package:noted_mobile/pages/groups_list_screen.dart';
-import 'package:noted_mobile/pages/forgot_password_screen.dart';
-import 'package:noted_mobile/pages/forgot_password_verification_screen.dart';
-import 'package:noted_mobile/pages/notes_list_screen.dart';
-import 'package:noted_mobile/pages/login_screen.dart';
-import 'package:noted_mobile/pages/note_detail_screen.dart';
-import 'package:noted_mobile/pages/notification_page.dart';
-import 'package:noted_mobile/pages/profile_screen.dart';
-import 'package:noted_mobile/pages/registration_screen.dart';
-import 'package:noted_mobile/pages/splash_screen.dart';
+import 'package:noted_mobile/pages/account/change_password.dart';
+import 'package:noted_mobile/pages/account/forgot_password_screen.dart';
+import 'package:noted_mobile/pages/account/login_screen.dart';
+import 'package:noted_mobile/pages/account/profile_screen.dart';
+import 'package:noted_mobile/pages/account/registration_screen.dart';
+import 'package:noted_mobile/pages/account/forgot_password_verification_screen.dart';
+import 'package:noted_mobile/pages/groups/group_detail_page.dart';
+import 'package:noted_mobile/pages/groups/groups_list_screen.dart';
+import 'package:noted_mobile/pages/notes/notes_list_screen.dart';
+import 'package:noted_mobile/pages/notes/note_detail_screen.dart';
+import 'package:noted_mobile/pages/notifications/notification_page.dart';
+import 'package:noted_mobile/pages/home/splash_screen.dart';
 
 void main() async {
   init();
@@ -37,6 +37,7 @@ class MyApp extends StatelessWidget {
       title: 'NOTED APP',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        useMaterial3: false,
         primaryColor: _primaryColor,
         scaffoldBackgroundColor: Colors.white,
         colorScheme: ColorScheme.fromSwatch()

@@ -29,10 +29,15 @@ class BaseContainer extends StatelessWidget {
             CupertinoSliverNavigationBar(
               brightness: Brightness.light,
               border: null,
+              padding: const EdgeInsetsDirectional.only(start: 8, end: 8),
               backgroundColor: primaryColor ?? Colors.white,
               leading: Material(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
                 color: Colors.transparent,
                 child: IconButton(
+                  padding: EdgeInsets.zero,
                   icon: Icon(
                     Navigator.canPop(context)
                         ? CupertinoIcons.back
@@ -60,8 +65,8 @@ class BaseContainer extends StatelessWidget {
                           }
                           Navigator.pushNamed(context, "/notif");
                         }),
-                        icon: Icon(Icons.send,
-                            size: 24,
+                        iconSize: 24,
+                        icon: Icon(Icons.send_rounded,
                             color: secondaryColor ?? Colors.grey.shade900),
                       ),
                     ),
