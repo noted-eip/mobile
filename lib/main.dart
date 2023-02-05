@@ -19,20 +19,6 @@ import 'package:noted_mobile/pages/notes/note_detail_screen.dart';
 import 'package:noted_mobile/pages/notifications/notification_page.dart';
 import 'package:noted_mobile/pages/home/splash_screen.dart';
 
-// to commit changes
-// add Firebase to the project
-// add firebase options
-// Configure Firebase
-// Configure Firebase for Android
-// Configure Firebase for iOS
-// Configure Google Sign In
-// Configure Google Sign In for Android
-// Configure Google Sign In for iOS
-// Pre add new methode in Account Client for login with google
-// Update flutter version
-// update code base on new linter rules
-// Setup android app
-
 void main() async {
   init();
   singleton.get<APIHelper>().initApiClient();
