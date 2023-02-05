@@ -64,12 +64,15 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             );
           });
         } else {
-          CustomToast.show(
-            message: "An error occured while updating your account",
-            type: ToastType.error,
-            context: context,
-            gravity: ToastGravity.BOTTOM,
-          );
+          if (mounted) {
+            CustomToast.show(
+              message: "An error occured while updating your account",
+              type: ToastType.error,
+              context: context,
+              gravity: ToastGravity.BOTTOM,
+            );
+          }
+
           _btnControllerSave.error();
           Future.delayed(const Duration(seconds: 1), () {
             _btnControllerSave.reset();
@@ -123,12 +126,15 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   );
 
               if (res == true) {
-                CustomToast.show(
-                  message: "Account deleted successfully",
-                  type: ToastType.success,
-                  context: context,
-                  gravity: ToastGravity.BOTTOM,
-                );
+                if (mounted) {
+                  CustomToast.show(
+                    message: "Account deleted successfully",
+                    type: ToastType.success,
+                    context: context,
+                    gravity: ToastGravity.BOTTOM,
+                  );
+                }
+
                 _btnControllerDeleteAccount.success();
                 if (mounted) {
                   Navigator.pushNamedAndRemoveUntil(

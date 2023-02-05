@@ -12,6 +12,47 @@ import 'package:noted_mobile/data/services/failure.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountClient {
+  Future<bool> loginWithGoogle(
+    String googleToken,
+    WidgetRef ref,
+  ) async {
+    final api = singleton.get<APIHelper>();
+    // final userNotifier = ref.read(userProvider);
+
+    try {
+      final response =
+          await api.post('/accounts/google', body: {"token": googleToken});
+
+      if (response.statusCode != 200) {
+        if (kDebugMode) {
+          print(
+            "inside try : code = ${response.statusCode}, error = ${response.error}",
+          );
+        }
+        throw Failure(message: response.error.toString());
+      }
+
+      // userNotifier.setEmail("Email");
+      // userNotifier.setName("Name");
+      // userNotifier.setToken("Token");
+      // userNotifier.setID("ID");
+
+      // await SharedPreferences.getInstance().then((prefs) {
+      //   prefs.setString('email', userNotifier.email);
+      //   prefs.setString('name', userNotifier.name);
+      //   prefs.setString('token', userNotifier.token);
+      //   prefs.setString('id', userNotifier.id);
+      // });
+
+      return true;
+    } on DioError catch (e) {
+      if (kDebugMode) {
+        print("Dio error catch : ${e.response!.data['error'].toString()}");
+      }
+      throw Failure(message: e.response!.data['error'].toString());
+    }
+  }
+
   Future<bool> login(
     String email,
     String password,

@@ -1,9 +1,11 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/components/common/custom_drawer.dart';
 import 'package:noted_mobile/data/services/api_helper.dart';
 import 'package:noted_mobile/data/services/dio_singleton.dart';
+import 'package:noted_mobile/firebase_options.dart';
 import 'package:noted_mobile/pages/account/change_password.dart';
 import 'package:noted_mobile/pages/account/forgot_password_screen.dart';
 import 'package:noted_mobile/pages/account/login_screen.dart';
@@ -17,10 +19,28 @@ import 'package:noted_mobile/pages/notes/note_detail_screen.dart';
 import 'package:noted_mobile/pages/notifications/notification_page.dart';
 import 'package:noted_mobile/pages/home/splash_screen.dart';
 
+// to commit changes
+// add Firebase to the project
+// add firebase options
+// Configure Firebase
+// Configure Firebase for Android
+// Configure Firebase for iOS
+// Configure Google Sign In
+// Configure Google Sign In for Android
+// Configure Google Sign In for iOS
+// Pre add new methode in Account Client for login with google
+// Update flutter version
+// update code base on new linter rules
+// Setup android app
+
 void main() async {
   init();
   singleton.get<APIHelper>().initApiClient();
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    name: "Noted",
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   runApp(const ProviderScope(child: MyApp()));
 }

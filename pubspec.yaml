@@ -50,6 +50,8 @@ dependencies:
   tuple: ^2.0.1
   auto_size_text: ^3.0.0
   fluttertoast: ^8.1.2
+  firebase_core: ^2.4.1
+  google_sign_in: ^5.4.4
 
 dev_dependencies:
   flutter_test:

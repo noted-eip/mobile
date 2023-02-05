@@ -289,8 +289,8 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                                     child: Text(
                                       state.errorText ?? '',
                                       textAlign: TextAlign.left,
-                                      style: TextStyle(
-                                        color: Theme.of(context).errorColor,
+                                      style: const TextStyle(
+                                        color: Colors.redAccent,
                                         fontSize: 12,
                                       ),
                                     ),

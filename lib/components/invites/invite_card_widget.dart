@@ -33,12 +33,14 @@ class _InviteCardState extends ConsumerState<InviteCard> {
   Future<bool> acceptInvite(String tkn, String inviteId) async {
     try {
       await ref.read(inviteClientProvider).acceptInvite(inviteId, tkn);
-      CustomToast.show(
-        message: "Invite accepted",
-        type: ToastType.success,
-        context: context,
-        gravity: ToastGravity.BOTTOM,
-      );
+      if (mounted) {
+        CustomToast.show(
+          message: "Invite accepted",
+          type: ToastType.success,
+          context: context,
+          gravity: ToastGravity.BOTTOM,
+        );
+      }
 
       return true;
     } catch (e) {
@@ -56,12 +58,14 @@ class _InviteCardState extends ConsumerState<InviteCard> {
   Future<bool> declineInvite(String tkn, String inviteId) async {
     try {
       await ref.read(inviteClientProvider).denyInvite(inviteId, tkn);
-      CustomToast.show(
-        message: "Invite declined",
-        type: ToastType.success,
-        context: context,
-        gravity: ToastGravity.BOTTOM,
-      );
+      if (mounted) {
+        CustomToast.show(
+          message: "Invite declined",
+          type: ToastType.success,
+          context: context,
+          gravity: ToastGravity.BOTTOM,
+        );
+      }
 
       return true;
     } catch (e) {
