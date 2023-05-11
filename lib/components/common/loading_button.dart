@@ -44,13 +44,14 @@ class _LoadingButtonState extends State<LoadingButton> {
       color: widget.color ?? Colors.grey.shade900,
       errorColor: Colors.redAccent,
       successColor: Colors.green.shade900,
-      onPressed: () async {
-        await widget.onPressed();
-      },
+      onPressed: () async => await widget.onPressed(),
       controller: widget.btnController,
       width: widget.width ?? MediaQuery.of(context).size.width,
       height: 48,
       borderRadius: 16,
+      disabledColor: widget.color != null
+          ? widget.color!.withOpacity(0.5)
+          : Colors.grey.shade400,
       child: widget.child != null
           ? widget.child!
           : widget.text != null

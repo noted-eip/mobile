@@ -2,12 +2,17 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/data/models/invite/invite.dart';
 import 'package:noted_mobile/data/services/api_helper.dart';
 import 'package:noted_mobile/data/services/dio_singleton.dart';
 import 'package:noted_mobile/data/services/failure.dart';
 
 class InviteClient {
+  ProviderRef<InviteClient> ref;
+
+  InviteClient({required this.ref});
+
   Future<Invite?> sendInvite(
       String groupId, String recipientId, String token) async {
     final api = singleton.get<APIHelper>();
@@ -120,6 +125,27 @@ class InviteClient {
   }
 
   Future<void> denyInvite(String inviteId, String token) async {
+    final api = singleton.get<APIHelper>();
+
+    try {
+      final response = await api.post(
+        '/invites/$inviteId/deny',
+        headers: {"Authorization": "Bearer $token"},
+      );
+      if (response.statusCode == 200) {
+        return;
+      } else {
+        throw Failure(message: response.error.toString());
+      }
+    } on DioError catch (e) {
+      if (kDebugMode) {
+        print(e.response!.data['error'].toString());
+      }
+      throw Failure(message: e.toString());
+    }
+  }
+
+  Future<void> revokeInvite(String inviteId, String token) async {
     final api = singleton.get<APIHelper>();
 
     try {

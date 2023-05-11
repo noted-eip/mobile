@@ -4,6 +4,7 @@ import 'package:noted_mobile/components/common/base_container.dart';
 import 'package:noted_mobile/data/models/note/note.dart';
 import 'package:noted_mobile/data/models/note/note_block.dart';
 import 'package:noted_mobile/data/providers/note_provider.dart';
+import 'package:tuple/tuple.dart';
 
 class NoteDetail extends ConsumerStatefulWidget {
   const NoteDetail({super.key});
@@ -103,9 +104,11 @@ class _NoteDetailState extends ConsumerState<NoteDetail> {
 
   @override
   Widget build(BuildContext context) {
-    final String noteId = ModalRoute.of(context)!.settings.arguments as String;
-
-    final note = ref.watch(noteProvider(noteId));
+    // final String noteId = ModalRoute.of(context)!.settings.arguments as String;
+    final Tuple2<String, String> infos =
+        ModalRoute.of(context)!.settings.arguments as Tuple2<String, String>;
+    // print("noteId: $noteId");
+    final note = ref.watch(noteProvider(infos));
 
     return Scaffold(
       body: BaseContainer(

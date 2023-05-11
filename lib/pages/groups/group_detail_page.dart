@@ -105,7 +105,7 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
 
   Future<void> deleteGroup(String groupId, userTkn) async {
     try {
-      await ref.read(groupClientProvider).deleteGroup(groupId, userTkn);
+      await ref.read(groupClientProvider).deleteGroup(groupId: groupId);
 
       if (kDebugMode) {
         print("Group deleted successfully");
@@ -396,7 +396,7 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
                       ),
                       Expanded(
                         child: DefaultTabController(
-                          length: 3,
+                          length: 2,
                           child: Column(
                             children: [
                               TabBar(
@@ -408,9 +408,9 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
                                   Tab(
                                     text: "Members",
                                   ),
-                                  Tab(
-                                    text: "Activity",
-                                  ),
+                                  // Tab(
+                                  //   text: "Activity",
+                                  // ),
                                 ],
                               ),
                               const SizedBox(
@@ -506,23 +506,23 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
                                         ],
                                       ),
                                     ),
-                                    Column(
-                                      children: [
-                                        const SizedBox(
-                                          height: 16,
-                                        ),
-                                        Expanded(
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 16,
-                                            ),
-                                            child: GroupActivities(
-                                              groupId: groupId,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                    // Column(
+                                    //   children: [
+                                    //     const SizedBox(
+                                    //       height: 16,
+                                    //     ),
+                                    //     Expanded(
+                                    //       child: Padding(
+                                    //         padding: const EdgeInsets.symmetric(
+                                    //           horizontal: 16,
+                                    //         ),
+                                    //         child: GroupActivities(
+                                    //           groupId: groupId,
+                                    //         ),
+                                    //       ),
+                                    //     ),
+                                    //   ],
+                                    // ),
                                   ],
                                 ),
                               ),

@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:noted_mobile/components/common/custom_alerte.dart';
+import 'package:noted_mobile/components/common/custom_modal.dart';
 import 'package:noted_mobile/components/common/custom_toast.dart';
 import 'package:noted_mobile/components/common/loading_button.dart';
 import 'package:noted_mobile/data/models/account/account.dart';
@@ -12,6 +15,9 @@ import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:noted_mobile/utils/string_extension.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
+
+// TODO : revoir le design de la page
+// TODO : ajouter un bouton pour supprimer le compte et revoir la logique de suppression
 
 class ProfilePage extends ConsumerStatefulWidget {
   const ProfilePage({super.key});
@@ -33,7 +39,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   bool isPasswordVisible = false;
   bool isConfirmPasswordVisible = false;
 
-  bool isEditing = false;
   bool isPasswordChanged = false;
   bool isNameChanged = false;
 
@@ -47,21 +52,24 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       try {
         final Account? updatedAccount = await ref
             .read(accountClientProvider)
-            .updateAccount(nameController.text, ref.read(userProvider).token,
-                ref.read(userProvider).id, ref);
+            .updateAccount(name: nameController.text);
 
         if (updatedAccount != null) {
           _btnControllerSave.success();
           Future.delayed(const Duration(seconds: 1), () {
-            setState(() {
-              isEditing = false;
-            });
+            Navigator.of(context).pop();
+          });
+
+          Future.delayed(const Duration(seconds: 2), () {
             CustomToast.show(
               message: "Account updated successfully",
               type: ToastType.success,
               context: context,
               gravity: ToastGravity.BOTTOM,
             );
+            setState(() {
+              isValid = false;
+            });
           });
         } else {
           if (mounted) {
@@ -112,7 +120,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   }
 
   void deleteAccount() async {
-    var res = await showDialog(
+    var resDiag = await showDialog(
       context: context,
       builder: ((context) {
         return CustomAlertDialog(
@@ -120,34 +128,15 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           content: "Are you sure you want to delete your account ?",
           onConfirm: () async {
             try {
-              bool res = await ref.read(accountClientProvider).deleteAccount(
-                    ref.read(userProvider).id,
-                    ref.read(userProvider).token,
-                  );
+              bool res = await ref.read(accountClientProvider).deleteAccount();
 
+              print("res: $res");
               if (res == true) {
-                if (mounted) {
-                  CustomToast.show(
-                    message: "Account deleted successfully",
-                    type: ToastType.success,
-                    context: context,
-                    gravity: ToastGravity.BOTTOM,
-                  );
-                }
-
                 _btnControllerDeleteAccount.success();
-                if (mounted) {
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, '/login', (r) => false);
-                }
               }
             } catch (e) {
-              CustomToast.show(
-                message: e.toString().capitalize(),
-                type: ToastType.error,
-                context: context,
-                gravity: ToastGravity.BOTTOM,
-              );
+              print("e.toString() : ${e.toString()}");
+
               _btnControllerDeleteAccount.error();
             }
           },
@@ -158,8 +147,18 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       }),
     );
 
-    if (res == false || res == null) {
+    if (resDiag == false || resDiag == null) {
+      print("cancel");
       _btnControllerDeleteAccount.reset();
+    } else {
+      print("confirm");
+      _btnControllerDeleteAccount.success();
+
+      if (mounted) {
+        Future.delayed(const Duration(seconds: 2), () {
+          Navigator.pushNamedAndRemoveUntil(context, '/login', (r) => false);
+        });
+      }
     }
   }
 
@@ -170,9 +169,13 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     emailController.text = ref.read(userProvider).email;
   }
 
+  bool isValid = false;
+
   @override
   Widget build(BuildContext context) {
     final MediaQueryData mediaQuery = MediaQuery.of(context);
+
+    GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
     return Scaffold(
       appBar: AppBar(
@@ -186,25 +189,252 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         iconTheme: IconThemeData(color: Colors.grey.shade900),
         actions: [
           IconButton(
-            icon: Icon(isEditing ? Icons.close : Icons.edit),
-            onPressed: () {
-              if (isEditing) {
-                nameController.text = ref.read(userProvider).name;
-                passwordController.clear();
-                confirmPasswordController.clear();
-              }
-              setState(() {
-                isEditing = !isEditing;
-                isNameChanged = false;
-                isPasswordChanged = false;
-              });
+            icon: const Icon(Icons.edit),
+            onPressed: () async {
+              await showModalBottomSheet(
+                backgroundColor: Colors.transparent,
+                context: context,
+                isScrollControlled: true,
+                builder: (context) {
+                  return StatefulBuilder(
+                      builder: (BuildContext context, StateSetter setState) {
+                    return CustomModal(
+                      height: 1,
+                      onClose: (context) {
+                        Navigator.pop(context, false);
+                        setState(() {
+                          isValid = false;
+                        });
+                        passwordController.clear();
+                        confirmPasswordController.clear();
+                        nameController.text = ref.read(userProvider).name;
+                      },
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: SingleChildScrollView(
+                              child: Column(
+                                children: [
+                                  const Text(
+                                    "Edit Account",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  Form(
+                                    key: formKey,
+                                    child: Column(
+                                      children: [
+                                        TextFormField(
+                                          decoration:
+                                              ThemeHelper().textInputProfile(
+                                            labelText: "Name",
+                                            hintText: "Enter your name",
+                                            prefixIcon:
+                                                const Icon(Icons.person),
+                                          ),
+                                          controller: nameController,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              isValid = value !=
+                                                      ref
+                                                          .read(userProvider)
+                                                          .name &&
+                                                  value.length >= 4;
+                                            });
+                                          },
+                                          validator: (value) {
+                                            if (value!.isEmpty) {
+                                              return "Name cannot be empty";
+                                            } else if (value.length < 4) {
+                                              return "Name must be at least 4 characters";
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                        const SizedBox(
+                                          height: 16,
+                                        ),
+                                        TextFormField(
+                                          decoration:
+                                              ThemeHelper().textInputProfile(
+                                            labelText: "Email",
+                                            hintText: "Enter your email",
+                                            prefixIcon: const Icon(Icons.email),
+                                          ),
+                                          enabled: false, //isEditing,
+                                          controller: emailController,
+                                          // validator: (value) {
+                                          //   if (value!.isEmpty) {
+                                          //     return "Email cannot be empty";
+                                          //   } else if (!value.isEmail()) {
+                                          //     return "Email is not valid";
+                                          //   }
+                                          //   return null;
+                                          // },
+                                        ),
+                                        const SizedBox(
+                                          height: 16,
+                                        ),
+                                        TextFormField(
+                                          decoration:
+                                              ThemeHelper().textInputProfile(
+                                            labelText: "Password",
+                                            hintText: "••••",
+                                            prefixIcon: const Icon(Icons.lock),
+                                            suffixIcon: IconButton(
+                                              splashColor: Colors.transparent,
+                                              highlightColor:
+                                                  Colors.transparent,
+                                              icon: Icon(
+                                                isPasswordVisible
+                                                    ? Icons.visibility_outlined
+                                                    : Icons
+                                                        .visibility_off_outlined,
+                                                color: Colors.grey,
+                                              ),
+                                              onPressed: () {
+                                                print(
+                                                    "isPasswordVisible: $isPasswordVisible");
+                                                setState(() {
+                                                  isPasswordVisible =
+                                                      !isPasswordVisible;
+                                                });
+                                              },
+                                            ),
+                                          ),
+                                          obscureText: isPasswordVisible,
+                                          controller: passwordController,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              isValid = value.length >= 4 &&
+                                                  value ==
+                                                      confirmPasswordController
+                                                          .text;
+                                            });
+                                          },
+                                          validator: (value) {
+                                            if (value!.isEmpty) {
+                                              return null;
+                                              // return "Password cannot be empty";
+                                            } else if (value.length < 4) {
+                                              return "Password must be at least 4 characters";
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                        const SizedBox(
+                                          height: 16,
+                                        ),
+                                        TextFormField(
+                                          decoration:
+                                              ThemeHelper().textInputProfile(
+                                            labelText: "Confirm Password",
+                                            hintText: "••••",
+                                            prefixIcon: const Icon(Icons.lock),
+                                            suffixIcon: IconButton(
+                                              splashColor: Colors.transparent,
+                                              highlightColor:
+                                                  Colors.transparent,
+                                              icon: Icon(
+                                                isConfirmPasswordVisible
+                                                    ? Icons.visibility_outlined
+                                                    : Icons
+                                                        .visibility_off_outlined,
+                                                color: Colors.grey,
+                                              ),
+                                              onPressed: () {
+                                                setState(() {
+                                                  isConfirmPasswordVisible =
+                                                      !isConfirmPasswordVisible;
+                                                });
+                                              },
+                                            ),
+                                          ),
+                                          onChanged: (value) {
+                                            setState(() {
+                                              isValid = value ==
+                                                      passwordController.text &&
+                                                  value.length >= 4;
+                                            });
+                                          },
+                                          validator: (value) {
+                                            if (value!.isEmpty) {
+                                              return null;
+                                              // return "Confirm Password cannot be empty";
+                                            } else if (value.length < 4) {
+                                              return "Confirm Password must be at least 4 characters";
+                                            } else if (value !=
+                                                passwordController.text) {
+                                              return "Confirm Password must be same as Password";
+                                            }
+                                            return null;
+                                          },
+                                          obscureText: isConfirmPasswordVisible,
+                                          controller: confirmPasswordController,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          LoadingButton(
+                            color: isValid
+                                ? Colors.grey.shade900
+                                : Colors.grey.shade400,
+                            animateOnTap: false,
+                            onPressed: () async {
+                              print("save button pressed");
+                              if (formKey.currentState!.validate()) {
+                                print("form is valid");
+                                if (passwordController.text ==
+                                        confirmPasswordController.text &&
+                                    passwordController.text.isNotEmpty) {
+                                  print("password changed");
+
+                                  _btnControllerSave.start();
+
+                                  Future.delayed(
+                                      const Duration(milliseconds: 2000), () {
+                                    _btnControllerSave.reset();
+                                  });
+                                }
+
+                                if (nameController.text !=
+                                    ref.read(userProvider).name) {
+                                  if (kDebugMode) {
+                                    print("name changed");
+                                  }
+
+                                  _btnControllerSave.start();
+                                  updateAccount();
+                                }
+                              } else {
+                                print("form is invalid");
+                              }
+                            },
+                            btnController: _btnControllerSave,
+                            text: 'Save',
+                          ),
+                        ],
+                      ),
+                    );
+                  });
+                },
+              );
             },
           )
         ],
         leading: IconButton(
           icon: const Icon(Icons.menu),
           onPressed: () {
-            ZoomDrawer.of(context)!.toggle();
+            // ZoomDrawer.of(context)!.toggle();
+            Scaffold.of(context).openDrawer();
           },
         ),
       ),
@@ -220,26 +450,32 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             padding: const EdgeInsets.all(32),
             child: Column(
               mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(width: 5, color: Colors.white),
-                    color: Colors.grey.shade900,
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 10,
-                        offset: Offset(5, 5),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(width: 5, color: Colors.white),
+                        color: Colors.grey.shade900,
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 10,
+                            offset: Offset(5, 5),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  child: Icon(
-                    Icons.person,
-                    size: 80,
-                    color: Colors.grey.shade300,
-                  ),
+                      child: Icon(
+                        Icons.person,
+                        size: 80,
+                        color: Colors.grey.shade300,
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(
                   height: 32,
@@ -250,20 +486,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                     hintText: "Enter your name",
                     prefixIcon: const Icon(Icons.person),
                   ),
-                  enabled: isEditing,
                   controller: nameController,
-                  onChanged: (value) {
-                    if (nameController.text != ref.read(userProvider).name &&
-                        nameController.text.length >= 4) {
-                      setState(() {
-                        isNameChanged = true;
-                      });
-                    } else {
-                      setState(() {
-                        isNameChanged = false;
-                      });
-                    }
-                  },
+                  enabled: false,
                 ),
                 const SizedBox(
                   height: 16,
@@ -274,96 +498,17 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                     hintText: "Enter your email",
                     prefixIcon: const Icon(Icons.email),
                   ),
-                  enabled: false, //isEditing,
                   controller: emailController,
+                  enabled: false,
                 ),
-                const SizedBox(
-                  height: 16,
-                ),
-                if (isEditing)
-                  Column(
-                    children: [
-                      TextField(
-                        decoration: ThemeHelper().textInputProfile(
-                          labelText: "Password",
-                          hintText: "••••",
-                          prefixIcon: const Icon(Icons.lock),
-                          suffixIcon: IconButton(
-                            splashColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            icon: Icon(
-                              isPasswordVisible
-                                  ? Icons.visibility_outlined
-                                  : Icons.visibility_off_outlined,
-                              color: Colors.grey,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                isPasswordVisible = !isPasswordVisible;
-                              });
-                            },
-                          ),
-                        ),
-                        obscureText: isPasswordVisible,
-                        controller: passwordController,
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      TextField(
-                        decoration: ThemeHelper().textInputProfile(
-                          labelText: "Confirm Password",
-                          hintText: "••••",
-                          prefixIcon: const Icon(Icons.lock),
-                          suffixIcon: IconButton(
-                            splashColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            icon: Icon(
-                              isConfirmPasswordVisible
-                                  ? Icons.visibility_outlined
-                                  : Icons.visibility_off_outlined,
-                              color: Colors.grey,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                isConfirmPasswordVisible =
-                                    !isConfirmPasswordVisible;
-                              });
-                            },
-                          ),
-                        ),
-                        onChanged: (value) {
-                          if (passwordController.text ==
-                                  confirmPasswordController.text &&
-                              passwordController.text.length >= 6) {
-                            setState(() {
-                              isPasswordChanged = true;
-                            });
-                          } else {
-                            setState(() {
-                              isPasswordChanged = false;
-                            });
-                          }
-                        },
-                        obscureText: isConfirmPasswordVisible,
-                        controller: confirmPasswordController,
-                      ),
-                    ],
-                  ),
                 const Spacer(),
-                if (isEditing && !isNameChanged && !isPasswordChanged)
-                  LoadingButton(
-                    onPressed: () async => deleteAccount(),
-                    btnController: _btnControllerDeleteAccount,
-                    text: 'Delete',
-                    color: Colors.redAccent,
+                TextButton(
+                  onPressed: () async => deleteAccount(),
+                  child: const Text(
+                    'Delete Account',
+                    style: TextStyle(color: Colors.redAccent),
                   ),
-                if (isEditing && (isNameChanged || isPasswordChanged))
-                  LoadingButton(
-                    onPressed: () async => updateAccount(),
-                    btnController: _btnControllerSave,
-                    text: 'Save',
-                  ),
+                ),
               ],
             ),
           ),

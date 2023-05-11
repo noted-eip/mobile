@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 
+// TODO: verif erreur .unknown
+
 class DioExceptions implements Exception {
   String message = "";
 
@@ -8,16 +10,16 @@ class DioExceptions implements Exception {
       case DioErrorType.cancel:
         message = "Request to API server was cancelled";
         break;
-      case DioErrorType.connectTimeout:
+      case DioErrorType.connectionTimeout:
         message = "Connection timeout with API server";
         break;
-      case DioErrorType.other:
+      case DioErrorType.connectionError:
         message = "Connection to API server failed due to internet connection";
         break;
       case DioErrorType.receiveTimeout:
         message = "Receive timeout in connection with API server";
         break;
-      case DioErrorType.response:
+      case DioErrorType.unknown:
         message = _handleError(
             dioError.response!.statusCode!, dioError.response?.data);
         break;

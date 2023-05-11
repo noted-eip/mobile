@@ -80,6 +80,31 @@ class _InviteCardState extends ConsumerState<InviteCard> {
     }
   }
 
+  Future<bool> revokeInvite(String tkn, String inviteId) async {
+    try {
+      await ref.read(inviteClientProvider).revokeInvite(inviteId, tkn);
+      if (mounted) {
+        CustomToast.show(
+          message: "Invite revoked",
+          type: ToastType.success,
+          context: context,
+          gravity: ToastGravity.BOTTOM,
+        );
+      }
+
+      return true;
+    } catch (e) {
+      CustomToast.show(
+        message: e.toString().capitalize(),
+        type: ToastType.error,
+        context: context,
+        gravity: ToastGravity.BOTTOM,
+      );
+
+      return false;
+    }
+  }
+
   void invalidateInvites(bool isSendInvite) {
     if (isSendInvite) {
       ref.invalidate(sendInvitesProvider);
@@ -118,7 +143,7 @@ class _InviteCardState extends ConsumerState<InviteCard> {
           setState(() {
             groupAlive = false;
             titleWidget = const Text(
-              "Group no longer exists !",
+              "Invalid invite !",
               style: TextStyle(color: Colors.white),
             );
           });
@@ -249,7 +274,12 @@ class _InviteCardState extends ConsumerState<InviteCard> {
         ),
       ),
       actions: widget.isSentInvite
-          ? null
+          ? [
+              ActionSlidable(Icons.cancel_schedule_send, Colors.grey,
+                  () async => revokeInvite(userTkn, widget.invite.id)),
+            ]
+          //  null
+
           : [
               ActionSlidable(
                 Icons.check,

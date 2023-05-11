@@ -5,6 +5,8 @@
 import 'dart:convert';
 
 import 'package:json_annotation/json_annotation.dart';
+import 'package:noted_mobile/utils/format_helper.dart';
+import 'package:openapi/openapi.dart';
 
 part 'group_data.g.dart';
 
@@ -14,15 +16,29 @@ class GroupData {
     required this.id,
     required this.name,
     required this.description,
-    required this.created_at,
-    this.members,
+    required this.createdAt,
+    this.workspaceAccountId,
+    required this.avatarUrl,
+    this.modifiedAt,
+    // this.conversations,
+    // this.invites,
+    // this.inviteLinks,
+    // this.members,
+    // this.activities,
   });
 
   final String id;
   final String name;
   final String description;
-  final String created_at;
-  final List<GroupMember>? members;
+  final String? workspaceAccountId;
+  final String avatarUrl;
+  final DateTime createdAt;
+  final DateTime? modifiedAt;
+  // final List<V1GroupConversation>? conversations;
+  // final List<V1GroupInvite>? invites;
+  // final List<V1GroupInviteLink>? inviteLinks;
+  // final List<V1GroupActivity>? activities;
+  // final List<V1GroupMember>? members;
 
   factory GroupData.fromRawJson(String str) =>
       GroupData.fromJson(json.decode(str));
@@ -32,7 +48,47 @@ class GroupData {
       id: json["id"] ?? "",
       name: json["name"] ?? "",
       description: json["description"] ?? "",
-      created_at: json["created_at"] ?? "",
+      avatarUrl: '',
+      createdAt: json["created_at"] != null
+          ? formatStringToDateTime(json["created_at"])
+          : DateTime.now(),
+      modifiedAt: json["modified_at"] != null
+          ? formatStringToDateTime(json["modified_at"])
+          : null,
+      workspaceAccountId: json["workspace_account_id"] ?? "",
+      // conversations: null,
+      // invites: [],
+      // inviteLinks: [],
+      // activities: [],
+      // members: [],
+    );
+  }
+
+  factory GroupData.fromApi(V1Group apiGroup) {
+    apiGroup.members;
+    return GroupData(
+      id: apiGroup.id,
+      name: apiGroup.name,
+      description: apiGroup.description,
+      avatarUrl: apiGroup.avatarUrl,
+      createdAt: apiGroup.createdAt,
+      modifiedAt: apiGroup.modifiedAt,
+      workspaceAccountId: apiGroup.workspaceAccountId,
+      // conversations: apiGroup.conversations == null
+      //     ? []
+      //     : apiGroup.conversations!.map((e) => e).toList(),
+      // invites: apiGroup.invites == null
+      //     ? []
+      //     : apiGroup.invites!.map((e) => e).toList(),
+      // inviteLinks: apiGroup.inviteLinks == null
+      //     ? []
+      //     : apiGroup.inviteLinks!.map((e) => e).toList(),
+      // activities: apiGroup.activities == null
+      //     ? []
+      //     : apiGroup.activities!.map((e) => e).toList(),
+      // members: apiGroup.members == null
+      //     ? []
+      //     : apiGroup.members!.map((e) => e).toList(),
     );
   }
 
@@ -40,7 +96,7 @@ class GroupData {
         "id": id,
         "name": name,
         "description": description,
-        "created_at": created_at,
+        "created_at": createdAt,
       };
 }
 
@@ -60,18 +116,18 @@ class GroupMember {
   String? name;
   String? email;
 
-  factory GroupMember.fromRawJson(String str) =>
-      GroupMember.fromJson(json.decode(str));
+  // factory GroupMember.fromRawJson(String str) =>
+  //     GroupMember.fromJson(json.decode(str));
 
-  factory GroupMember.fromJson(Map<String, dynamic> json) {
-    return GroupMember(
-      account_id: json["account_id"] ?? "",
-      name: json["name"] ?? "",
-      email: json["email"] ?? "",
-      created_at: json["created_at"] ?? "",
-      role: json["role"] ?? "",
-    );
-  }
+  // factory GroupMember.fromJson(Map<String, dynamic> json) {
+  //   return GroupMember(
+  //     account_id: json["account_id"] ?? "",
+  //     name: json["name"] ?? "",
+  //     email: json["email"] ?? "",
+  //     created_at: json["created_at"] ?? "",
+  //     role: json["role"] ?? "",
+  //   );
+  // }
 
   Map<String, dynamic> toJson() => {
         "account_id": account_id,

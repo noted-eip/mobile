@@ -83,9 +83,11 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
   Future<void> createAccount(String name, String email, String password) async {
     if (_formKey.currentState!.validate()) {
       try {
-        final loginRes = await ref
-            .read(accountClientProvider)
-            .createAccount(name, email, password);
+        final loginRes = await ref.read(accountClientProvider).createAccount(
+              name: name,
+              email: email,
+              password: password,
+            );
 
         if (loginRes != null && mounted) {
           CustomToast.show(
@@ -214,11 +216,12 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                               validator: (val) {
                                 if (val!.isEmpty) {
                                   return "Please enter an email adress";
-                                } else if (!RegExp(
-                                        r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$")
-                                    .hasMatch(val)) {
-                                  return "Enter a valid email address";
                                 }
+                                // else if (!val.isEmail()) {
+                                //   print(!val.isEmail());
+                                //   print("not an email");
+                                //   return "Enter a valid email address";
+                                // }
                                 return null;
                               },
                             ),

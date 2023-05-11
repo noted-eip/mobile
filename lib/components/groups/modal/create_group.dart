@@ -41,7 +41,8 @@ class _CreateGroupModalState extends ConsumerState<CreateGroupModal> {
       if (_formKey.currentState!.validate()) {
         try {
           Group? group = await ref.read(groupClientProvider).createGroup(
-              _titleController.text, _descriptionController.text, user.token);
+              groupName: _titleController.text,
+              groupDescription: _descriptionController.text);
           if (group != null) {
             setState(() {
               groupId = group.data.id;

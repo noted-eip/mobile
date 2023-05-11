@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:noted_mobile/data/models/group/group.dart';
+import 'package:noted_mobile/utils/format_helper.dart';
 import 'package:shimmer/shimmer.dart';
 
 class GroupInfos extends StatelessWidget {
@@ -7,24 +8,6 @@ class GroupInfos extends StatelessWidget {
   const GroupInfos.empty({Key? key}) : this(key: key, group: null);
 
   final Group? group;
-
-  String intTo2Digits(int number) {
-    if (number < 10) {
-      return "0$number";
-    }
-    return number.toString();
-  }
-
-  String formatDate(String date) {
-    DateTime dateTime = DateTime.parse(date);
-    String day = intTo2Digits(dateTime.day);
-    String month = intTo2Digits(dateTime.month);
-    String year = dateTime.year.toString();
-    String hour = intTo2Digits(dateTime.hour);
-    String minute = intTo2Digits(dateTime.minute);
-
-    return "$day/$month/$year : $hour:$minute";
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -192,7 +175,7 @@ class GroupInfos extends StatelessWidget {
                   SizedBox(
                     width: 180,
                     child: Text(
-                      formatDate(group!.data.created_at),
+                      formatDateToString(group!.data.createdAt),
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                           color: Colors.grey,

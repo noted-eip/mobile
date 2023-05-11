@@ -4,7 +4,8 @@ import 'package:noted_mobile/data/models/invite/invite.dart';
 // import 'package:noted_mobile/data/providers/utils/cache_timeout.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
 
-final inviteClientProvider = Provider<InviteClient>((ref) => InviteClient());
+final inviteClientProvider =
+    Provider<InviteClient>((ref) => InviteClient(ref: ref));
 
 final sendInvitesProvider = FutureProvider<List<Invite>?>((ref) async {
   final account = ref.watch(userProvider);

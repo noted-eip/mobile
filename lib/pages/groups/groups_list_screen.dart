@@ -26,7 +26,7 @@ class AppNavigationBar extends StatelessWidget {
       ),
       backgroundColor: Colors.white,
       leading: Material(
-        color: Colors.transparent,
+        // color: Colors.transparent,
         child: IconButton(
           padding: EdgeInsets.zero,
           iconSize: 32,
@@ -35,7 +35,8 @@ class AppNavigationBar extends StatelessWidget {
             color: Colors.grey.shade900,
           ),
           onPressed: () {
-            ZoomDrawer.of(context)!.toggle();
+            // ZoomDrawer.of(context)!.toggle();
+            Scaffold.of(context).openDrawer();
           },
         ),
       ),

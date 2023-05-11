@@ -32,4 +32,12 @@ class UserNotifier extends ChangeNotifier {
     _email = newEmail;
     notifyListeners();
   }
+
+  void reset() {
+    _email = "";
+    _id = "";
+    _name = "";
+    _token = "";
+    notifyListeners();
+  }
 }

@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:noted_mobile/utils/constant.dart';
 import 'package:noted_mobile/utils/string_extension.dart';
@@ -94,7 +95,7 @@ class GroupCard extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Text(
+                    AutoSizeText(
                       groupName!.capitalize(),
                       textAlign: TextAlign.start,
                       softWrap: true,
@@ -105,12 +106,12 @@ class GroupCard extends StatelessWidget {
                   ],
                 ),
               ),
-              displaySeeMore
-                  ? const SizedBox()
-                  : Text(
-                      '$groupNotesCount notes',
-                      style: const TextStyle(fontSize: 15, color: Colors.white),
-                    ),
+              // displaySeeMore
+              //     ? const SizedBox()
+              //     : AutoSizeText(
+              //         '$groupNotesCount notes',
+              //         style: const TextStyle(fontSize: 15, color: Colors.white),
+              //       ),
             ],
           ),
         ),

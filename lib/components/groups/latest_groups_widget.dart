@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:noted_mobile/components/common/new_custom_drawer.dart';
 import 'package:noted_mobile/components/groups/modal/create_group.dart';
 import 'package:noted_mobile/components/groups/card/group_card.dart';
 import 'package:noted_mobile/data/models/group/group.dart';
 import 'package:noted_mobile/data/providers/group_provider.dart';
+import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -52,7 +54,7 @@ class _LatestsGroupsState extends ConsumerState<LatestsGroups> {
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 1,
-                      childAspectRatio: 1.15,
+                      childAspectRatio: 1,
                     ),
                     itemBuilder: (context, index) {
                       if (index < groups.length) {
@@ -75,7 +77,10 @@ class _LatestsGroupsState extends ConsumerState<LatestsGroups> {
                           groupIcon: Icons.add,
                           displaySeeMore: true,
                           onTap: () {
-                            Navigator.pushNamed(context, '/groups');
+                            ref
+                                .read(mainScreenProvider)
+                                .setItem(MyMenuItems.groups);
+                            // Navigator.pushNamed(context, '/groups');
                           },
                         );
                       }
@@ -129,7 +134,7 @@ class _LatestsGroupsState extends ConsumerState<LatestsGroups> {
                 child: GridView(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 1,
-                    childAspectRatio: 1.15,
+                    childAspectRatio: 1,
                   ),
                   scrollDirection: Axis.horizontal,
                   physics: const NeverScrollableScrollPhysics(),

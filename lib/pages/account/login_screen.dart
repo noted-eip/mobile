@@ -72,7 +72,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       }
 
       if (kDebugMode) {
-        print("googleToken: $googleToken");
+        print("googleToken: ${googleToken.substring(0, 10)}");
       }
 
       // try {
@@ -182,9 +182,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     if (_formKey.currentState!.validate()) {
       try {
         final loginRes = await ref.read(accountClientProvider).login(
-              _emailController.text,
-              _passwordController.text,
-              ref,
+              email: _emailController.text,
+              password: _passwordController.text,
             );
         if (loginRes && mounted) {
           Navigator.of(context).pushReplacementNamed('/home');
@@ -262,11 +261,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         validator: (val) {
                           if (val!.isEmpty) {
                             return "Please enter your email";
-                          } else if (!RegExp(
-                                  r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$")
-                              .hasMatch(val)) {
-                            return "Enter a valid email address";
                           }
+                          //  else if (!val.isEmail()) {
+                          //   return "Enter a valid email address";
+                          // }
                           return null;
                         },
                       ),

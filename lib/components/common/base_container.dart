@@ -4,20 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 
 class BaseContainer extends StatelessWidget {
-  const BaseContainer(
-      {Key? key,
-      required this.titleWidget,
-      required this.body,
-      this.primaryColor,
-      this.secondaryColor,
-      this.notif})
-      : super(key: key);
+  const BaseContainer({
+    Key? key,
+    required this.titleWidget,
+    required this.body,
+    this.primaryColor,
+    this.secondaryColor,
+    this.notif,
+    this.openDrawer,
+  }) : super(key: key);
 
   final Widget titleWidget;
   final Widget body;
   final Color? primaryColor;
   final Color? secondaryColor;
   final bool? notif;
+  final bool? openDrawer;
 
   @override
   Widget build(BuildContext context) {
@@ -39,17 +41,26 @@ class BaseContainer extends StatelessWidget {
                 child: IconButton(
                   padding: EdgeInsets.zero,
                   icon: Icon(
-                    Navigator.canPop(context)
+                    openDrawer != null && !openDrawer!
                         ? CupertinoIcons.back
-                        : Icons.menu,
+                        : Navigator.canPop(context)
+                            ? CupertinoIcons.back
+                            : Icons.menu,
                     color: secondaryColor ?? Colors.grey.shade900,
                   ),
                   onPressed: () {
-                    if (Navigator.canPop(context)) {
+                    if (openDrawer != null && !openDrawer! ||
+                        Navigator.canPop(context)) {
                       Navigator.pop(context, false);
                     } else {
                       ZoomDrawer.of(context)!.toggle();
                     }
+
+                    // if (Navigator.canPop(context)) {
+                    //   Navigator.pop(context, false);
+                    // } else {
+                    //   ZoomDrawer.of(context)!.toggle();
+                    // }
                   },
                 ),
               ),

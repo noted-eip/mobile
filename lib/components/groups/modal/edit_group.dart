@@ -44,10 +44,9 @@ class _EditGroupModalState extends ConsumerState<EditGroupModal> {
   Future<void> editGroup() async {
     try {
       Group? group = await ref.read(groupClientProvider).updateGroup(
-            _titleController.text,
-            _descriptionController.text,
-            widget.userTkn,
-            widget.groupId,
+            groupName: _titleController.text,
+            groupDescription: _descriptionController.text,
+            groupId: widget.groupId,
           );
 
       if (group != null) {

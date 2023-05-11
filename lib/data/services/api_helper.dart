@@ -90,8 +90,9 @@ class APIHelper {
     } on DioError catch (e) {
       // print('[API Helper - DELETE] Server Response: ${e.toString()}');
       return ApiResponse(
-          error: DioExceptions.fromDioError(e).toString(),
-          statusCode: e.response!.statusCode);
+        error: DioExceptions.fromDioError(e).toString(),
+        statusCode: e.response!.statusCode,
+      );
     }
   }
 }

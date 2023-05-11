@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:noted_mobile/components/common/loading_button.dart';
+import 'package:noted_mobile/utils/string_extension.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
@@ -99,9 +100,7 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             validator: (val) {
                               if (val!.isEmpty) {
                                 return "Please enter your email";
-                              } else if (!RegExp(
-                                      r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$")
-                                  .hasMatch(val)) {
+                              } else if (!val.isEmail()) {
                                 return "Enter a valid email address";
                               }
                               return null;

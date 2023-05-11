@@ -83,6 +83,7 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
 
     return Scaffold(
       body: BaseContainer(
+        openDrawer: false,
         notif: true,
         titleWidget: const Text("Invitations"),
         body: DefaultTabController(

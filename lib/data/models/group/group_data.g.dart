@@ -1,7 +1,5 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-// ignore_for_file: unused_element
-
 part of 'group_data.dart';
 
 // **************************************************************************
@@ -12,18 +10,22 @@ GroupData _$GroupDataFromJson(Map<String, dynamic> json) => GroupData(
       id: json['id'] as String,
       name: json['name'] as String,
       description: json['description'] as String,
-      created_at: json['created_at'] as String,
-      members: (json['members'] as List<dynamic>?)
-          ?.map((e) => GroupMember.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      workspaceAccountId: json['workspaceAccountId'] as String?,
+      avatarUrl: json['avatarUrl'] as String,
+      modifiedAt: json['modifiedAt'] == null
+          ? null
+          : DateTime.parse(json['modifiedAt'] as String),
     );
 
 Map<String, dynamic> _$GroupDataToJson(GroupData instance) => <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
       'description': instance.description,
-      'created_at': instance.created_at,
-      'members': instance.members,
+      'workspaceAccountId': instance.workspaceAccountId,
+      'avatarUrl': instance.avatarUrl,
+      'createdAt': instance.createdAt.toIso8601String(),
+      'modifiedAt': instance.modifiedAt?.toIso8601String(),
     };
 
 GroupMember _$GroupMemberFromJson(Map<String, dynamic> json) => GroupMember(

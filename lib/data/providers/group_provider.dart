@@ -5,14 +5,15 @@ import 'package:noted_mobile/data/models/group/group_data.dart';
 // import 'package:noted_mobile/data/providers/utils/cache_timeout.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
 
-final groupClientProvider = Provider<GroupClient>((ref) => GroupClient());
+final groupClientProvider =
+    Provider<GroupClient>((ref) => GroupClient(ref: ref));
 
 final groupsProvider = FutureProvider<List<Group>?>((ref) async {
   final account = ref.watch(userProvider);
   final search = ref.watch(searchProvider);
   final grouplist = await ref
       .watch(groupClientProvider)
-      .listGroups(account.id, account.token, offset: 0, limit: 20);
+      .listGroups(accountId: account.id, offset: 0, limit: 20);
 
   // cacheTimeout(ref, 'fetchGroups');
 
@@ -30,9 +31,10 @@ final searchProvider = StateProvider((ref) => '');
 
 final latestGroupsProvider = FutureProvider<List<Group>?>((ref) async {
   final account = ref.watch(userProvider);
+  print("account.id: ${account.id}");
   final grouplist = await ref
       .watch(groupClientProvider)
-      .listGroups(account.id, account.token, offset: 0, limit: 2);
+      .listGroups(accountId: account.id, offset: 0, limit: 2);
 
   // cacheTimeout(ref, 'fetchLatestGroups');
   return grouplist;
@@ -40,9 +42,7 @@ final latestGroupsProvider = FutureProvider<List<Group>?>((ref) async {
 
 final groupProvider =
     FutureProvider.family<Group?, String>((ref, groupId) async {
-  final account = ref.watch(userProvider);
-  final group =
-      await ref.watch(groupClientProvider).getGroup(groupId, account.token);
+  final group = await ref.watch(groupClientProvider).getGroup(groupId: groupId);
 
   // cacheTimeout(ref, 'fetchGroup $groupId');
   return group;

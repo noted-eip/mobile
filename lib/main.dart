@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/components/common/custom_drawer.dart';
+import 'package:noted_mobile/components/common/new_custom_drawer.dart';
 import 'package:noted_mobile/data/services/api_helper.dart';
 import 'package:noted_mobile/data/services/dio_singleton.dart';
 import 'package:noted_mobile/firebase_options.dart';
@@ -54,7 +55,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/splash': (context) => const SplashScreen(),
         '/login': (context) => const LoginPage(),
-        '/home': (context) => const MyCustomDrawer(),
+        // '/home': (context) => const MyCustomDrawer(),
+        '/home': (context) => const MyDrawer(),
         '/profile': (context) => const ProfilePage(),
         '/register': (context) => const RegistrationPage(),
         '/forgot-password': (context) => const ForgotPasswordPage(),

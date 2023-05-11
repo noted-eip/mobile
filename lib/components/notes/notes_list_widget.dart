@@ -1,22 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:noted_mobile/components/groups/card/group_card.dart';
 import 'package:noted_mobile/components/notes/note_card_widget.dart';
+import 'package:noted_mobile/data/models/group/group.dart';
 import 'package:noted_mobile/data/models/note/note.dart';
+import 'package:noted_mobile/data/providers/group_provider.dart';
 import 'package:noted_mobile/data/providers/note_provider.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:tuple/tuple.dart';
 
 class NotesList extends ConsumerStatefulWidget {
   const NotesList({
     super.key,
     required this.isRefresh,
     required this.title,
+    this.groupId,
+    this.isNotePage = false,
   });
 
   const NotesList.empty({Key? key})
       : this(key: key, isRefresh: null, title: null);
 
   final bool? isRefresh;
+  final bool isNotePage;
   final Widget? title;
+  final String? groupId;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _NotesListState();
@@ -82,7 +90,76 @@ class _NotesListState extends ConsumerState<NotesList> {
     );
   }
 
+  List<bool> isExpandedList = [];
+
   Widget builList(List<Note> notes, bool isRefresh) {
+    List<String> groupIds = notes.map((note) => note.groupId).toSet().toList();
+
+    notes.sort((a, b) => a.groupId.compareTo(b.groupId));
+    // créer une map avec comme clé l'id du groupe et comme valeur la liste des notes
+    Map<String, List<Note>> notesByGroup = {};
+
+    for (var groupId in groupIds) {
+      notesByGroup[groupId] =
+          notes.where((note) => note.groupId == groupId).toList();
+    }
+
+    // créer une liste de expension panel  avec comme enfant une liste de notes et comme clé l'id du groupe
+    // List<ExpansionPanel> expansionPanels = [];
+
+    List<Widget> expansionTiles = [];
+
+    for (var groupId in groupIds) {
+      AsyncValue<Group?> groupFromApi =
+          ref.read(groupProvider(notesByGroup[groupId]![0].groupId));
+      isExpandedList.add(false);
+      expansionTiles.add(
+        Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: ExpansionTile(
+            initiallyExpanded: true,
+            tilePadding: const EdgeInsets.all(12),
+            collapsedBackgroundColor: Colors.grey.shade900,
+            backgroundColor: Colors.grey.shade100,
+            collapsedTextColor: Colors.white,
+            textColor: Colors.grey.shade900,
+            iconColor: Colors.grey.shade900,
+            collapsedIconColor: Colors.white,
+            collapsedShape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: Text(
+              groupFromApi.when(
+                data: (group) => group!.data.name,
+                loading: () => '',
+                error: (error, stackTrace) => '',
+              ),
+            ),
+            children: [
+              for (var note in notesByGroup[groupId]!)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: NoteCard(
+                    note: note,
+                    baseColor: Colors.white,
+                    onTap: () {
+                      Navigator.pushNamed(context, '/note-detail',
+                          arguments: Tuple2(note.id, note.groupId));
+                    },
+                  ),
+                ),
+            ],
+            onExpansionChanged: (value) => setState(() {
+              isExpandedList[groupIds.indexOf(groupId)] = value;
+            }),
+          ),
+        ),
+      );
+    }
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       child: Column(
@@ -91,13 +168,61 @@ class _NotesListState extends ConsumerState<NotesList> {
         children: [
           if (widget.title != null) widget.title!,
           if (widget.title != null) const SizedBox(height: 16),
-          if (isRefresh)
-            Expanded(
-              child: RefreshIndicator(
-                displacement: 0,
-                onRefresh: () async {
-                  ref.invalidate(notesProvider);
-                },
+          if (widget.isNotePage)
+            Theme(
+              data: ThemeData(dividerColor: Colors.transparent),
+              child: Expanded(
+                  child: ListView(
+                children: expansionTiles,
+              )),
+            ),
+          // if (widget.isNotePage)
+          //   Expanded(
+          //     child: SingleChildScrollView(
+          //       child: ExpansionPanelList(
+          //         // expandedHeaderPadding: EdgeInsets.all(32),
+          //         // dividerColor: Colors.grey.shade900,
+          //         expansionCallback: (index, isExpanded) {
+          //           setState(() {
+          //             isExpandedList[index] = !isExpandedList[index];
+          //             // expansionPanels[index].isExpanded = !isExpanded;
+          //           });
+          //         },
+          //         children: expansionPanels,
+          //       ),
+          //     ),
+          //   ),
+          if (!widget.isNotePage)
+            if (isRefresh)
+              Expanded(
+                child: RefreshIndicator(
+                  displacement: 0,
+                  onRefresh: () async {
+                    ref.invalidate(notesProvider);
+                  },
+                  child: ListView.builder(
+                    padding: EdgeInsets.zero,
+                    itemBuilder: (context, index) {
+                      Note note = notes[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: NoteCard(
+                          note: note,
+                          baseColor: Colors.white,
+                          onTap: () {
+                            Navigator.pushNamed(context, '/note-detail',
+                                arguments: Tuple2(note.id, note.groupId));
+                          },
+                        ),
+                      );
+                    },
+                    itemCount: notes.length,
+                  ),
+                ),
+              ),
+          if (!widget.isNotePage)
+            if (!isRefresh)
+              Expanded(
                 child: ListView.builder(
                   padding: EdgeInsets.zero,
                   itemBuilder: (context, index) {
@@ -109,7 +234,7 @@ class _NotesListState extends ConsumerState<NotesList> {
                         baseColor: Colors.white,
                         onTap: () {
                           Navigator.pushNamed(context, '/note-detail',
-                              arguments: note.id);
+                              arguments: Tuple2(note.id, note.groupId));
                         },
                       ),
                     );
@@ -117,31 +242,69 @@ class _NotesListState extends ConsumerState<NotesList> {
                   itemCount: notes.length,
                 ),
               ),
-            ),
-          if (!isRefresh)
-            Expanded(
-              child: ListView.builder(
-                padding: EdgeInsets.zero,
-                itemBuilder: (context, index) {
-                  Note note = notes[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: NoteCard(
-                      note: note,
-                      baseColor: Colors.white,
-                      onTap: () {
-                        Navigator.pushNamed(context, '/note-detail',
-                            arguments: note.id);
-                      },
-                    ),
-                  );
-                },
-                itemCount: notes.length,
-              ),
-            ),
         ],
       ),
     );
+
+    // return Container(
+    //   margin: const EdgeInsets.only(bottom: 16),
+    //   child: Column(
+    //     crossAxisAlignment: CrossAxisAlignment.start,
+    //     mainAxisAlignment: MainAxisAlignment.start,
+    //     children: [
+    //       if (widget.title != null) widget.title!,
+    //       if (widget.title != null) const SizedBox(height: 16),
+    //       if (isRefresh)
+    //         Expanded(
+    //           child: RefreshIndicator(
+    //             displacement: 0,
+    //             onRefresh: () async {
+    //               ref.invalidate(notesProvider);
+    //             },
+    //             child: ListView.builder(
+    //               padding: EdgeInsets.zero,
+    //               itemBuilder: (context, index) {
+    //                 Note note = notes[index];
+    //                 return Padding(
+    //                   padding: const EdgeInsets.only(bottom: 16),
+    //                   child: NoteCard(
+    //                     note: note,
+    //                     baseColor: Colors.white,
+    //                     onTap: () {
+    //                       Navigator.pushNamed(context, '/note-detail',
+    //                           arguments: Tuple2(note.id, note.groupId));
+    //                     },
+    //                   ),
+    //                 );
+    //               },
+    //               itemCount: notes.length,
+    //             ),
+    //           ),
+    //         ),
+    //       if (!isRefresh)
+    //         Expanded(
+    //           child: ListView.builder(
+    //             padding: EdgeInsets.zero,
+    //             itemBuilder: (context, index) {
+    //               Note note = notes[index];
+    //               return Padding(
+    //                 padding: const EdgeInsets.only(bottom: 16),
+    //                 child: NoteCard(
+    //                   note: note,
+    //                   baseColor: Colors.white,
+    //                   onTap: () {
+    //                     Navigator.pushNamed(context, '/note-detail',
+    //                         arguments: Tuple2(note.id, note.groupId));
+    //                   },
+    //                 ),
+    //               );
+    //             },
+    //             itemCount: notes.length,
+    //           ),
+    //         ),
+    //     ],
+    //   ),
+    // );
   }
 
   @override
@@ -157,6 +320,7 @@ class _NotesListState extends ConsumerState<NotesList> {
         if (data == null) {
           return buildLoading(widget.isRefresh!);
         }
+
         return builList(data, widget.isRefresh!);
       },
       error: (error, stackTrace) {
