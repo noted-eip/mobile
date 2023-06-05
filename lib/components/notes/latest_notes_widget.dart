@@ -17,7 +17,7 @@ class _LatestFilesState extends ConsumerState<LatestFiles> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: const [
-          Text("Latest Files", style: TextStyle(fontSize: 20)),
+          Text("Latest Notes", style: TextStyle(fontSize: 20)),
           SizedBox(height: 16),
           Expanded(
               child: Padding(

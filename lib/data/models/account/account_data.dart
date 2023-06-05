@@ -1,6 +1,6 @@
 // user_data.dart file
 
-import 'dart:convert';
+// import 'dart:convert';
 
 import 'package:json_annotation/json_annotation.dart';
 import 'package:openapi/openapi.dart';
@@ -19,16 +19,16 @@ class AccountData {
   final String email;
   final String id;
 
-  factory AccountData.fromRawJson(String str) =>
-      AccountData.fromJson(json.decode(str));
+  // factory AccountData.fromRawJson(String str) =>
+  //     AccountData.fromJson(json.decode(str));
 
-  factory AccountData.fromJson(Map<String, dynamic> json) {
-    return AccountData(
-      id: json["id"] ?? "",
-      email: json["email"] ?? "",
-      name: json["name"] ?? "",
-    );
-  }
+  // factory AccountData.fromJson(Map<String, dynamic> json) {
+  //   return AccountData(
+  //     id: json["id"] ?? "",
+  //     email: json["email"] ?? "",
+  //     name: json["name"] ?? "",
+  //   );
+  // }
 
   factory AccountData.fromApi(V1Account apiAccount) {
     return AccountData(
@@ -38,9 +38,9 @@ class AccountData {
     );
   }
 
-  Map<String, dynamic> toJson() => {
-        "name": name,
-        "email": email,
-        "id": id,
-      };
+  // Map<String, dynamic> toJson() => {
+  //       "name": name,
+  //       "email": email,
+  //       "id": id,
+  //     };
 }

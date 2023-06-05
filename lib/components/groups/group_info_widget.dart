@@ -144,27 +144,27 @@ class GroupInfos extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Text(
-                    "0",
-                    style: TextStyle(
-                        color: Colors.grey.shade900,
-                        fontSize: 40,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Text(
-                    "Notes",
-                    style: TextStyle(
-                        color: Colors.grey.shade900,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
+              // Row(
+              //   children: [
+              //     // Text(
+              //     //   "0",
+              //     //   style: TextStyle(
+              //     //       color: Colors.grey.shade900,
+              //     //       fontSize: 40,
+              //     //       fontWeight: FontWeight.bold),
+              //     // ),
+              //     // const SizedBox(
+              //     //   width: 10,
+              //     // ),
+              //     // Text(
+              //     //   "Notes",
+              //     //   style: TextStyle(
+              //     //       color: Colors.grey.shade900,
+              //     //       fontSize: 20,
+              //     //       fontWeight: FontWeight.bold),
+              //     // ),
+              //   ],
+              // ),
               Row(
                 children: [
                   const Icon(

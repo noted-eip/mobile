@@ -71,33 +71,28 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         return false;
       }
 
-      if (kDebugMode) {
-        print("googleToken: ${googleToken.substring(0, 10)}");
+      try {
+        bool loginRes =
+            await ref.read(accountClientProvider).loginWithGoogle(googleToken);
+
+        if (!loginRes) {
+          return false;
+        }
+
+        if (mounted) {
+          Navigator.of(context).pushReplacementNamed('/home');
+        }
+      } catch (error) {
+        if (mounted) {
+          CustomToast.show(
+            message: error.toString().capitalize(),
+            type: ToastType.error,
+            context: context,
+            gravity: ToastGravity.BOTTOM,
+          );
+        }
+        return false;
       }
-
-      // try {
-      //   bool loginRes = await ref
-      //       .read(accountClientProvider)
-      //       .loginWithGoogle(googleToken, ref);
-
-      //   if (!loginRes) {
-      //     return false;
-      //   }
-
-      //   if (mounted) {
-      //     Navigator.of(context).pushReplacementNamed('/home');
-      //   }
-      // } catch (error) {
-      //   if (mounted) {
-      //     CustomToast.show(
-      //       message: error.toString().capitalize(),
-      //       type: ToastType.error,
-      //       context: context,
-      //       gravity: ToastGravity.BOTTOM,
-      //     );
-      //   }
-      //   return false;
-      // }
 
       return true;
     } catch (error) {

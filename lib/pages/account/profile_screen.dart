@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:noted_mobile/components/common/custom_alerte.dart';
 import 'package:noted_mobile/components/common/custom_modal.dart';
@@ -16,7 +15,6 @@ import 'package:noted_mobile/utils/string_extension.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
-// TODO : revoir le design de la page
 // TODO : ajouter un bouton pour supprimer le compte et revoir la logique de suppression
 
 class ProfilePage extends ConsumerStatefulWidget {
@@ -130,13 +128,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             try {
               bool res = await ref.read(accountClientProvider).deleteAccount();
 
-              print("res: $res");
               if (res == true) {
                 _btnControllerDeleteAccount.success();
               }
             } catch (e) {
-              print("e.toString() : ${e.toString()}");
-
               _btnControllerDeleteAccount.error();
             }
           },
@@ -148,10 +143,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     );
 
     if (resDiag == false || resDiag == null) {
-      print("cancel");
       _btnControllerDeleteAccount.reset();
     } else {
-      print("confirm");
       _btnControllerDeleteAccount.success();
 
       if (mounted) {
@@ -297,8 +290,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                                 color: Colors.grey,
                                               ),
                                               onPressed: () {
-                                                print(
-                                                    "isPasswordVisible: $isPasswordVisible");
                                                 setState(() {
                                                   isPasswordVisible =
                                                       !isPasswordVisible;
@@ -389,14 +380,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                 : Colors.grey.shade400,
                             animateOnTap: false,
                             onPressed: () async {
-                              print("save button pressed");
                               if (formKey.currentState!.validate()) {
-                                print("form is valid");
                                 if (passwordController.text ==
                                         confirmPasswordController.text &&
                                     passwordController.text.isNotEmpty) {
-                                  print("password changed");
-
                                   _btnControllerSave.start();
 
                                   Future.delayed(
@@ -415,7 +402,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                   updateAccount();
                                 }
                               } else {
-                                print("form is invalid");
+                                if (kDebugMode) {
+                                  print("form is invalid");
+                                }
                               }
                             },
                             btnController: _btnControllerSave,

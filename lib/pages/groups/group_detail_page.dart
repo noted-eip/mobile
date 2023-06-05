@@ -46,11 +46,12 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
       context: context,
       builder: ((context) {
         return CustomAlertDialog(
-          title: "Leave the Group",
+          title: "Leave the Group ?",
           content: "Are you sure you want to leave this group ?",
           onConfirm: () async {
             await deleteGroupMember(userTkn, userId, groupId, true);
           },
+          confirmText: "Leave",
         );
       }),
     );
@@ -66,12 +67,13 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
           );
       if (mounted) {
         if (isLeave) {
-          Navigator.pop(context);
-          Navigator.pop(context);
+          // TODO: check if is needed
+          // Navigator.pop(context);
+          // Navigator.pop(context);
           Navigator.pop(context, true);
+          // ref.invalidate(groupProvider(groupId));
         } else {
-          Navigator.pop(context);
-          ref.invalidate(groupMembersProvider(groupId));
+          ref.invalidate(groupProvider(groupId));
         }
       }
     } catch (e) {
@@ -132,206 +134,6 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
     }
   }
 
-  // Future<void> openSettings(String userTkn, String userId, String groupId,
-  //     AsyncValue<Group?> group, WidgetRef ref) async {
-  //   final user = ref.watch(userProvider);
-  //   return showModalBottomSheet(
-  //     backgroundColor: Colors.transparent,
-  //     context: context,
-  //     isScrollControlled: true,
-  //     builder: (context) {
-  //       return EditGroupModal(
-  //         btnController: btnController,
-  //         userTkn: user.token,
-  //         groupId: groupId,
-  //         baseTitle: group.hasValue ? group.value!.data.name : "groupName",
-  //         baseDescription: group.hasValue
-  //             ? group.value!.data.description
-  //             : "groupDescription",
-  //       );
-  //     },
-  //   );
-  // }
-
-  // Widget baseContainerTittle(AsyncValue<Group?> groupFromApi,
-  //     AsyncValue<GroupMember?> memberFromApi, WidgetRef ref) {
-  //   return Row(
-  //     children: [
-  //       groupFromApi.hasValue
-  //           ? Expanded(
-  //               flex: 1,
-  //               child: AutoSizeText(
-  //                 groupFromApi.value!.data.name.capitalize(),
-  //                 overflow: TextOverflow.ellipsis,
-  //               ),
-  //             )
-  //           : Shimmer.fromColors(
-  //               baseColor: Colors.grey.shade800,
-  //               highlightColor: Colors.grey.shade600,
-  //               child: Container(
-  //                 decoration: BoxDecoration(
-  //                   borderRadius: BorderRadius.circular(10),
-  //                   color: Colors.black,
-  //                 ),
-  //                 height: 20,
-  //                 width: 100,
-  //               ),
-  //             ),
-  //       groupFromApi.hasValue && memberFromApi.hasValue
-  //           ? Material(
-  //               color: Colors.transparent,
-  //               child: PopupMenuButton(
-  //                 shape: const RoundedRectangleBorder(
-  //                   borderRadius: BorderRadius.all(
-  //                     Radius.circular(16),
-  //                   ),
-  //                 ),
-  //                 itemBuilder: ((context) {
-  //                   return [
-  //                     if (memberFromApi.value!.role == "admin")
-  //                       PopupMenuItem(
-  //                         child: TextButton(
-  //                           onPressed: () async {
-  //                             if (groupFromApi.hasValue) {
-  //                               final snapshot = groupFromApi.value!.data;
-  //                               final user = ref.read(userProvider);
-  //                               Navigator.pop(context);
-
-  //                               await openSettings(user.token, user.id,
-  //                                   snapshot.id, groupFromApi, ref);
-  //                             }
-  //                           },
-  //                           child: Row(
-  //                             children: [
-  //                               Icon(
-  //                                 Icons.edit,
-  //                                 color: Colors.grey.shade900,
-  //                                 size: 30,
-  //                               ),
-  //                               const SizedBox(
-  //                                 width: 10,
-  //                               ),
-  //                               Text(
-  //                                 "Edit",
-  //                                 style: TextStyle(
-  //                                     color: Colors.grey.shade900,
-  //                                     fontSize: 16,
-  //                                     fontWeight: FontWeight.bold),
-  //                               ),
-  //                             ],
-  //                           ),
-  //                         ),
-  //                       ),
-  //                     if (memberFromApi.value!.role == "admin")
-  //                       PopupMenuItem(
-  //                         child: TextButton(
-  //                           onPressed: () async {
-  //                             final res = await showDialog(
-  //                               context: context,
-  //                               builder: ((context) {
-  //                                 return CustomAlertDialog(
-  //                                   title: "Delete Group",
-  //                                   content:
-  //                                       "Are you sure you want to delete this group?",
-  //                                   onConfirm: () async {
-  //                                     final groupId =
-  //                                         groupFromApi.value!.data.id;
-  //                                     final userTkn =
-  //                                         ref.read(userProvider).token;
-
-  //                                     await deleteGroup(
-  //                                       groupId,
-  //                                       userTkn,
-  //                                     );
-  //                                   },
-  //                                 );
-  //                               }),
-  //                             );
-
-  //                             if (mounted && res == true) {
-  //                               await Future.delayed(
-  //                                   const Duration(milliseconds: 500),
-  //                                   (() => Navigator.of(context).pop(true)));
-  //                             } else {
-  //                               Navigator.of(context).pop();
-  //                             }
-  //                           },
-  //                           child: Row(
-  //                             children: [
-  //                               Icon(
-  //                                 Icons.delete,
-  //                                 color: Colors.grey.shade900,
-  //                                 size: 30,
-  //                               ),
-  //                               const SizedBox(
-  //                                 width: 10,
-  //                               ),
-  //                               Text(
-  //                                 "Delete",
-  //                                 style: TextStyle(
-  //                                     color: Colors.grey.shade900,
-  //                                     fontSize: 16,
-  //                                     fontWeight: FontWeight.bold),
-  //                               ),
-  //                             ],
-  //                           ),
-  //                         ),
-  //                       ),
-  //                     PopupMenuItem(
-  //                       child: TextButton(
-  //                         onPressed: () async {
-  //                           if (groupFromApi.hasValue) {
-  //                             final snapshot = groupFromApi.value!.data;
-  //                             final user = ref.read(userProvider);
-  //                             Navigator.pop(context);
-
-  //                             await leaveGroupDialog(
-  //                               user.token,
-  //                               user.id,
-  //                               snapshot.id,
-  //                               ref,
-  //                             );
-  //                           }
-  //                         },
-  //                         child: Row(
-  //                           children: [
-  //                             Icon(
-  //                               Icons.exit_to_app_rounded,
-  //                               color: Colors.grey.shade900,
-  //                               size: 30,
-  //                             ),
-  //                             const SizedBox(
-  //                               width: 10,
-  //                             ),
-  //                             Text(
-  //                               "Leave",
-  //                               style: TextStyle(
-  //                                 color: Colors.grey.shade900,
-  //                                 fontSize: 16,
-  //                                 fontWeight: FontWeight.bold,
-  //                               ),
-  //                             ),
-  //                           ],
-  //                         ),
-  //                       ),
-  //                     ),
-  //                   ];
-  //                 }),
-  //                 child: Padding(
-  //                   padding: const EdgeInsets.symmetric(horizontal: 16),
-  //                   child: Icon(
-  //                     Icons.more_vert,
-  //                     color: Colors.grey.shade900,
-  //                     size: 32,
-  //                   ),
-  //                 ),
-  //               ),
-  //             )
-  //           : const SizedBox(),
-  //     ],
-  //   );
-  // }
-
   Future<void> inviteMemberModal(String tkn, String groupId) async {
     TextEditingController controller = TextEditingController();
     GlobalKey<FormState> roleformKey = GlobalKey<FormState>();
@@ -385,6 +187,9 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
         body: groupFromApi.when(
           data: ((data) {
             if (data != null) {
+              bool isWorkspace = data.data.workspaceAccountId != null;
+              print(data.data.workspaceAccountId);
+              print(data.data.id);
               return SingleChildScrollView(
                 child: SizedBox(
                   height: MediaQuery.of(context).size.height,
@@ -396,21 +201,21 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
                       ),
                       Expanded(
                         child: DefaultTabController(
-                          length: 2,
+                          length:
+                              // sisWorkspace ? 1 :
+                              2,
                           child: Column(
                             children: [
                               TabBar(
                                 indicatorColor: Colors.grey.shade900,
-                                tabs: const [
-                                  Tab(
+                                tabs: [
+                                  const Tab(
                                     text: "Notes",
                                   ),
-                                  Tab(
+                                  // if (!isWorkspace)
+                                  const Tab(
                                     text: "Members",
                                   ),
-                                  // Tab(
-                                  //   text: "Activity",
-                                  // ),
                                 ],
                               ),
                               const SizedBox(
@@ -419,14 +224,16 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
                               Expanded(
                                 child: TabBarView(
                                   children: [
-                                    const Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(horizontal: 16),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16),
                                       child: NotesList(
                                         title: null,
                                         isRefresh: true,
+                                        groupId: data.data.id,
                                       ),
                                     ),
+                                    // if (!isWorkspace)
                                     Padding(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 16.0),
@@ -483,6 +290,7 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
                                           ),
                                           Expanded(
                                             child: GroupMembersList(
+                                              members: data.data.members,
                                               isPadding: false,
                                               deleteGroupMember: (accountId) {
                                                 deleteGroupMemberDialog(
@@ -506,23 +314,6 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
                                         ],
                                       ),
                                     ),
-                                    // Column(
-                                    //   children: [
-                                    //     const SizedBox(
-                                    //       height: 16,
-                                    //     ),
-                                    //     Expanded(
-                                    //       child: Padding(
-                                    //         padding: const EdgeInsets.symmetric(
-                                    //           horizontal: 16,
-                                    //         ),
-                                    //         child: GroupActivities(
-                                    //           groupId: groupId,
-                                    //         ),
-                                    //       ),
-                                    //     ),
-                                    //   ],
-                                    // ),
                                   ],
                                 ),
                               ),
@@ -547,7 +338,7 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
                 const GroupInfos.empty(),
                 Expanded(
                   child: DefaultTabController(
-                    length: 3,
+                    length: 2,
                     child: Column(
                       children: [
                         TabBar(
@@ -559,9 +350,6 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
                             Tab(
                               text: "Members",
                             ),
-                            Tab(
-                              text: "Activities",
-                            ),
                           ],
                         ),
                         const SizedBox(
@@ -572,25 +360,25 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
                             children: [
                               const Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 16),
-                                child: NotesList.empty(),
+                                child: NotesList(
+                                  title: Text(
+                                    "",
+                                    style: TextStyle(
+                                        fontSize: 20, color: Colors.black),
+                                  ),
+                                  isRefresh: true,
+                                ),
                               ),
                               Padding(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 16.0),
                                 child: GroupMembersList(
+                                  members: null,
                                   isPadding: false,
                                   deleteGroupMember: (accountId) {},
                                   leaveGroup: (accountId) {},
                                   groupId: groupId,
                                 ),
-                              ),
-                              const NotesList(
-                                title: Text(
-                                  "Notes List",
-                                  style: TextStyle(
-                                      fontSize: 20, color: Colors.black),
-                                ),
-                                isRefresh: true,
                               ),
                             ],
                           ),

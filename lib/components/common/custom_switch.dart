@@ -59,85 +59,86 @@ class _CustomSwitchState extends State<CustomSwitch> {
       opacity: _opacity,
       duration: const Duration(milliseconds: 1000),
       child: AnimatedSlide(
-          offset: Offset(0, _y),
-          duration: const Duration(milliseconds: 1000),
-          child: GestureDetector(
-            onTap: () {
-              if (widget.disabled) {
-                return;
-              }
-              setState(() {
-                _active = !_active;
-              });
-              if (widget.onChanged != null) {
-                widget.onChanged!(_active);
-              }
-            },
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 100),
-              height: height,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  color: widget.disabled
-                      ? Colors.white
-                      : _active
-                          ? widget.activeColor ?? Colors.green
-                          : widget.inActiveColor ?? Colors.grey.shade900,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      blurRadius: 8,
-                      spreadRadius: 0,
-                      offset: const Offset(0, 5),
-                    ),
-                  ]),
-              width: width,
-              child: Stack(
-                alignment: Alignment.center,
-                clipBehavior: Clip.none,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: const [
-                        Expanded(
-                            child: Text(
-                          'USER',
-                          textAlign: TextAlign.start,
-                          style: TextStyle(color: Colors.white, fontSize: 10),
-                        )),
-                        Expanded(
-                            child: Text(
-                          'ADMIN',
-                          textAlign: TextAlign.end,
-                          style: TextStyle(color: Colors.white, fontSize: 10),
-                        )),
-                      ],
-                    ),
+        offset: Offset(0, _y),
+        duration: const Duration(milliseconds: 1000),
+        child: GestureDetector(
+          onTap: () {
+            if (widget.disabled) {
+              return;
+            }
+            setState(() {
+              _active = !_active;
+            });
+            if (widget.onChanged != null) {
+              widget.onChanged!(_active);
+            }
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 100),
+            height: height,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                color: widget.disabled
+                    ? Colors.white
+                    : _active
+                        ? widget.activeColor ?? Colors.green
+                        : widget.inActiveColor ?? Colors.grey.shade900,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 8,
+                    spreadRadius: 0,
+                    offset: const Offset(0, 5),
                   ),
-                  AnimatedAlign(
+                ]),
+            width: width,
+            child: Stack(
+              alignment: Alignment.center,
+              clipBehavior: Clip.none,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: const [
+                      Expanded(
+                          child: Text(
+                        'USER',
+                        textAlign: TextAlign.start,
+                        style: TextStyle(color: Colors.white, fontSize: 10),
+                      )),
+                      Expanded(
+                          child: Text(
+                        'ADMIN',
+                        textAlign: TextAlign.end,
+                        style: TextStyle(color: Colors.white, fontSize: 10),
+                      )),
+                    ],
+                  ),
+                ),
+                AnimatedAlign(
+                  duration: const Duration(milliseconds: 300),
+                  alignment:
+                      _active ? Alignment.centerLeft : Alignment.centerRight,
+                  child: AnimatedContainer(
                     duration: const Duration(milliseconds: 300),
-                    alignment:
-                        _active ? Alignment.centerLeft : Alignment.centerRight,
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      height: double.infinity,
-                      width: _active ? width / 1.9 : width / 1.7,
-                      child: Card(
-                        color: Colors.grey.shade100,
-                        clipBehavior: Clip.none,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
+                    height: double.infinity,
+                    width: _active ? width / 1.9 : width / 1.7,
+                    child: Card(
+                      color: Colors.grey.shade100,
+                      clipBehavior: Clip.none,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
                       ),
                     ),
-                  )
-                ],
-              ),
+                  ),
+                ),
+              ],
             ),
-          )),
+          ),
+        ),
+      ),
     );
   }
 }

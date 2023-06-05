@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:noted_mobile/components/groups/modal/create_group.dart';
 import 'package:noted_mobile/components/groups/card/group_card.dart';
 import 'package:noted_mobile/data/models/group/group.dart';
@@ -26,7 +25,6 @@ class AppNavigationBar extends StatelessWidget {
       ),
       backgroundColor: Colors.white,
       leading: Material(
-        // color: Colors.transparent,
         child: IconButton(
           padding: EdgeInsets.zero,
           iconSize: 32,
@@ -35,7 +33,6 @@ class AppNavigationBar extends StatelessWidget {
             color: Colors.grey.shade900,
           ),
           onPressed: () {
-            // ZoomDrawer.of(context)!.toggle();
             Scaffold.of(context).openDrawer();
           },
         ),

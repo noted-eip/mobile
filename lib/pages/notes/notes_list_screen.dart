@@ -2,14 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
-import 'package:noted_mobile/components/common/base_container.dart';
-import 'package:noted_mobile/components/groups/card/group_card.dart';
 import 'package:noted_mobile/components/notes/note_card_widget.dart';
-import 'package:noted_mobile/components/notes/notes_list_widget.dart';
-import 'package:noted_mobile/data/models/group/group.dart';
 import 'package:noted_mobile/data/models/note/note.dart';
-import 'package:noted_mobile/data/providers/group_provider.dart';
 import 'package:noted_mobile/data/providers/note_provider.dart';
 import 'package:noted_mobile/pages/groups/groups_list_screen.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
@@ -45,7 +39,6 @@ class _LatestsFilesListState extends ConsumerState<LatestsFilesList> {
 
   @override
   Widget build(BuildContext context) {
-    // final AsyncValue<List<Group>?> groups = ref.watch(groupsProvider);
     final AsyncValue<List<Note>?> notes = ref.watch(notesProvider);
 
     return Scaffold(
@@ -84,7 +77,6 @@ class _LatestsFilesListState extends ConsumerState<LatestsFilesList> {
                         color: Colors.grey.shade900,
                       ),
                       onPressed: () {
-                        // ZoomDrawer.of(context)!.toggle();
                         Scaffold.of(context).openDrawer();
                       },
                     ),
@@ -272,31 +264,3 @@ class _LatestsFilesListState extends ConsumerState<LatestsFilesList> {
     );
   }
 }
-
-//   @override
-//   Widget build(BuildContext context) {
-    
-//     return BaseContainer(
-//       titleWidget: const Text(
-//         "My Notes",
-//       ),
-//       body: Padding(
-//         padding: const EdgeInsets.only(top: 0, left: 20, right: 20, bottom: 20),
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.start,
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           mainAxisSize: MainAxisSize.min,
-//           children: const [
-//             Expanded(
-//               child: NotesList(
-//                 isRefresh: true,
-//                 title: null,
-//                 isNotePage: true,
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }

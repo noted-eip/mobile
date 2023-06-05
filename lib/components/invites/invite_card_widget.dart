@@ -7,7 +7,6 @@ import 'package:noted_mobile/data/models/invite/invite.dart';
 import 'package:noted_mobile/data/providers/account_provider.dart';
 import 'package:noted_mobile/data/providers/group_provider.dart';
 import 'package:noted_mobile/data/providers/invite_provider.dart';
-import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:noted_mobile/utils/string_extension.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -30,9 +29,16 @@ class InviteCard extends ConsumerStatefulWidget {
 }
 
 class _InviteCardState extends ConsumerState<InviteCard> {
-  Future<bool> acceptInvite(String tkn, String inviteId) async {
+  Future<bool> acceptInvite(
+      {required String inviteId, required String? groupId}) async {
+    if (groupId == null) {
+      return false;
+    }
+
     try {
-      await ref.read(inviteClientProvider).acceptInvite(inviteId, tkn);
+      await ref
+          .read(inviteClientProvider)
+          .acceptInvite(inviteId: inviteId, groupId: groupId);
       if (mounted) {
         CustomToast.show(
           message: "Invite accepted",
@@ -55,9 +61,16 @@ class _InviteCardState extends ConsumerState<InviteCard> {
     }
   }
 
-  Future<bool> declineInvite(String tkn, String inviteId) async {
+  Future<bool> declineInvite(
+      {required String inviteId, required String? groupId}) async {
+    if (groupId == null) {
+      return false;
+    }
+
     try {
-      await ref.read(inviteClientProvider).denyInvite(inviteId, tkn);
+      await ref
+          .read(inviteClientProvider)
+          .denyInvite(inviteId: inviteId, groupId: groupId);
       if (mounted) {
         CustomToast.show(
           message: "Invite declined",
@@ -80,9 +93,15 @@ class _InviteCardState extends ConsumerState<InviteCard> {
     }
   }
 
-  Future<bool> revokeInvite(String tkn, String inviteId) async {
+  Future<bool> revokeInvite(
+      {required String inviteId, required String? groupId}) async {
+    if (groupId == null) {
+      return false;
+    }
     try {
-      await ref.read(inviteClientProvider).revokeInvite(inviteId, tkn);
+      await ref
+          .read(inviteClientProvider)
+          .revokeInvite(inviteId: inviteId, groupId: groupId);
       if (mounted) {
         CustomToast.show(
           message: "Invite revoked",
@@ -131,13 +150,11 @@ class _InviteCardState extends ConsumerState<InviteCard> {
 
   @override
   Widget build(BuildContext context) {
-    final userTkn = ref.read(userProvider).token;
-
     final bool isPendingGroupInvites =
         widget.isInGroup != null && widget.isInGroup!;
 
-    if (!isPendingGroupInvites) {
-      final group = ref.watch(groupProvider(widget.invite.group_id));
+    if (!isPendingGroupInvites && widget.invite.group_id != null) {
+      final group = ref.watch(groupProvider(widget.invite.group_id!));
       group.when(data: (group) {
         if (group == null) {
           setState(() {
@@ -275,8 +292,13 @@ class _InviteCardState extends ConsumerState<InviteCard> {
       ),
       actions: widget.isSentInvite
           ? [
-              ActionSlidable(Icons.cancel_schedule_send, Colors.grey,
-                  () async => revokeInvite(userTkn, widget.invite.id)),
+              ActionSlidable(
+                  Icons.cancel_schedule_send,
+                  Colors.grey,
+                  () async => revokeInvite(
+                          inviteId: widget.invite.id,
+                          groupId: widget.invite.group_id)
+                      .then((value) => invalidateInvites(widget.isSentInvite))),
             ]
           //  null
 
@@ -285,7 +307,10 @@ class _InviteCardState extends ConsumerState<InviteCard> {
                 Icons.check,
                 Colors.green,
                 () async {
-                  if (await acceptInvite(userTkn, widget.invite.id)) {
+                  if (await acceptInvite(
+                    inviteId: widget.invite.id,
+                    groupId: widget.invite.group_id,
+                  )) {
                     invalidateInvites(widget.isSentInvite);
                   }
                 },
@@ -294,7 +319,10 @@ class _InviteCardState extends ConsumerState<InviteCard> {
                 Icons.close,
                 Colors.red,
                 () async {
-                  if (await declineInvite(userTkn, widget.invite.id)) {
+                  if (await declineInvite(
+                    inviteId: widget.invite.id,
+                    groupId: widget.invite.group_id,
+                  )) {
                     invalidateInvites(widget.isSentInvite);
                   }
                 },

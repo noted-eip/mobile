@@ -8,8 +8,6 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:noted_mobile/utils/format_helper.dart';
 import 'package:openapi/openapi.dart';
 
-part 'group_data.g.dart';
-
 @JsonSerializable()
 class GroupData {
   const GroupData({
@@ -20,11 +18,11 @@ class GroupData {
     this.workspaceAccountId,
     required this.avatarUrl,
     this.modifiedAt,
-    // this.conversations,
-    // this.invites,
-    // this.inviteLinks,
-    // this.members,
-    // this.activities,
+    this.conversations,
+    this.invites,
+    this.inviteLinks,
+    this.members,
+    this.activities,
   });
 
   final String id;
@@ -34,11 +32,11 @@ class GroupData {
   final String avatarUrl;
   final DateTime createdAt;
   final DateTime? modifiedAt;
-  // final List<V1GroupConversation>? conversations;
-  // final List<V1GroupInvite>? invites;
-  // final List<V1GroupInviteLink>? inviteLinks;
-  // final List<V1GroupActivity>? activities;
-  // final List<V1GroupMember>? members;
+  final List<V1GroupConversation>? conversations;
+  final List<V1GroupInvite>? invites;
+  final List<V1GroupInviteLink>? inviteLinks;
+  final List<V1GroupActivity>? activities;
+  final List<V1GroupMember>? members;
 
   factory GroupData.fromRawJson(String str) =>
       GroupData.fromJson(json.decode(str));
@@ -56,11 +54,11 @@ class GroupData {
           ? formatStringToDateTime(json["modified_at"])
           : null,
       workspaceAccountId: json["workspace_account_id"] ?? "",
-      // conversations: null,
-      // invites: [],
-      // inviteLinks: [],
-      // activities: [],
-      // members: [],
+      conversations: null,
+      invites: [],
+      inviteLinks: [],
+      activities: [],
+      members: [],
     );
   }
 
@@ -74,21 +72,21 @@ class GroupData {
       createdAt: apiGroup.createdAt,
       modifiedAt: apiGroup.modifiedAt,
       workspaceAccountId: apiGroup.workspaceAccountId,
-      // conversations: apiGroup.conversations == null
-      //     ? []
-      //     : apiGroup.conversations!.map((e) => e).toList(),
-      // invites: apiGroup.invites == null
-      //     ? []
-      //     : apiGroup.invites!.map((e) => e).toList(),
-      // inviteLinks: apiGroup.inviteLinks == null
-      //     ? []
-      //     : apiGroup.inviteLinks!.map((e) => e).toList(),
-      // activities: apiGroup.activities == null
-      //     ? []
-      //     : apiGroup.activities!.map((e) => e).toList(),
-      // members: apiGroup.members == null
-      //     ? []
-      //     : apiGroup.members!.map((e) => e).toList(),
+      conversations: apiGroup.conversations == null
+          ? []
+          : apiGroup.conversations!.map((e) => e).toList(),
+      invites: apiGroup.invites == null
+          ? []
+          : apiGroup.invites!.map((e) => e).toList(),
+      inviteLinks: apiGroup.inviteLinks == null
+          ? []
+          : apiGroup.inviteLinks!.map((e) => e).toList(),
+      activities: apiGroup.activities == null
+          ? []
+          : apiGroup.activities!.map((e) => e).toList(),
+      members: apiGroup.members == null
+          ? []
+          : apiGroup.members!.map((e) => e).toList(),
     );
   }
 

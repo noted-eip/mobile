@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:async';
 
-import 'package:noted_mobile/components/common/custom_switch.dart';
 import 'package:noted_mobile/components/common/custom_toast.dart';
 import 'package:noted_mobile/components/common/loading_button.dart';
 import 'package:noted_mobile/components/invites/pending_invite.dart';
@@ -162,21 +161,12 @@ class InviteMemberWidget extends ConsumerStatefulWidget {
 }
 
 class _InviteMemberState extends ConsumerState<InviteMemberWidget> {
-  String role = "user";
   bool isValidEmailAdress = false;
   String? recipientId;
   final RoundedLoadingButtonController btnController =
       RoundedLoadingButtonController();
 
-  void setRole(String newRole) {
-    setState(() {
-      role = newRole;
-    });
-  }
-
   void sendInvite() async {
-    final user = ref.read(userProvider);
-
     if (recipientId == null || !isValidEmailAdress) {
       btnController.error();
       Timer(const Duration(seconds: 2), () {
@@ -187,9 +177,8 @@ class _InviteMemberState extends ConsumerState<InviteMemberWidget> {
 
     try {
       Invite? invite = await ref.read(inviteClientProvider).sendInvite(
-            widget.groupId,
-            recipientId!,
-            user.token,
+            groupId: widget.groupId,
+            recipientId: recipientId!,
           );
 
       if (invite != null) {
@@ -246,26 +235,25 @@ class _InviteMemberState extends ConsumerState<InviteMemberWidget> {
                   },
                 ),
                 const SizedBox(
-                  height: 32,
+                  height: 48,
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text("Choose member role :"),
-                    CustomSwitch(
-                      onChanged: (bool value) {
-                        if (value) {
-                          setRole("admin");
-                        } else {
-                          setRole("user");
-                        }
-                      },
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 32,
-                ),
+                // Edit role
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //   children: [
+                //     const Text("Choose member role :"),
+                //     CustomSwitch(
+                //       onChanged: (bool value) {
+                //         setState(() {
+                //           isAdmin = value;
+                //         });
+                //       },
+                //     ),
+                //   ],
+                // ),
+                // const SizedBox(
+                //   height: 32,
+                // ),
                 LoadingButton(
                   btnController: btnController,
                   color: isValidEmailAdress

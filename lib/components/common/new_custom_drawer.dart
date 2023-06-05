@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_zoom_drawer/config.dart';
-import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:noted_mobile/pages/groups/groups_list_screen.dart';
 import 'package:noted_mobile/pages/notes/notes_list_screen.dart';
@@ -156,6 +154,8 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                 prefs!.remove('name');
                 prefs!.remove('id');
 
+                ref.read(mainScreenProvider).setItem(MyMenuItems.home);
+
                 Navigator.pushNamedAndRemoveUntil(
                     context, '/login', (r) => false);
               },
@@ -168,70 +168,6 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
     );
 
     return drawer;
-
-    // return Scaffold(
-    //   backgroundColor: Colors.grey[900],
-    //   body: SafeArea(
-    //     child: Column(
-    //       mainAxisAlignment: MainAxisAlignment.spaceAround,
-    //       children: [
-    //         Column(
-    //           children: [
-    //             Container(
-    //               padding: const EdgeInsets.all(10),
-    //               decoration: BoxDecoration(
-    //                 borderRadius: BorderRadius.circular(100),
-    //                 border: Border.all(width: 5, color: Colors.white),
-    //                 color: Colors.white,
-    //                 boxShadow: const [
-    //                   BoxShadow(
-    //                     color: Colors.black12,
-    //                     blurRadius: 20,
-    //                     offset: Offset(5, 5),
-    //                   ),
-    //                 ],
-    //               ),
-    //               child: const Image(
-    //                 image: AssetImage('./images/noted_logo.png'),
-    //                 fit: BoxFit.fill,
-    //                 height: 80.0,
-    //                 width: 80.0,
-    //               ),
-    //             ),
-    //             const SizedBox(height: 16),
-    //             const Text(
-    //               'Noted',
-    //               style: TextStyle(
-    //                   color: Colors.white,
-    //                   fontSize: 30,
-    //                   fontWeight: FontWeight.bold),
-    //             ),
-    //           ],
-    //         ),
-    //         Column(
-    //           children: [
-    //             ...MyMenuItems.all.map(_buildMenuItem).toList(),
-    //           ],
-    //         ),
-    //         ListTile(
-    //           iconColor: Colors.white,
-    //           textColor: Colors.white,
-    //           onTap: () {
-    //             prefs!.remove('token');
-    //             prefs!.remove('email');
-    //             prefs!.remove('name');
-    //             prefs!.remove('id');
-
-    //             Navigator.pushNamedAndRemoveUntil(
-    //                 context, '/login', (r) => false);
-    //           },
-    //           leading: const Icon(Icons.logout),
-    //           title: const Text("Logout"),
-    //         ),
-    //       ],
-    //     ),
-    //   ),
-    // );
   }
 
   Widget _buildMenuItem(MyMenuItem item) => ListTile(

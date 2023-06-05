@@ -2,14 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/components/common/custom_slide.dart';
 import 'package:noted_mobile/data/models/account/account.dart';
-import 'package:noted_mobile/data/models/group/group_data.dart';
 import 'package:noted_mobile/data/providers/account_provider.dart';
+import 'package:openapi/openapi.dart';
 
 class GroupMemberCard extends ConsumerStatefulWidget {
   const GroupMemberCard(
-      {required this.member, required this.actions, super.key});
+      {
+      // required this.member,
+      required this.memberData,
+      required this.actions,
+      super.key});
 
-  final GroupMember member;
+  // final GroupMember member;
+  final V1GroupMember memberData;
   final List<ActionSlidable> actions;
 
   @override
@@ -20,7 +25,7 @@ class GroupMemberCard extends ConsumerStatefulWidget {
 class _GroupMemberCardState extends ConsumerState<GroupMemberCard> {
   @override
   Widget build(BuildContext context) {
-    final account = ref.watch(accountProvider(widget.member.account_id));
+    final account = ref.watch(accountProvider(widget.memberData.accountId));
 
     return account.when(
       data: (account) {
@@ -48,7 +53,7 @@ class _GroupMemberCardState extends ConsumerState<GroupMemberCard> {
           color: Colors.red, borderRadius: BorderRadius.circular(16)),
       child: CustomSlide(
         title: account.data.email,
-        subtitle: widget.member.role,
+        subtitle: widget.memberData.isAdmin ? "Admin" : "User",
         avatar: account.data.name.substring(0, 1).toUpperCase(),
         actions: widget.actions,
         color: Colors.blueGrey.shade800,

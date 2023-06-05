@@ -18,8 +18,11 @@ class LoadingButton extends StatefulWidget {
     this.text,
     required this.btnController,
     this.color,
+    this.secondaryColor,
     this.width,
     this.child,
+    this.elevation,
+    this.resetDuration,
     this.animateOnTap,
   });
 
@@ -28,7 +31,10 @@ class LoadingButton extends StatefulWidget {
   final String? text;
   final bool? animateOnTap;
   final Color? color;
+  final Color? secondaryColor;
   final double? width;
+  final double? elevation;
+  final int? resetDuration;
 
   final Widget? child;
 
@@ -40,8 +46,10 @@ class _LoadingButtonState extends State<LoadingButton> {
   @override
   Widget build(BuildContext context) {
     return RoundedLoadingButton(
+      elevation: widget.elevation ?? 2,
       animateOnTap: widget.animateOnTap ?? true,
       color: widget.color ?? Colors.grey.shade900,
+      valueColor: widget.secondaryColor ?? Colors.white,
       errorColor: Colors.redAccent,
       successColor: Colors.green.shade900,
       onPressed: () async => await widget.onPressed(),
@@ -49,6 +57,8 @@ class _LoadingButtonState extends State<LoadingButton> {
       width: widget.width ?? MediaQuery.of(context).size.width,
       height: 48,
       borderRadius: 16,
+      resetAfterDuration: true,
+      resetDuration: Duration(seconds: widget.resetDuration ?? 15),
       disabledColor: widget.color != null
           ? widget.color!.withOpacity(0.5)
           : Colors.grey.shade400,

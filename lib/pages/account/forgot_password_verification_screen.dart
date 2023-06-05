@@ -1,11 +1,15 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/components/common/loading_button.dart';
+import 'package:noted_mobile/data/providers/account_provider.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:tuple/tuple.dart';
 
-class ForgotPasswordVerificationPage extends StatefulWidget {
+class ForgotPasswordVerificationPage extends ConsumerStatefulWidget {
   const ForgotPasswordVerificationPage({Key? key}) : super(key: key);
 
   @override
@@ -14,15 +18,16 @@ class ForgotPasswordVerificationPage extends StatefulWidget {
 }
 
 class ForgotPasswordVerificationPageState
-    extends State<ForgotPasswordVerificationPage> {
+    extends ConsumerState<ForgotPasswordVerificationPage> {
   final _formKey = GlobalKey<FormState>();
-  // bool _pinSuccess = false;
 
   @override
   Widget build(BuildContext context) {
     TextEditingController textEditingController = TextEditingController();
     final RoundedLoadingButtonController btnController =
         RoundedLoadingButtonController();
+
+    String accountId = ModalRoute.of(context)!.settings.arguments as String;
 
     return Scaffold(
         backgroundColor: Colors.white,
@@ -85,7 +90,7 @@ class ForgotPasswordVerificationPageState
                             autoFocus: true,
                             autoDismissKeyboard: true,
                             keyboardType: TextInputType.number,
-                            length: 6,
+                            length: 4,
                             obscureText: false,
                             animationType: AnimationType.fade,
                             pinTheme: PinTheme(
@@ -159,8 +164,10 @@ class ForgotPasswordVerificationPageState
                             btnController: btnController,
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
-                                Navigator.pushNamed(
-                                    context, '/change-password');
+                                tokenVerification(
+                                  textEditingController.text,
+                                  accountId,
+                                );
                               } else {
                                 btnController.error();
                                 resetButton(btnController);
@@ -177,5 +184,36 @@ class ForgotPasswordVerificationPageState
             ),
           ),
         ));
+  }
+
+  Future<void> tokenVerification(String token, String accountId) async {
+    try {
+      final Tuple3? resetToken = await ref
+          .read(accountClientProvider)
+          .verifyToken(token: token, accountId: accountId);
+
+      if (resetToken != null && mounted) {
+        Navigator.pushNamed(context, '/change-password', arguments: resetToken);
+      }
+    } on DioError catch (e) {
+      if (e.response!.statusCode == 400) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return ThemeHelper()
+                .alartDialog("Error", "Verification code is invalid.", context);
+          },
+        );
+      } else {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return ThemeHelper()
+                .alartDialog("Error", "Something went wrong.", context);
+          },
+        );
+      }
+      rethrow;
+    }
   }
 }

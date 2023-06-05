@@ -7,6 +7,9 @@ class CustomAlertDialog extends StatefulWidget {
     required this.content,
     required this.onConfirm,
     this.onCancel,
+    this.contentWidget,
+    this.cancelText,
+    this.confirmText,
     super.key,
   });
 
@@ -14,6 +17,9 @@ class CustomAlertDialog extends StatefulWidget {
   final String content;
   final AsyncCallback onConfirm;
   final AsyncCallback? onCancel;
+  final Widget? contentWidget;
+  final String? cancelText;
+  final String? confirmText;
 
   @override
   State<CustomAlertDialog> createState() => _CustomAlertDialogState();
@@ -29,7 +35,16 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> {
         ),
       ),
       title: Text(widget.title),
-      content: Text(widget.content),
+      content: widget.contentWidget != null
+          ? Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(widget.content),
+                const SizedBox(height: 16.0),
+                widget.contentWidget!,
+              ],
+            )
+          : Text(widget.content),
       actions: [
         TextButton(
           onPressed: () {
@@ -38,7 +53,7 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> {
               widget.onCancel!();
             }
           },
-          child: const Text("Cancel"),
+          child: Text(widget.cancelText ?? "Cancel"),
         ),
         TextButton(
           onPressed: () {
@@ -48,7 +63,7 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> {
           style: ButtonStyle(
             foregroundColor: MaterialStateProperty.all(Colors.red),
           ),
-          child: const Text("Delete"),
+          child: Text(widget.confirmText ?? "Delete"),
         ),
       ],
     );

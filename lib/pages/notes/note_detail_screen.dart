@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/components/common/base_container.dart';
+import 'package:noted_mobile/components/common/loading_button.dart';
 import 'package:noted_mobile/data/models/note/note.dart';
 import 'package:noted_mobile/data/models/note/note_block.dart';
 import 'package:noted_mobile/data/providers/note_provider.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:tuple/tuple.dart';
 
 class NoteDetail extends ConsumerStatefulWidget {
@@ -14,19 +16,24 @@ class NoteDetail extends ConsumerStatefulWidget {
 }
 
 class _NoteDetailState extends ConsumerState<NoteDetail> {
+  int numberedPoint = 1;
+
   Widget _buildBlocks(Note note) {
     List<Widget> blocks = [];
+
     if (note.blocks != null) {
-      for (var block in note.blocks!) {
-        switch (block.type) {
+      note.blocks!.asMap().forEach((key, value) {
+        Block? previousBlock = key > 0 ? note.blocks![key - 1] : null;
+
+        switch (value.type) {
           case BlockType.heading1:
             {
               blocks.add(
                 SizedBox(
                   width: double.infinity,
                   child: Text(
-                    block.text,
-                    textAlign: TextAlign.center,
+                    value.text,
+                    textAlign: TextAlign.start,
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -43,8 +50,8 @@ class _NoteDetailState extends ConsumerState<NoteDetail> {
                 SizedBox(
                   width: double.infinity,
                   child: Text(
-                    block.text,
-                    textAlign: TextAlign.center,
+                    value.text,
+                    textAlign: TextAlign.start,
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -61,8 +68,8 @@ class _NoteDetailState extends ConsumerState<NoteDetail> {
                 SizedBox(
                   width: double.infinity,
                   child: Text(
-                    block.text,
-                    textAlign: TextAlign.center,
+                    value.text,
+                    textAlign: TextAlign.start,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -73,14 +80,36 @@ class _NoteDetailState extends ConsumerState<NoteDetail> {
               blocks.add(const SizedBox(height: 12));
             }
             break;
+          case BlockType.numberPoint:
+            {
+              if (previousBlock?.type != BlockType.numberPoint) {
+                numberedPoint = 1;
+              }
 
-          default:
+              blocks.add(
+                SizedBox(
+                  width: double.infinity,
+                  child: Text(
+                    "$numberedPoint. ${value.text}",
+                    textAlign: TextAlign.start,
+                    style: const TextStyle(
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              );
+              blocks.add(const SizedBox(height: 10));
+              numberedPoint++;
+            }
+            break;
+          case BlockType.bulletPoint:
             {
               blocks.add(
                 SizedBox(
                   width: double.infinity,
                   child: Text(
-                    block.text,
+                    "• ${value.text}",
+                    textAlign: TextAlign.start,
                     style: const TextStyle(
                       fontSize: 14,
                     ),
@@ -89,8 +118,27 @@ class _NoteDetailState extends ConsumerState<NoteDetail> {
               );
               blocks.add(const SizedBox(height: 10));
             }
+            break;
+
+          default:
+            {
+              blocks.add(
+                SizedBox(
+                  width: double.infinity,
+                  child: Text(
+                    value.text,
+                    textAlign: TextAlign.start,
+                    style: const TextStyle(
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              );
+              blocks.add(const SizedBox(height: 10));
+            }
+            break;
         }
-      }
+      });
     }
 
     return SizedBox(
@@ -104,16 +152,38 @@ class _NoteDetailState extends ConsumerState<NoteDetail> {
 
   @override
   Widget build(BuildContext context) {
-    // final String noteId = ModalRoute.of(context)!.settings.arguments as String;
     final Tuple2<String, String> infos =
         ModalRoute.of(context)!.settings.arguments as Tuple2<String, String>;
-    // print("noteId: $noteId");
     final note = ref.watch(noteProvider(infos));
+
+    RoundedLoadingButtonController btnController =
+        RoundedLoadingButtonController();
 
     return Scaffold(
       body: BaseContainer(
-        titleWidget: const Text(
-          "Note Detail",
+        titleWidget: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              note.hasValue ? note.value!.title : "Note Detail",
+            ),
+            LoadingButton(
+              width: 48,
+              elevation: 0,
+              color: Colors.white,
+              secondaryColor: Colors.black,
+              btnController: btnController,
+              onPressed: () async {
+                ref.invalidate(noteProvider(infos));
+              },
+              resetDuration: 3,
+              child: const Icon(
+                Icons.refresh,
+                color: Colors.black,
+                size: 32,
+              ),
+            ),
+          ],
         ),
         body: Padding(
           padding:
@@ -132,15 +202,6 @@ class _NoteDetailState extends ConsumerState<NoteDetail> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisSize: MainAxisSize.max,
                   children: [
-                    const SizedBox(height: 16),
-                    Text(
-                      data.title,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
                     const SizedBox(height: 32),
                     _buildBlocks(data),
                   ],

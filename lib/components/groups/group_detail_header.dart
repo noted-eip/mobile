@@ -5,10 +5,10 @@ import 'package:noted_mobile/components/common/custom_alerte.dart';
 import 'package:noted_mobile/components/common/loading_button.dart';
 import 'package:noted_mobile/components/groups/modal/edit_group.dart';
 import 'package:noted_mobile/data/models/group/group.dart';
-import 'package:noted_mobile/data/models/group/group_data.dart';
 import 'package:noted_mobile/data/providers/group_provider.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:noted_mobile/utils/string_extension.dart';
+import 'package:openapi/openapi.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -61,7 +61,8 @@ class _GroupDetailHeaderState extends ConsumerState<GroupDetailHeader> {
   @override
   Widget build(BuildContext context) {
     final user = ref.read(userProvider);
-    final AsyncValue<GroupMember?> member =
+
+    final AsyncValue<V1GroupMember?> member =
         ref.watch(groupMemberProvider(widget.groupId));
     final AsyncValue<Group?> group = ref.watch(groupProvider(widget.groupId));
 
@@ -98,42 +99,89 @@ class _GroupDetailHeaderState extends ConsumerState<GroupDetailHeader> {
                   ),
                   itemBuilder: ((context) {
                     return [
-                      // if (member.value!.role == "admin")
-                      PopupMenuItem(
-                        child: TextButton(
-                          onPressed: () async {
-                            Navigator.pop(context);
-                            await openSettings(
-                              group: group,
-                              groupId: widget.groupId,
-                              ref: ref,
-                              userId: user.id,
-                              userTkn: user.token,
-                            );
-                          },
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.edit,
-                                color: Colors.grey.shade900,
-                                size: 30,
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Text(
-                                "Edit",
-                                style: TextStyle(
+                      if (member.value!.isAdmin)
+                        PopupMenuItem(
+                          child: TextButton(
+                            onPressed: () async {
+                              Navigator.pop(context);
+                              await openSettings(
+                                group: group,
+                                groupId: widget.groupId,
+                                ref: ref,
+                                userId: user.id,
+                                userTkn: user.token,
+                              );
+                            },
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.edit,
                                   color: Colors.grey.shade900,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                                  size: 30,
                                 ),
-                              ),
-                            ],
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  "Edit",
+                                  style: TextStyle(
+                                    color: Colors.grey.shade900,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      // if (member.value!.role == "admin")
+                      if (member.value!.isAdmin)
+                        PopupMenuItem(
+                          child: TextButton(
+                            onPressed: () async {
+                              final res = await showDialog(
+                                context: context,
+                                builder: ((context) {
+                                  return CustomAlertDialog(
+                                    title: "Delete Group",
+                                    content:
+                                        "Are you sure you want to delete this group?",
+                                    onConfirm: () async {
+                                      await widget.deleteGroup();
+                                    },
+                                  );
+                                }),
+                              );
+
+                              if (mounted && res == true) {
+                                await Future.delayed(
+                                    const Duration(milliseconds: 500),
+                                    (() => Navigator.of(context).pop(true)));
+                              } else {
+                                Navigator.of(context).pop();
+                              }
+                            },
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.delete,
+                                  color: Colors.grey.shade900,
+                                  size: 30,
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  "Delete",
+                                  style: TextStyle(
+                                    color: Colors.grey.shade900,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       PopupMenuItem(
                         child: TextButton(
                           onPressed: () async {
@@ -141,12 +189,13 @@ class _GroupDetailHeaderState extends ConsumerState<GroupDetailHeader> {
                               context: context,
                               builder: ((context) {
                                 return CustomAlertDialog(
-                                  title: "Delete Group",
+                                  title: "Leave the Group in header",
                                   content:
-                                      "Are you sure you want to delete this group?",
+                                      "Are you sure you want to leave this group ?",
                                   onConfirm: () async {
-                                    await widget.deleteGroup();
+                                    await widget.leaveGroup();
                                   },
+                                  confirmText: "Leave",
                                 );
                               }),
                             );
@@ -158,46 +207,6 @@ class _GroupDetailHeaderState extends ConsumerState<GroupDetailHeader> {
                             } else {
                               Navigator.of(context).pop();
                             }
-                          },
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.delete,
-                                color: Colors.grey.shade900,
-                                size: 30,
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Text(
-                                "Delete",
-                                style: TextStyle(
-                                  color: Colors.grey.shade900,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      PopupMenuItem(
-                        child: TextButton(
-                          onPressed: () async {
-                            Navigator.pop(context);
-                            await showDialog(
-                              context: context,
-                              builder: ((context) {
-                                return CustomAlertDialog(
-                                  title: "Leave the Group",
-                                  content:
-                                      "Are you sure you want to leave this group ?",
-                                  onConfirm: () async {
-                                    await widget.leaveGroup();
-                                  },
-                                );
-                              }),
-                            );
                           },
                           child: Row(
                             children: [

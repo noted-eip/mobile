@@ -1,24 +1,57 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:noted_mobile/components/common/custom_toast.dart';
 import 'package:noted_mobile/components/common/loading_button.dart';
-import 'package:noted_mobile/utils/string_extension.dart';
+import 'package:noted_mobile/data/providers/account_provider.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
-class ForgotPasswordPage extends StatefulWidget {
+class ForgotPasswordPage extends ConsumerStatefulWidget {
   const ForgotPasswordPage({Key? key}) : super(key: key);
 
   @override
-  ForgotPasswordPageState createState() => ForgotPasswordPageState();
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      ForgotPasswordPageState();
 }
 
-class ForgotPasswordPageState extends State<ForgotPasswordPage> {
+class ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
   final _formKey = GlobalKey<FormState>();
+
+  resetPassword(String email) async {
+    try {
+      final accountId = await ref
+          .read(accountClientProvider)
+          .forgetAccountPassword(email: email);
+
+      if (accountId != null && mounted) {
+        Navigator.pushReplacementNamed(
+          context,
+          '/forgot-password-verification',
+          arguments: accountId,
+        );
+      }
+    } on DioError catch (e) {
+      if (e.response != null) {
+        final error = e.response!.data['error'];
+        CustomToast.show(
+          message: error.toString(),
+          type: ToastType.error,
+          context: context,
+          gravity: ToastGravity.BOTTOM,
+        );
+      }
+      rethrow;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final RoundedLoadingButtonController btnController =
         RoundedLoadingButtonController();
+    final TextEditingController email = TextEditingController();
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
@@ -87,6 +120,7 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
                         Container(
                           decoration: ThemeHelper().inputBoxDecorationShaddow(),
                           child: TextFormField(
+                            controller: email,
                             autofocus: true,
                             decoration: ThemeHelper()
                                 .textInputDecoration(
@@ -100,9 +134,10 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             validator: (val) {
                               if (val!.isEmpty) {
                                 return "Please enter your email";
-                              } else if (!val.isEmail()) {
-                                return "Enter a valid email address";
                               }
+                              // else if (!val.isEmail()) {
+                              //   return "Enter a valid email address";
+                              // }
                               return null;
                             },
                           ),
@@ -112,8 +147,7 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
                           btnController: btnController,
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
-                              Navigator.pushReplacementNamed(
-                                  context, '/forgot-password-verification');
+                              await resetPassword(email.text);
                             } else {
                               btnController.error();
                               resetButton(btnController);

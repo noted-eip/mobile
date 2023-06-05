@@ -1,19 +1,22 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:noted_mobile/components/common/custom_toast.dart';
 import 'package:noted_mobile/components/common/loading_button.dart';
+import 'package:noted_mobile/data/providers/account_provider.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
+import 'package:tuple/tuple.dart';
 
-class ChangePasswordPage extends StatefulWidget {
+class ChangePasswordPage extends ConsumerStatefulWidget {
   const ChangePasswordPage({Key? key}) : super(key: key);
 
   @override
-  State<ChangePasswordPage> createState() => _ChangePasswordPageState();
+  ConsumerState<ChangePasswordPage> createState() => _ChangePasswordPageState();
 }
 
-class _ChangePasswordPageState extends State<ChangePasswordPage> {
+class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
   final _formKey = GlobalKey<FormState>();
 
   final List<bool> _obscureText = [true, true];
@@ -22,6 +25,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   Widget build(BuildContext context) {
     final RoundedLoadingButtonController btnController =
         RoundedLoadingButtonController();
+    Tuple3? data = ModalRoute.of(context)!.settings.arguments as Tuple3?;
 
     TextEditingController passwordController = TextEditingController();
     TextEditingController confirmPasswordController = TextEditingController();
@@ -157,7 +161,10 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                                 ),
                             validator: (val) {
                               if (val!.isEmpty) {
-                                return 'Please enter your password';
+                                return 'Please confirm your password';
+                              }
+                              if (val != passwordController.text) {
+                                return 'Password does not match';
                               }
                               return null;
                             },
@@ -168,16 +175,34 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                           btnController: btnController,
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
-                              btnController.success();
-                              CustomToast.show(
-                                message: 'Password Changed',
-                                type: ToastType.success,
-                                context: context,
-                                gravity: ToastGravity.BOTTOM,
+                              bool res = await changePassword(
+                                password: passwordController.text,
+                                resetToken: data!.item1,
+                                authToken: data.item2,
+                                accountId: data.item3,
                               );
 
-                              Navigator.pushNamedAndRemoveUntil(
-                                  context, '/login', (route) => false);
+                              if (res && mounted) {
+                                CustomToast.show(
+                                  message: 'Password Changed',
+                                  type: ToastType.success,
+                                  context: context,
+                                  gravity: ToastGravity.BOTTOM,
+                                );
+                                btnController.success();
+                                resetButton(btnController);
+                                Navigator.pushNamedAndRemoveUntil(
+                                    context, '/login', (route) => false);
+                              } else {
+                                CustomToast.show(
+                                  message: 'Password Change Failed',
+                                  type: ToastType.error,
+                                  context: context,
+                                  gravity: ToastGravity.BOTTOM,
+                                );
+                                btnController.error();
+                                resetButton(btnController);
+                              }
                             } else {
                               btnController.error();
                               resetButton(btnController);
@@ -213,5 +238,24 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         ),
       ),
     );
+  }
+
+  Future<bool> changePassword({
+    required String password,
+    required String resetToken,
+    required String authToken,
+    required String accountId,
+  }) async {
+    try {
+      final isSucces = await ref.read(accountClientProvider).resetPassword(
+            password: password,
+            accountId: accountId,
+            resetToken: resetToken,
+            authToken: authToken,
+          );
+      return isSucces;
+    } catch (e) {
+      return false;
+    }
   }
 }

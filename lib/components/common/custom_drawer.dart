@@ -62,32 +62,6 @@ class _MyCustomDrawerState extends ConsumerState<MyCustomDrawer> {
   }
 }
 
-// class MyMenuItem {
-//   final String title;
-//   final IconData icon;
-//   final Function()? onTap;
-
-//   const MyMenuItem({
-//     required this.title,
-//     required this.icon,
-//     this.onTap,
-//   });
-// }
-
-// class MyMenuItems {
-//   static const home = MyMenuItem(icon: Icons.home, title: 'Home');
-//   static const groups = MyMenuItem(icon: Icons.group, title: 'My Groups');
-//   static const notes = MyMenuItem(icon: Icons.description, title: 'My Notes');
-//   static const profil = MyMenuItem(icon: Icons.person, title: 'Profile');
-
-//   static const all = <MyMenuItem>[
-//     home,
-//     groups,
-//     notes,
-//     profil,
-//   ];
-// }
-
 class MenuScreen extends ConsumerStatefulWidget {
   const MenuScreen(
       {Key? key, required this.currentItem, required this.onSelected})

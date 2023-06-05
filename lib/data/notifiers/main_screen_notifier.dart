@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:noted_mobile/components/common/custom_drawer.dart';
 import 'package:noted_mobile/components/common/new_custom_drawer.dart';
 
 class MainScreenNotifier extends ChangeNotifier {

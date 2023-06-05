@@ -1,4 +1,5 @@
 import 'package:noted_mobile/data/models/note/note_block.dart';
+import 'package:openapi/openapi.dart';
 
 class Note {
   String id;
@@ -21,29 +22,44 @@ class Note {
     this.modifiedAt,
   });
 
-  factory Note.fromJson(Map<String, dynamic> json) {
+  factory Note.fromApi(V1Note note) {
     return Note(
-      id: json['id'] ?? '',
-      authorId: json['authorAccountId'] ?? '',
-      title: json['title'] ?? '',
-      groupId: json['groupId'] ?? '',
-      createdAt:
-          json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
-      modifiedAt: json['modifiedAt'] != null
-          ? DateTime.parse(json['modifiedAt'])
-          : null,
-      analysedAt: json['analysedAt'] != null
-          ? DateTime.parse(json['analysedAt'])
-          : null,
-      blocks: json['blocks'] == null
+      id: note.id,
+      authorId: note.authorAccountId,
+      title: note.title,
+      groupId: note.groupId,
+      createdAt: note.createdAt,
+      modifiedAt: note.modifiedAt,
+      analysedAt: note.analyzedAt,
+      blocks: note.blocks == null
           ? null
-          : List<Block>.from(
-              json['blocks'].map(
-                (block) => Block.fromJson(block),
-              ),
-            ),
+          : note.blocks!.map((e) => Block.fromApi(e)).toList(),
     );
   }
+
+  // factory Note.fromJson(Map<String, dynamic> json) {
+  //   return Note(
+  //     id: json['id'] ?? '',
+  //     authorId: json['authorAccountId'] ?? '',
+  //     title: json['title'] ?? '',
+  //     groupId: json['groupId'] ?? '',
+  //     createdAt:
+  //         json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
+  //     modifiedAt: json['modifiedAt'] != null
+  //         ? DateTime.parse(json['modifiedAt'])
+  //         : null,
+  //     analysedAt: json['analysedAt'] != null
+  //         ? DateTime.parse(json['analysedAt'])
+  //         : null,
+  //     blocks: json['blocks'] == null
+  //         ? null
+  //         : List<Block>.from(
+  //             json['blocks'].map(
+  //               (block) => Block.fromJson(block),
+  //             ),
+  //           ),
+  //   );
+  // }
 
   Map<String, dynamic> toJson() {
     return {

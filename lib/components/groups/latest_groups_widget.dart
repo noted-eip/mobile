@@ -57,6 +57,8 @@ class _LatestsGroupsState extends ConsumerState<LatestsGroups> {
                       childAspectRatio: 1,
                     ),
                     itemBuilder: (context, index) {
+                      print(index);
+
                       if (index < groups.length) {
                         return GroupCard(
                           groupName: groups[index].data.name,
@@ -80,7 +82,6 @@ class _LatestsGroupsState extends ConsumerState<LatestsGroups> {
                             ref
                                 .read(mainScreenProvider)
                                 .setItem(MyMenuItems.groups);
-                            // Navigator.pushNamed(context, '/groups');
                           },
                         );
                       }

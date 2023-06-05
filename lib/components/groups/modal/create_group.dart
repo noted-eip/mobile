@@ -111,6 +111,7 @@ class _CreateGroupModalState extends ConsumerState<CreateGroupModal> {
     final user = ref.read(userProvider);
 
     return CustomModal(
+      height: 0.9,
       onClose: (context) => Navigator.pop(context, false),
       child: Column(
         children: [

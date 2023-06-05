@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 
 class BaseContainer extends StatelessWidget {
   const BaseContainer({
@@ -53,14 +52,8 @@ class BaseContainer extends StatelessWidget {
                         Navigator.canPop(context)) {
                       Navigator.pop(context, false);
                     } else {
-                      ZoomDrawer.of(context)!.toggle();
+                      Scaffold.of(context).openDrawer();
                     }
-
-                    // if (Navigator.canPop(context)) {
-                    //   Navigator.pop(context, false);
-                    // } else {
-                    //   ZoomDrawer.of(context)!.toggle();
-                    // }
                   },
                 ),
               ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:noted_mobile/components/groups/card/group_card.dart';
 import 'package:noted_mobile/components/notes/note_card_widget.dart';
 import 'package:noted_mobile/data/models/group/group.dart';
 import 'package:noted_mobile/data/models/note/note.dart';
@@ -192,37 +191,13 @@ class _NotesListState extends ConsumerState<NotesList> {
           //       ),
           //     ),
           //   ),
-          if (!widget.isNotePage)
-            if (isRefresh)
-              Expanded(
-                child: RefreshIndicator(
-                  displacement: 0,
-                  onRefresh: () async {
-                    ref.invalidate(notesProvider);
-                  },
-                  child: ListView.builder(
-                    padding: EdgeInsets.zero,
-                    itemBuilder: (context, index) {
-                      Note note = notes[index];
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 16),
-                        child: NoteCard(
-                          note: note,
-                          baseColor: Colors.white,
-                          onTap: () {
-                            Navigator.pushNamed(context, '/note-detail',
-                                arguments: Tuple2(note.id, note.groupId));
-                          },
-                        ),
-                      );
-                    },
-                    itemCount: notes.length,
-                  ),
-                ),
-              ),
-          if (!widget.isNotePage)
-            if (!isRefresh)
-              Expanded(
+          if (!widget.isNotePage && isRefresh)
+            Expanded(
+              child: RefreshIndicator(
+                displacement: 0,
+                onRefresh: () async {
+                  ref.invalidate(notesProvider);
+                },
                 child: ListView.builder(
                   padding: EdgeInsets.zero,
                   itemBuilder: (context, index) {
@@ -242,6 +217,40 @@ class _NotesListState extends ConsumerState<NotesList> {
                   itemCount: notes.length,
                 ),
               ),
+            ),
+          if (!widget.isNotePage && !isRefresh && notes.isNotEmpty)
+            Expanded(
+              child: ListView.builder(
+                padding: EdgeInsets.zero,
+                itemBuilder: (context, index) {
+                  Note note = notes[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: NoteCard(
+                      note: note,
+                      baseColor: Colors.white,
+                      onTap: () {
+                        Navigator.pushNamed(context, '/note-detail',
+                            arguments: Tuple2(note.id, note.groupId));
+                      },
+                    ),
+                  );
+                },
+                itemCount: notes.length,
+              ),
+            ),
+          if (!widget.isNotePage && !isRefresh && notes.isEmpty)
+            Expanded(
+              child: Center(
+                child: Text(
+                  'You don\'t have any notes yet',
+                  style: TextStyle(
+                    color: Colors.grey.shade700,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -313,6 +322,10 @@ class _NotesListState extends ConsumerState<NotesList> {
       return buildLoading(false);
     }
 
+    if (widget.groupId != null) {
+      return buildListByGroup(widget.groupId!);
+    }
+
     final notes = ref.watch(notesProvider);
 
     return notes.when(
@@ -330,5 +343,78 @@ class _NotesListState extends ConsumerState<NotesList> {
         return buildLoading(widget.isRefresh!);
       },
     );
+  }
+
+  Widget buildListByGroup(String groupId) {
+    final notes = ref.watch(groupNotesProvider(groupId));
+
+    return notes.when(
+      data: (data) {
+        if (data == null) {
+          return buildLoading(widget.isRefresh!);
+        }
+        return RefreshIndicator(
+          displacement: 0,
+          onRefresh: () async {
+            ref.invalidate(groupNotesProvider(groupId));
+          },
+          child: ListView.builder(
+            padding: EdgeInsets.zero,
+            itemBuilder: (context, index) {
+              Note note = data[index];
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: NoteCard(
+                  note: note,
+                  baseColor: Colors.white,
+                  onTap: () {
+                    Navigator.pushNamed(context, '/note-detail',
+                        arguments: Tuple2(note.id, note.groupId));
+                  },
+                ),
+              );
+            },
+            itemCount: data.length,
+          ),
+        );
+      },
+      error: (error, stackTrace) => Text(error.toString()),
+      loading: () => buildLoading(widget.isRefresh!),
+    );
+
+    // return Column(
+    //   crossAxisAlignment: CrossAxisAlignment.start,
+    //   mainAxisAlignment: MainAxisAlignment.start,
+    //   children: [
+
+    //     if (!widget.isNotePage)
+    //       if (isRefresh)
+    //         Expanded(
+    //           child:
+    //         ),
+    //     if (!widget.isNotePage)
+    //       if (!isRefresh)
+    //         Expanded(
+    //           child: ListView.builder(
+    //             padding: EdgeInsets.zero,
+    //             itemBuilder: (context, index) {
+    //               Note note = notes[index];
+    //               return Padding(
+    //                 padding: const EdgeInsets.only(bottom: 16),
+    //                 child: NoteCard(
+    //                   note: note,
+    //                   baseColor: Colors.white,
+    //                   onTap: () {
+    //                     Navigator.pushNamed(context, '/note-detail',
+    //                         arguments: Tuple2(note.id, note.groupId));
+    //                   },
+    //                 ),
+    //               );
+    //             },
+    //             itemCount: notes.length,
+    //           ),
+    //         ),
+    //   ],
+    // );
   }
 }

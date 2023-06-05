@@ -32,8 +32,16 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
   }) {
     return invites.when(data: ((data) {
       if (data == null) {
-        return const Center(
-          child: Text("No invitations chh"),
+        return RefreshIndicator(
+          onRefresh: () async {
+            invalidateInvites(isSentInvite);
+          },
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: const [
+              Center(child: Text("No invitations found")),
+            ],
+          ),
         );
       }
 
@@ -45,7 +53,7 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
           child: ListView(
             padding: EdgeInsets.zero,
             children: const [
-              Center(child: Text("No invitations")),
+              Center(child: Text("No invitations found")),
             ],
           ),
         );

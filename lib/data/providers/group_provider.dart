@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/data/clients/group_client.dart';
 import 'package:noted_mobile/data/models/group/group.dart';
-import 'package:noted_mobile/data/models/group/group_data.dart';
 // import 'package:noted_mobile/data/providers/utils/cache_timeout.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
+import 'package:openapi/openapi.dart';
 
 final groupClientProvider =
     Provider<GroupClient>((ref) => GroupClient(ref: ref));
@@ -31,7 +31,6 @@ final searchProvider = StateProvider((ref) => '');
 
 final latestGroupsProvider = FutureProvider<List<Group>?>((ref) async {
   final account = ref.watch(userProvider);
-  print("account.id: ${account.id}");
   final grouplist = await ref
       .watch(groupClientProvider)
       .listGroups(accountId: account.id, offset: 0, limit: 2);
@@ -48,19 +47,8 @@ final groupProvider =
   return group;
 });
 
-final groupMembersProvider =
-    FutureProvider.family<List<GroupMember>?, String>((ref, groupId) async {
-  final account = ref.watch(userProvider);
-  final groupMembers = await ref
-      .watch(groupClientProvider)
-      .listGroupMembers(groupId, account.token);
-
-  // cacheTimeout(ref, 'fetchGroupMembers $groupId');
-  return groupMembers;
-});
-
 final groupMemberProvider =
-    FutureProvider.family<GroupMember?, String>((ref, groupId) async {
+    FutureProvider.family<V1GroupMember?, String>((ref, groupId) async {
   final account = ref.watch(userProvider);
   final user = ref.watch(userProvider);
 
