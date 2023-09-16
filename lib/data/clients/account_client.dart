@@ -88,10 +88,10 @@ class AccountClient {
           response.data!.account.id);
     } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
-      print("error : $error");
-      print("error : ${e.response!.data}");
-      print("error : ${e.response!.statusCode}");
       if (kDebugMode) {
+        print("error : $error");
+        print("error : ${e.response!.data}");
+        print("error : ${e.response!.statusCode}");
         print(
             "Exception when calling DefaultApi->accountsAPIVerifyToken: $error\n");
       }

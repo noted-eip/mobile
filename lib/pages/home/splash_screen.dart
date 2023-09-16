@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/data/clients/tracker_client.dart';
@@ -64,26 +63,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // final user = ref.read(userProvider);
-    // if (_isLogged) {
-    //   Future.delayed(Duration.zero, () {
-    //     user.setToken(prefs?.getString('token') ?? '');
-    //     user.setName(
-    //       prefs?.getString('name') ?? '',
-    //     );
-    //     user.setEmail(
-    //       prefs?.getString('email') ?? '',
-    //     );
-    //     user.setID(
-    //       prefs?.getString('id') ?? '',
-    //     );
-    //   });
-    // }
-    FirebaseAnalytics analyctics = ref.read(analyticsProvider);
-
-    print("Splash Screen ");
-
-    analyctics.logAppOpen();
     return Scaffold(
       body: Container(
         color: Theme.of(context).colorScheme.secondary,

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
 
@@ -6,8 +7,9 @@ class TrackerService {
   TrackerService({required this.ref});
 
   Future<void> trackPage(TrackPage page) async {
-    print("Tracking page: ${page.name}");
-    // await ref.read(analyticsProvider).setCurrentScreen(screenName: page.name);
+    if (kDebugMode) {
+      print("Tracking page: ${page.name}");
+    }
     await ref.read(analyticsProvider).logEvent(
           name: page.name,
         );

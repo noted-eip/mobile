@@ -24,6 +24,8 @@ import 'package:rounded_loading_button/rounded_loading_button.dart';
 // Voir pour refaire le design de la page
 //TODO: add NestedScrollView
 
+//TODO: add workspace gestion
+
 class GroupDetailPage extends ConsumerStatefulWidget {
   const GroupDetailPage({super.key, this.groupId});
 
@@ -188,8 +190,11 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
           data: ((data) {
             if (data != null) {
               bool isWorkspace = data.data.workspaceAccountId != null;
-              print(data.data.workspaceAccountId);
-              print(data.data.id);
+              if (kDebugMode) {
+                print(isWorkspace);
+                print(data.data.workspaceAccountId);
+                print(data.data.id);
+              }
               return SingleChildScrollView(
                 child: SizedBox(
                   height: MediaQuery.of(context).size.height,
@@ -208,12 +213,12 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
                             children: [
                               TabBar(
                                 indicatorColor: Colors.grey.shade900,
-                                tabs: [
-                                  const Tab(
+                                tabs: const [
+                                  Tab(
                                     text: "Notes",
                                   ),
                                   // if (!isWorkspace)
-                                  const Tab(
+                                  Tab(
                                     text: "Members",
                                   ),
                                 ],

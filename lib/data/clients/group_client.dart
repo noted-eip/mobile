@@ -227,6 +227,7 @@ class GroupClient {
       }
       // throw Failure(message: error);
     }
+    return null;
   }
 
   Future<V1GroupMember?> updateGroupMember(
