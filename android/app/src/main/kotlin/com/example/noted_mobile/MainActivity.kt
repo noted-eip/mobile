@@ -1,4 +1,4 @@
-package com.example.noted_mobile
+package com.noted.notedApp
 
 import io.flutter.embedding.android.FlutterActivity
 

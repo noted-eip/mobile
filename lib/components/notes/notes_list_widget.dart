@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/components/notes/note_card_widget.dart';
+import 'package:noted_mobile/data/clients/tracker_client.dart';
 import 'package:noted_mobile/data/models/group/group.dart';
 import 'package:noted_mobile/data/models/note/note.dart';
 import 'package:noted_mobile/data/providers/group_provider.dart';
 import 'package:noted_mobile/data/providers/note_provider.dart';
+import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:tuple/tuple.dart';
 
@@ -145,6 +147,7 @@ class _NotesListState extends ConsumerState<NotesList> {
                     note: note,
                     baseColor: Colors.white,
                     onTap: () {
+                      ref.read(trackerProvider).trackPage(TrackPage.noteDetail);
                       Navigator.pushNamed(context, '/note-detail',
                           arguments: Tuple2(note.id, note.groupId));
                     },
@@ -208,6 +211,9 @@ class _NotesListState extends ConsumerState<NotesList> {
                         note: note,
                         baseColor: Colors.white,
                         onTap: () {
+                          ref
+                              .read(trackerProvider)
+                              .trackPage(TrackPage.noteDetail);
                           Navigator.pushNamed(context, '/note-detail',
                               arguments: Tuple2(note.id, note.groupId));
                         },
@@ -230,6 +236,9 @@ class _NotesListState extends ConsumerState<NotesList> {
                       note: note,
                       baseColor: Colors.white,
                       onTap: () {
+                        ref
+                            .read(trackerProvider)
+                            .trackPage(TrackPage.noteDetail);
                         Navigator.pushNamed(context, '/note-detail',
                             arguments: Tuple2(note.id, note.groupId));
                       },
@@ -368,6 +377,7 @@ class _NotesListState extends ConsumerState<NotesList> {
                   note: note,
                   baseColor: Colors.white,
                   onTap: () {
+                    ref.read(trackerProvider).trackPage(TrackPage.noteDetail);
                     Navigator.pushNamed(context, '/note-detail',
                         arguments: Tuple2(note.id, note.groupId));
                   },

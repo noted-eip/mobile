@@ -5,7 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:noted_mobile/components/common/custom_toast.dart';
 import 'package:noted_mobile/components/common/loading_button.dart';
+import 'package:noted_mobile/data/clients/tracker_client.dart';
 import 'package:noted_mobile/data/providers/account_provider.dart';
+import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
@@ -27,13 +29,17 @@ class ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
           .forgetAccountPassword(email: email);
 
       if (accountId != null && mounted) {
+        ref
+            .read(trackerProvider)
+            .trackPage(TrackPage.forgotPasswordVerification);
+
         Navigator.pushReplacementNamed(
           context,
           '/forgot-password-verification',
           arguments: accountId,
         );
       }
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       if (e.response != null) {
         final error = e.response!.data['error'];
         CustomToast.show(
@@ -164,6 +170,10 @@ class ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                                 text: 'Login',
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () {
+                                    ref
+                                        .read(trackerProvider)
+                                        .trackPage(TrackPage.login);
+
                                     Navigator.pushNamedAndRemoveUntil(
                                         context, '/login', (route) => false);
                                   },

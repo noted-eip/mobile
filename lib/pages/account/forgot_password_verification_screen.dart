@@ -3,7 +3,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/components/common/loading_button.dart';
+import 'package:noted_mobile/data/clients/tracker_client.dart';
 import 'package:noted_mobile/data/providers/account_provider.dart';
+import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
@@ -193,9 +195,10 @@ class ForgotPasswordVerificationPageState
           .verifyToken(token: token, accountId: accountId);
 
       if (resetToken != null && mounted) {
+        ref.read(trackerProvider).trackPage(TrackPage.changePassword);
         Navigator.pushNamed(context, '/change-password', arguments: resetToken);
       }
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       if (e.response!.statusCode == 400) {
         showDialog(
           context: context,

@@ -3,8 +3,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/components/notes/note_card_widget.dart';
+import 'package:noted_mobile/data/clients/tracker_client.dart';
 import 'package:noted_mobile/data/models/note/note.dart';
 import 'package:noted_mobile/data/providers/note_provider.dart';
+import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:noted_mobile/pages/groups/groups_list_screen.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
 import 'package:tuple/tuple.dart';
@@ -18,11 +20,6 @@ class LatestsFilesList extends ConsumerStatefulWidget {
 }
 
 class _LatestsFilesListState extends ConsumerState<LatestsFilesList> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
   Widget buildSearchBar() {
     return TextField(
       decoration: ThemeHelper().textInputDecoration('', 'Search ...').copyWith(
@@ -106,6 +103,9 @@ class _LatestsFilesListState extends ConsumerState<LatestsFilesList> {
                             if (kDebugMode) {
                               print("Send button pressed");
                             }
+                            ref
+                                .read(trackerProvider)
+                                .trackPage(TrackPage.notification);
                             Navigator.pushNamed(context, "/notif");
                           }),
                           icon: Icon(Icons.send_rounded,
@@ -197,6 +197,9 @@ class _LatestsFilesListState extends ConsumerState<LatestsFilesList> {
                                   baseColor: Colors.white,
                                   note: note,
                                   onTap: () async {
+                                    ref
+                                        .read(trackerProvider)
+                                        .trackPage(TrackPage.noteDetail);
                                     final res = await Navigator.pushNamed(
                                         context, "/note-detail",
                                         arguments:

@@ -50,7 +50,7 @@ class AccountClient {
         throw Failure(message: response.toString());
       }
       return true;
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
         print(
@@ -86,7 +86,7 @@ class AccountClient {
 
       return Tuple3(response.data!.resetToken, response.data!.authToken,
           response.data!.account.id);
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       print("error : $error");
       print("error : ${e.response!.data}");
@@ -123,7 +123,7 @@ class AccountClient {
       }
 
       return response.data!.accountId;
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
         print(
@@ -195,7 +195,7 @@ class AccountClient {
       });
 
       return true;
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
         print(
@@ -269,7 +269,7 @@ class AccountClient {
       });
 
       return true;
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
         print(
@@ -308,7 +308,7 @@ class AccountClient {
       final V1Account apiAccount = response.data!.account;
 
       return Account.fromApi(apiAccount);
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
         print(
@@ -354,7 +354,7 @@ class AccountClient {
       });
 
       return Account.fromApi(apiAccount);
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
         print(
@@ -390,7 +390,7 @@ class AccountClient {
         prefs.remove('id');
       });
       return true;
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
         print(
@@ -421,7 +421,7 @@ class AccountClient {
       final V1Account apiAccount = response.data!.account;
 
       return Account.fromApi(apiAccount);
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
         print(
@@ -453,7 +453,7 @@ class AccountClient {
       final V1Account apiAccount = response.data!.account;
 
       return Account.fromApi(apiAccount);
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
         print(

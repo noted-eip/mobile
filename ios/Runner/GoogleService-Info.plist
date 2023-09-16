@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>871625340195-b5f2qigoefr879geub7kadi3io5nf8e4.apps.googleusercontent.com</string>
+	<string>871625340195-vli3ajnounqk7u002mp2b5dahj2cmbs9.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.871625340195-b5f2qigoefr879geub7kadi3io5nf8e4</string>
+	<string>com.googleusercontent.apps.871625340195-vli3ajnounqk7u002mp2b5dahj2cmbs9</string>
 	<key>API_KEY</key>
 	<string>AIzaSyCd6Le8M6q_JcQIFScHogJvkprd3qGD1yo</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,22 +13,22 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.debugNoted.mobile</string>
+	<string>com.noted.notedmobile</string>
 	<key>PROJECT_ID</key>
 	<string>noted-354512</string>
 	<key>STORAGE_BUCKET</key>
 	<string>noted-354512.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
-	<false></false>
+	<false/>
 	<key>IS_ANALYTICS_ENABLED</key>
-	<false></false>
+	<true/>
 	<key>IS_APPINVITE_ENABLED</key>
-	<true></true>
+	<true/>
 	<key>IS_GCM_ENABLED</key>
-	<true></true>
+	<true/>
 	<key>IS_SIGNIN_ENABLED</key>
-	<true></true>
+	<true/>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:871625340195:ios:a32a6f12d4655e4f2fc896</string>
+	<string>1:871625340195:ios:f21ac509570656702fc896</string>
 </dict>
 </plist>

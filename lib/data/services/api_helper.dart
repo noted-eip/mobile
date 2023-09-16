@@ -30,7 +30,7 @@ class APIHelper {
       print('[API Helper - GET] Server Response: $res');
 
       return ApiResponse(statusCode: response.statusCode, data: response.data);
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       return ApiResponse(
           statusCode: e.response!.statusCode,
           error: DioExceptions.fromDioError(e).toString());
@@ -49,7 +49,7 @@ class APIHelper {
       print('[API Helper - POST] Server Response: $res');
 
       return ApiResponse(statusCode: response.statusCode, data: response.data);
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       return ApiResponse(
           error: DioExceptions.fromDioError(e).toString(),
           statusCode: e.response!.statusCode);
@@ -69,7 +69,7 @@ class APIHelper {
       final String res = json.encode(response.data);
       print('[API Helper - PUT] Server Response: $res');
       return ApiResponse(statusCode: response.statusCode, data: response.data);
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       return ApiResponse(
           error: DioExceptions.fromDioError(e).toString(),
           statusCode: e.response!.statusCode);
@@ -87,7 +87,7 @@ class APIHelper {
       final String res = json.encode(response.data);
       print('[API Helper - DELETE] Server Response: $res');
       return ApiResponse(statusCode: response.statusCode, data: response.data);
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       // print('[API Helper - DELETE] Server Response: ${e.toString()}');
       return ApiResponse(
         error: DioExceptions.fromDioError(e).toString(),

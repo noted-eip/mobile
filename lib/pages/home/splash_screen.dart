@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:noted_mobile/data/clients/tracker_client.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -43,9 +45,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           user.setID(
             prefs?.getString('id') ?? '',
           );
-
+          ref.read(trackerProvider).trackPage(TrackPage.home);
           Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
         } else {
+          ref.read(trackerProvider).trackPage(TrackPage.login);
           Navigator.pushNamedAndRemoveUntil(
               context, '/login', (route) => false);
         }
@@ -76,6 +79,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     //     );
     //   });
     // }
+    FirebaseAnalytics analyctics = ref.read(analyticsProvider);
+
+    print("Splash Screen ");
+
+    analyctics.logAppOpen();
     return Scaffold(
       body: Container(
         color: Theme.of(context).colorScheme.secondary,

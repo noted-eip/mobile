@@ -9,7 +9,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:noted_mobile/components/common/custom_toast.dart';
 import 'package:noted_mobile/components/common/loading_button.dart';
+import 'package:noted_mobile/data/clients/tracker_client.dart';
 import 'package:noted_mobile/data/providers/account_provider.dart';
+import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:noted_mobile/utils/string_extension.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
@@ -80,6 +82,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         }
 
         if (mounted) {
+          ref.read(trackerProvider).trackPage(TrackPage.home);
           Navigator.of(context).pushReplacementNamed('/home');
         }
       } catch (error) {
@@ -181,6 +184,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               password: _passwordController.text,
             );
         if (loginRes && mounted) {
+          ref.read(trackerProvider).trackPage(TrackPage.home);
           Navigator.of(context).pushReplacementNamed('/home');
         }
       } catch (e) {
@@ -301,7 +305,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         margin: const EdgeInsets.fromLTRB(10, 0, 10, 20),
                         alignment: Alignment.topRight,
                         child: GestureDetector(
-                          onTap: () {
+                          onTap: () async {
+                            ref
+                                .read(trackerProvider)
+                                .trackPage(TrackPage.forgotPassword);
+
                             Navigator.pushNamed(context, '/forgot-password');
                           },
                           child: const Text(
@@ -344,6 +352,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                 text: 'Create',
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () {
+                                    ref
+                                        .read(trackerProvider)
+                                        .trackPage(TrackPage.register);
                                     Navigator.pushNamed(context, '/register');
                                   },
                                 style: TextStyle(

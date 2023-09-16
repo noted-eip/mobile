@@ -35,32 +35,12 @@ class InviteClient {
       }
 
       return Invite.fromApi(response.data!.invite);
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       if (kDebugMode) {
         print(e.response!.data['error'].toString());
       }
       throw Failure(message: e.toString());
     }
-
-    // final api = singleton.get<APIHelper>();
-
-    // try {
-    //   final response = await api.post(
-    //     '/invites',
-    //     headers: {"Authorization": "Bearer $token"},
-    //     body: {"group_id": groupId, "recipient_account_id": recipientId},
-    //   );
-    //   if (response.statusCode == 200) {
-    //     return Invite.fromJson(response.data["invite"]);
-    //   } else {
-    //     throw Failure(message: response.data['error'].toString());
-    //   }
-    // } on DioError catch (e) {
-    //   if (kDebugMode) {
-    //     print(e.response!.data['error'].toString());
-    //   }
-    //   throw Failure(message: e.toString());
-    // }
   }
 
   Future<Invite?> getInvite(String inviteId, String token) async {
@@ -76,7 +56,7 @@ class InviteClient {
       } else {
         throw Failure(message: response.data['error'].toString());
       }
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       if (kDebugMode) {
         print(e.response!.data['error'].toString());
       }
@@ -109,7 +89,7 @@ class InviteClient {
       }
 
       return response.data!.invites!.map((e) => Invite.fromApi(e)).toList();
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       throw Failure(message: e.toString());
     }
   }
@@ -131,7 +111,7 @@ class InviteClient {
       if (response.statusCode != 200 || response.data == null) {
         throw Failure(message: response.statusMessage ?? 'Error');
       }
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       throw Failure(message: e.toString());
     }
   }
@@ -152,7 +132,7 @@ class InviteClient {
       if (response.statusCode != 200 || response.data == null) {
         throw Failure(message: response.statusMessage ?? 'Error');
       }
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       throw Failure(message: e.toString());
     }
   }
@@ -173,7 +153,7 @@ class InviteClient {
       if (response.statusCode != 200 || response.data == null) {
         throw Failure(message: response.statusMessage ?? 'Error');
       }
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       throw Failure(message: e.toString());
     }
   }

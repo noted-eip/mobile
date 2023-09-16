@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDkb5xkY1R86XADULVc0I18mIhAFXtZzvE',
-    appId: '1:871625340195:android:fcd72060c157b8402fc896',
+    appId: '1:871625340195:android:b8049a5a228921c92fc896',
     messagingSenderId: '871625340195',
     projectId: 'noted-354512',
     storageBucket: 'noted-354512.appspot.com',
@@ -59,11 +59,13 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyCd6Le8M6q_JcQIFScHogJvkprd3qGD1yo',
-    appId: '1:871625340195:ios:a32a6f12d4655e4f2fc896',
+    appId: '1:871625340195:ios:f21ac509570656702fc896',
     messagingSenderId: '871625340195',
     projectId: 'noted-354512',
     storageBucket: 'noted-354512.appspot.com',
-    iosClientId: '871625340195-b5f2qigoefr879geub7kadi3io5nf8e4.apps.googleusercontent.com',
-    iosBundleId: 'com.debugNoted.mobile',
+    iosClientId:
+        '871625340195-vli3ajnounqk7u002mp2b5dahj2cmbs9.apps.googleusercontent.com',
+    iosBundleId: 'com.noted.notedmobile',
+    measurementId: 'G-XFC30W00DZ',
   );
 }

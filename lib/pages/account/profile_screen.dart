@@ -8,6 +8,7 @@ import 'package:noted_mobile/components/common/custom_alerte.dart';
 import 'package:noted_mobile/components/common/custom_modal.dart';
 import 'package:noted_mobile/components/common/custom_toast.dart';
 import 'package:noted_mobile/components/common/loading_button.dart';
+import 'package:noted_mobile/data/clients/tracker_client.dart';
 import 'package:noted_mobile/data/models/account/account.dart';
 import 'package:noted_mobile/data/providers/account_provider.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
@@ -149,6 +150,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
       if (mounted) {
         Future.delayed(const Duration(seconds: 2), () {
+          ref.read(trackerProvider).trackPage(TrackPage.login);
           Navigator.pushNamedAndRemoveUntil(context, '/login', (r) => false);
         });
       }
@@ -491,6 +493,24 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   enabled: false,
                 ),
                 const Spacer(),
+                TextButton(
+                  onPressed: () async {
+                    throw Exception("Crash Test");
+                  },
+                  child: const Text(
+                    'Crash App',
+                    style: TextStyle(color: Colors.green),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    ref.read(trackerProvider).trackPage(TrackPage.test);
+                  },
+                  child: const Text(
+                    'SEND EVENT',
+                    style: TextStyle(color: Colors.green),
+                  ),
+                ),
                 TextButton(
                   onPressed: () async => deleteAccount(),
                   child: const Text(

@@ -1,8 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:noted_mobile/data/clients/tracker_client.dart';
+import 'package:noted_mobile/data/providers/provider_list.dart';
 
-class BaseContainer extends StatelessWidget {
+class BaseContainer extends ConsumerStatefulWidget {
   const BaseContainer({
     Key? key,
     required this.titleWidget,
@@ -21,17 +24,22 @@ class BaseContainer extends StatelessWidget {
   final bool? openDrawer;
 
   @override
+  ConsumerState<BaseContainer> createState() => _BaseContainerState();
+}
+
+class _BaseContainerState extends ConsumerState<BaseContainer> {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: CupertinoPageScaffold(
-        backgroundColor: primaryColor ?? Colors.white,
+        backgroundColor: widget.primaryColor ?? Colors.white,
         child: NestedScrollView(
           headerSliverBuilder: (_, innerBoxIsScrolled) => [
             CupertinoSliverNavigationBar(
               brightness: Brightness.light,
               border: null,
               padding: const EdgeInsetsDirectional.only(start: 8, end: 8),
-              backgroundColor: primaryColor ?? Colors.white,
+              backgroundColor: widget.primaryColor ?? Colors.white,
               leading: Material(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16.0),
@@ -40,15 +48,15 @@ class BaseContainer extends StatelessWidget {
                 child: IconButton(
                   padding: EdgeInsets.zero,
                   icon: Icon(
-                    openDrawer != null && !openDrawer!
+                    widget.openDrawer != null && !widget.openDrawer!
                         ? CupertinoIcons.back
                         : Navigator.canPop(context)
                             ? CupertinoIcons.back
                             : Icons.menu,
-                    color: secondaryColor ?? Colors.grey.shade900,
+                    color: widget.secondaryColor ?? Colors.grey.shade900,
                   ),
                   onPressed: () {
-                    if (openDrawer != null && !openDrawer! ||
+                    if (widget.openDrawer != null && !widget.openDrawer! ||
                         Navigator.canPop(context)) {
                       Navigator.pop(context, false);
                     } else {
@@ -57,8 +65,8 @@ class BaseContainer extends StatelessWidget {
                   },
                 ),
               ),
-              largeTitle: titleWidget,
-              trailing: notif != null && notif!
+              largeTitle: widget.titleWidget,
+              trailing: widget.notif != null && widget.notif!
                   ? const SizedBox()
                   : Material(
                       color: Colors.transparent,
@@ -67,16 +75,20 @@ class BaseContainer extends StatelessWidget {
                           if (kDebugMode) {
                             print("Send button pressed");
                           }
+                          ref
+                              .read(trackerProvider)
+                              .trackPage(TrackPage.notification);
                           Navigator.pushNamed(context, "/notif");
                         }),
                         iconSize: 24,
                         icon: Icon(Icons.send_rounded,
-                            color: secondaryColor ?? Colors.grey.shade900),
+                            color:
+                                widget.secondaryColor ?? Colors.grey.shade900),
                       ),
                     ),
             ),
           ],
-          body: body,
+          body: widget.body,
         ),
       ),
     );

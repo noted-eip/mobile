@@ -43,7 +43,7 @@ class GroupClient {
       final V1Group apiGroup = response.data!.group;
 
       return Group.fromApi(apiGroup);
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
         print(
@@ -87,7 +87,7 @@ class GroupClient {
       final V1Group apiGroup = response.data!.group;
 
       return Group.fromApi(apiGroup);
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
         print(
@@ -117,7 +117,7 @@ class GroupClient {
       }
 
       return;
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
         print(
@@ -159,7 +159,7 @@ class GroupClient {
       }
 
       return apiGroups.map((e) => Group.fromApi(e)).toList();
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
         print(
@@ -189,7 +189,7 @@ class GroupClient {
       }
 
       return Group.fromApi(response.data!.group);
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
         print("Exception when calling DefaultApi->groupsAPIGetGroup: $error\n");
@@ -219,7 +219,7 @@ class GroupClient {
         throw Failure(message: response.toString());
       }
       return response.data!.member;
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
         print(
@@ -260,7 +260,7 @@ class GroupClient {
         throw Failure(message: response.toString());
       }
       return response.data!.member;
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
         print(
@@ -288,7 +288,7 @@ class GroupClient {
         }
         throw Failure(message: response.toString());
       }
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
         print(

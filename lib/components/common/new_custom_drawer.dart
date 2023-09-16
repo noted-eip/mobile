@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:noted_mobile/data/clients/tracker_client.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:noted_mobile/pages/groups/groups_list_screen.dart';
 import 'package:noted_mobile/pages/notes/notes_list_screen.dart';
@@ -24,6 +25,7 @@ class _MyDrawerState extends ConsumerState<MyDrawer> {
       drawer: MenuScreen(
         currentItem: currentItem,
         onSelected: (item) {
+          ref.read(trackerProvider).trackPage(item.trackPage);
           ref.read(mainScreenProvider).setItem(item);
           Navigator.of(context).pop();
         },
@@ -58,6 +60,21 @@ class MyMenuItem {
     required this.icon,
     this.onTap,
   });
+
+  TrackPage get trackPage {
+    switch (this) {
+      case MyMenuItems.home:
+        return TrackPage.home;
+      case MyMenuItems.groups:
+        return TrackPage.groupsList;
+      case MyMenuItems.notes:
+        return TrackPage.notesList;
+      case MyMenuItems.profil:
+        return TrackPage.profile;
+      default:
+        return TrackPage.home;
+    }
+  }
 }
 
 class MyMenuItems {
@@ -155,6 +172,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                 prefs!.remove('id');
 
                 ref.read(mainScreenProvider).setItem(MyMenuItems.home);
+                ref.read(trackerProvider).trackPage(TrackPage.login);
 
                 Navigator.pushNamedAndRemoveUntil(
                     context, '/login', (r) => false);

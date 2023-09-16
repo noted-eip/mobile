@@ -4,91 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/components/groups/modal/create_group.dart';
 import 'package:noted_mobile/components/groups/card/group_card.dart';
+import 'package:noted_mobile/data/clients/tracker_client.dart';
 import 'package:noted_mobile/data/models/group/group.dart';
 import 'package:noted_mobile/data/providers/group_provider.dart';
+import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
 
 //TODO: delay  when refresh indicator is shown
-
-class AppNavigationBar extends StatelessWidget {
-  const AppNavigationBar({required this.onPressed, super.key});
-
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return CupertinoSliverNavigationBar(
-      border: Border.all(color: CupertinoColors.white),
-      padding: const EdgeInsetsDirectional.only(
-        start: 8,
-        end: 8,
-      ),
-      backgroundColor: Colors.white,
-      leading: Material(
-        child: IconButton(
-          padding: EdgeInsets.zero,
-          iconSize: 32,
-          icon: Icon(
-            Icons.menu,
-            color: Colors.grey.shade900,
-          ),
-          onPressed: () {
-            Scaffold.of(context).openDrawer();
-          },
-        ),
-      ),
-      largeTitle: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        textBaseline: TextBaseline.alphabetic,
-        children: [
-          const Text(
-            "My Groups",
-          ),
-          const Spacer(),
-          Material(
-            color: Colors.transparent,
-            child: Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: IconButton(
-                padding: EdgeInsets.zero,
-                color: Colors.grey.shade900,
-                splashColor: Colors.black,
-                splashRadius: 35,
-                focusColor: Colors.blueAccent,
-                iconSize: 32,
-                onPressed: () => onPressed(),
-                icon: const Icon(Icons.add),
-              ),
-            ),
-          ),
-        ],
-      ),
-      trailing: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Material(
-            color: Colors.transparent,
-            child: IconButton(
-              padding: EdgeInsets.zero,
-              iconSize: 24,
-              onPressed: (() {
-                if (kDebugMode) {
-                  print("Send button pressed");
-                }
-                Navigator.pushNamed(context, "/notif");
-              }),
-              icon: Icon(Icons.send_rounded, color: Colors.grey.shade900),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class GroupsListPage extends ConsumerStatefulWidget {
   const GroupsListPage({super.key});
@@ -146,10 +68,79 @@ class _GroupsListPageState extends ConsumerState<GroupsListPage> {
             child: CustomScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: <Widget>[
-                AppNavigationBar(
-                  onPressed: () {
-                    openCreateGroupModal();
-                  },
+                CupertinoSliverNavigationBar(
+                  border: Border.all(color: CupertinoColors.white),
+                  padding: const EdgeInsetsDirectional.only(
+                    start: 8,
+                    end: 8,
+                  ),
+                  backgroundColor: Colors.white,
+                  leading: Material(
+                    child: IconButton(
+                      padding: EdgeInsets.zero,
+                      iconSize: 32,
+                      icon: Icon(
+                        Icons.menu,
+                        color: Colors.grey.shade900,
+                      ),
+                      onPressed: () {
+                        Scaffold.of(context).openDrawer();
+                      },
+                    ),
+                  ),
+                  largeTitle: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    textBaseline: TextBaseline.alphabetic,
+                    children: [
+                      const Text(
+                        "My Groups",
+                      ),
+                      const Spacer(),
+                      Material(
+                        color: Colors.transparent,
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: IconButton(
+                            padding: EdgeInsets.zero,
+                            color: Colors.grey.shade900,
+                            splashColor: Colors.black,
+                            splashRadius: 35,
+                            focusColor: Colors.blueAccent,
+                            iconSize: 32,
+                            onPressed: () => openCreateGroupModal(),
+                            icon: const Icon(Icons.add),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  trailing: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Material(
+                        color: Colors.transparent,
+                        child: IconButton(
+                          padding: EdgeInsets.zero,
+                          iconSize: 24,
+                          onPressed: (() {
+                            if (kDebugMode) {
+                              print("Send button pressed");
+                            }
+                            ref
+                                .read(trackerProvider)
+                                .trackPage(TrackPage.notification);
+                            Navigator.pushNamed(context, "/notif");
+                          }),
+                          icon: Icon(Icons.send_rounded,
+                              color: Colors.grey.shade900),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 SliverPersistentHeader(
                   pinned: true,
@@ -206,6 +197,9 @@ class _GroupsListPageState extends ConsumerState<GroupsListPage> {
                                 groupDescription: group.description,
                                 groupNotesCount: 0,
                                 onTap: () async {
+                                  ref
+                                      .read(trackerProvider)
+                                      .trackPage(TrackPage.groupDetail);
                                   final res = await Navigator.pushNamed(
                                       context, "/group-detail",
                                       arguments: group.id);

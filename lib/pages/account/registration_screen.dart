@@ -7,7 +7,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:noted_mobile/components/common/custom_toast.dart';
 import 'package:noted_mobile/components/common/loading_button.dart';
+import 'package:noted_mobile/data/clients/tracker_client.dart';
 import 'package:noted_mobile/data/providers/account_provider.dart';
+import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:noted_mobile/utils/string_extension.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -96,6 +98,8 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
             context: context,
             gravity: ToastGravity.BOTTOM,
           );
+
+          ref.read(trackerProvider).trackPage(TrackPage.login);
 
           Navigator.pushNamedAndRemoveUntil(
               context, '/login', (Route<dynamic> route) => false);
@@ -344,6 +348,9 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                                     text: 'Login',
                                     recognizer: TapGestureRecognizer()
                                       ..onTap = () {
+                                        ref
+                                            .read(trackerProvider)
+                                            .trackPage(TrackPage.login);
                                         Navigator.pushNamedAndRemoveUntil(
                                             context,
                                             '/login',

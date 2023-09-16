@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/components/common/new_custom_drawer.dart';
 import 'package:noted_mobile/components/groups/modal/create_group.dart';
 import 'package:noted_mobile/components/groups/card/group_card.dart';
+import 'package:noted_mobile/data/clients/tracker_client.dart';
 import 'package:noted_mobile/data/models/group/group.dart';
 import 'package:noted_mobile/data/providers/group_provider.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
@@ -57,13 +58,14 @@ class _LatestsGroupsState extends ConsumerState<LatestsGroups> {
                       childAspectRatio: 1,
                     ),
                     itemBuilder: (context, index) {
-                      print(index);
-
                       if (index < groups.length) {
                         return GroupCard(
                           groupName: groups[index].data.name,
                           groupIcon: Icons.group,
                           onTap: () async {
+                            ref
+                                .read(trackerProvider)
+                                .trackPage(TrackPage.groupDetail);
                             final res = await Navigator.pushNamed(
                                 context, '/group-detail',
                                 arguments: groups[index].data.id);
