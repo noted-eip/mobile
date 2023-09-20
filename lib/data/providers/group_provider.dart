@@ -3,6 +3,7 @@ import 'package:noted_mobile/data/clients/group_client.dart';
 import 'package:noted_mobile/data/models/group/group.dart';
 // import 'package:noted_mobile/data/providers/utils/cache_timeout.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
+import 'package:noted_mobile/pages/groups/group_detail_page.dart';
 import 'package:openapi/openapi.dart';
 
 final groupClientProvider =
@@ -58,4 +59,14 @@ final groupMemberProvider =
 
   // cacheTimeout(ref, 'fetchGroupMember $groupId');
   return groupMember;
+});
+
+final groupActivitiesProvider =
+    FutureProvider.family<List<V1GroupActivity>?, String>((ref, groupId) async {
+  final activities = await ref
+      .watch(groupClientProvider)
+      .getGroupsActivities(groupId: groupId);
+
+  // cacheTimeout(ref, 'fetchGroupActivities $groupId');
+  return activities;
 });

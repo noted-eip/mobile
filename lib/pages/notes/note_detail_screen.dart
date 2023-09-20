@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/components/common/base_container.dart';
+import 'package:noted_mobile/components/common/custom_modal.dart';
 import 'package:noted_mobile/components/common/loading_button.dart';
 import 'package:noted_mobile/data/models/note/note.dart';
 import 'package:noted_mobile/data/models/note/note_block.dart';
 import 'package:noted_mobile/data/providers/note_provider.dart';
+import 'package:noted_mobile/pages/quizz/quizz_screen.dart';
+import 'package:noted_mobile/pages/recommendation/recommendation_screen.dart';
+import 'package:noted_mobile/utils/constant.dart';
+import 'package:openapi/openapi.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:tuple/tuple.dart';
+
+//TODO: invalidate QuizzProvider when user click on refresh button
+// VOIR pourquoi le widget ne passe pas en chargement quand on refresh
 
 class NoteDetail extends ConsumerStatefulWidget {
   const NoteDetail({super.key});
@@ -155,17 +164,148 @@ class _NoteDetailState extends ConsumerState<NoteDetail> {
     final Tuple2<String, String> infos =
         ModalRoute.of(context)!.settings.arguments as Tuple2<String, String>;
     final note = ref.watch(noteProvider(infos));
+    final AsyncValue<V1Quiz?> quizz = ref.watch(quizzProvider(infos));
+    final AsyncValue<List<V1Widget>?> widgetsList =
+        ref.watch(recommendationListProvider(infos));
 
     RoundedLoadingButtonController btnController =
         RoundedLoadingButtonController();
 
     return Scaffold(
+      floatingActionButtonLocation: ExpandableFab.location,
+      floatingActionButton: ExpandableFab(
+        openButtonBuilder: RotateFloatingActionButtonBuilder(
+          child: const Icon(Icons.more_vert_rounded),
+          fabSize: ExpandableFabSize.regular,
+          foregroundColor: Colors.white,
+          backgroundColor: kPrimaryColor,
+          shape: const CircleBorder(),
+        ),
+        closeButtonBuilder: DefaultFloatingActionButtonBuilder(
+          child: const Icon(Icons.close),
+          fabSize: ExpandableFabSize.small,
+          foregroundColor: Colors.white,
+          backgroundColor: Colors.redAccent,
+          shape: const CircleBorder(),
+        ),
+        children: [
+          quizz.when(
+            data: (quiz) {
+              return FloatingActionButton(
+                heroTag: "quizz-data",
+                onPressed: () async {
+                  if (quiz == null) {
+                    return;
+                  }
+                  return showModalBottomSheet(
+                    backgroundColor: Colors.transparent,
+                    context: context,
+                    isScrollControlled: true,
+                    builder: (context) {
+                      return CustomModal(
+                        height: 0.9,
+                        onClose: (context) {
+                          print("close");
+                          ref.invalidate(quizzProvider(infos));
+                          Navigator.pop(context);
+                        },
+                        child: QuizzPage(
+                          quiz: quiz,
+                          infos: infos,
+                        ),
+                      );
+                    },
+                  );
+                },
+                child: const Icon(
+                  Icons.quiz,
+                  color: Colors.white,
+                ),
+              );
+            },
+            error: (err, stack) {
+              return FloatingActionButton(
+                heroTag: "quizz-error",
+                onPressed: () {
+                  ref.invalidate(quizzProvider(infos));
+                },
+                child: const Icon(
+                  Icons.error,
+                  color: Colors.white,
+                ),
+              );
+            },
+            loading: () {
+              return FloatingActionButton(
+                heroTag: "quizz-loading",
+                onPressed: () {},
+                child: const CircularProgressIndicator(),
+              );
+            },
+          ),
+          widgetsList.when(
+            data: (widgetList) {
+              return FloatingActionButton(
+                heroTag: "recommandation-data",
+                onPressed: () async {
+                  if (widgetList == null || widgetList.isEmpty) {
+                    return;
+                  }
+
+                  return showModalBottomSheet(
+                    backgroundColor: Colors.transparent,
+                    context: context,
+                    isScrollControlled: true,
+                    builder: (context) {
+                      return CustomModal(
+                        height: 1,
+                        onClose: (context) {
+                          Navigator.pop(context);
+                        },
+                        child: RecommendationPage(
+                            infos: infos, widgetList: widgetList),
+                      );
+                    },
+                  );
+                },
+                child: const Icon(
+                  Icons.recommend_rounded,
+                ),
+              );
+            },
+            loading: () => FloatingActionButton(
+              heroTag: "recommandation-loading",
+              onPressed: () {},
+              child: const CircularProgressIndicator(),
+            ),
+            error: (err, stack) {
+              return FloatingActionButton(
+                heroTag: "recommandation-error",
+                onPressed: () {
+                  ref.invalidate(recommendationListProvider(infos));
+                },
+                child: const Icon(
+                  Icons.error,
+                  color: Colors.white,
+                ),
+              );
+            },
+          ),
+        ],
+      ),
       body: BaseContainer(
         titleWidget: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              note.hasValue ? note.value!.title : "Note Detail",
+              note.hasValue
+                  ? note.value!.title.substring(
+                      0,
+                      note.value!.title.length > 15
+                          ? 15
+                          : note.value!.title.length,
+                    )
+                  : "Note Detail",
             ),
             LoadingButton(
               width: 48,

@@ -298,4 +298,38 @@ class GroupClient {
       throw Failure(message: error);
     }
   }
+
+  Future<List<V1GroupActivity>?> getGroupsActivities({
+    required String groupId,
+  }) async {
+    // ref.read(apiProvider).groupsAPIListActivities(groupId: groupId);
+    final userNotifier = ref.read(userProvider.notifier);
+
+    try {
+      final response = await ref.read(apiProvider).groupsAPIListActivities(
+        groupId: groupId,
+        headers: {"Authorization": "Bearer ${userNotifier.token}"},
+      );
+
+      if (response.statusCode != 200 || response.data == null) {
+        if (kDebugMode) {
+          print(
+            "inside try : code = ${response.statusCode}, error = ${response.toString()}",
+          );
+        }
+
+        throw Failure(message: response.toString());
+      }
+
+      if (response.data == null) {
+        return null;
+      }
+
+      return response.data!.activities.toList();
+    } on DioException catch (e) {
+      String error = DioExceptions.fromDioError(e).toString();
+      if (kDebugMode) print("Exception when calling DefaultApi->: $error\n");
+      throw Failure(message: error);
+    }
+  }
 }

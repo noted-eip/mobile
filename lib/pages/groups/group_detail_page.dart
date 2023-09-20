@@ -17,6 +17,7 @@ import 'package:noted_mobile/data/providers/group_provider.dart';
 import 'package:noted_mobile/data/providers/invite_provider.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:noted_mobile/utils/string_extension.dart';
+import 'package:openapi/openapi.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 //TODO: ajouter un scroll sur la page entière et faire disparaitre le header
@@ -208,7 +209,7 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
                         child: DefaultTabController(
                           length:
                               // sisWorkspace ? 1 :
-                              2,
+                              3,
                           child: Column(
                             children: [
                               TabBar(
@@ -220,6 +221,9 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
                                   // if (!isWorkspace)
                                   Tab(
                                     text: "Members",
+                                  ),
+                                  Tab(
+                                    text: "Activities",
                                   ),
                                 ],
                               ),
@@ -319,6 +323,11 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
                                         ],
                                       ),
                                     ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16.0),
+                                      child: GroupActivities(groupId: groupId),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -343,7 +352,7 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
                 const GroupInfos.empty(),
                 Expanded(
                   child: DefaultTabController(
-                    length: 2,
+                    length: 3,
                     child: Column(
                       children: [
                         TabBar(
@@ -354,6 +363,9 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
                             ),
                             Tab(
                               text: "Members",
+                            ),
+                            Tab(
+                              text: "Activities",
                             ),
                           ],
                         ),
@@ -372,6 +384,17 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
                                         fontSize: 20, color: Colors.black),
                                   ),
                                   isRefresh: true,
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0),
+                                child: GroupMembersList(
+                                  members: null,
+                                  isPadding: false,
+                                  deleteGroupMember: (accountId) {},
+                                  leaveGroup: (accountId) {},
+                                  groupId: groupId,
                                 ),
                               ),
                               Padding(
@@ -414,8 +437,42 @@ class GroupActivities extends ConsumerStatefulWidget {
 class _GroupActivitiesState extends ConsumerState<GroupActivities> {
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text("Activities"),
-    );
+    final AsyncValue<List<V1GroupActivity>?> activites =
+        ref.read(groupActivitiesProvider(widget.groupId));
+
+    return activites.when(
+        data: ((data) {
+          if (data == null) {
+            return const Center(
+              child: Text("No data"),
+            );
+          }
+
+          print("data.length: ${data.length}");
+
+          if (data.isEmpty) {
+            return const Center(
+              child: Text("No data"),
+            );
+          }
+
+          return ListView.builder(
+            itemCount: data.length,
+            itemBuilder: (context, index) {
+              print(data[index]);
+              print(data[index].type);
+              return ListTile(
+                title: Text(data[index].event),
+              );
+            },
+          );
+        }),
+        error: ((error, stackTrace) => Text(error.toString())),
+        loading: () {
+          print("loading");
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        });
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/data/clients/note_client.dart';
 import 'package:noted_mobile/data/models/note/note.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
+import 'package:openapi/openapi.dart';
 import 'package:tuple/tuple.dart';
 
 final searchNoteProvider = StateProvider((ref) => '');
@@ -50,4 +51,25 @@ final noteProvider =
       );
 
   return note;
+});
+
+final quizzProvider = FutureProvider.autoDispose
+    .family<V1Quiz?, Tuple2<String, String>>((ref, infos) async {
+  final quizz = await ref.watch(noteClientProvider).quizzGenerator(
+        noteId: infos.item1,
+        groupId: infos.item2,
+      );
+
+  return quizz;
+});
+
+final recommendationListProvider = FutureProvider.autoDispose
+    .family<List<V1Widget>?, Tuple2<String, String>>((ref, infos) async {
+  final recommendationList =
+      await ref.watch(noteClientProvider).recommendationGenerator(
+            noteId: infos.item1,
+            groupId: infos.item2,
+          );
+
+  return recommendationList;
 });

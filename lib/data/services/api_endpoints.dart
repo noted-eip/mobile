@@ -5,10 +5,10 @@ class Endpoints {
   // static const String kBaseUrl = "https://noted-rojasdiego.koyeb.app";
 
   // receiveTimeout
-  static const int receiveTimeout = 5000;
+  static const int receiveTimeout = 1000000;
 
   // connectTimeout
-  static const int connectionTimeout = 10000;
+  static const int connectionTimeout = 1000000;
 
   // WIP: Add your endpoints here
   static const String authentificate = '/authentificate';

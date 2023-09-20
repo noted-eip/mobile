@@ -105,4 +105,88 @@ class NoteClient {
     }
     return null;
   }
+
+  Future<List<V1Widget>?> recommendationGenerator({
+    required String groupId,
+    required String noteId,
+  }) async {
+    final userNotifier = ref.read(userProvider);
+    try {
+      final response = await ref
+          .read(apiProvider)
+          .recommendationsAPIGenerateWidgets(
+              groupId: groupId,
+              noteId: noteId,
+              headers: {"Authorization": "Bearer ${userNotifier.token}"});
+
+      if (response.statusCode != 200 || response.data == null) {
+        if (kDebugMode) {
+          print(
+            "inside try : code = ${response.statusCode}, error = ${response.toString()}",
+          );
+        }
+        return null;
+
+        // throw Failure(message: response.toString());
+      }
+
+      return response.data!.widgets.toList();
+    } on DioException catch (e) {
+      String error = DioExceptions.fromDioError(e).toString();
+      if (kDebugMode) {
+        print(
+            "Exception when calling DefaultApi->accountsAPIGetAccount: $error\n");
+      }
+      // throw Failure(message: error);
+    }
+    return null;
+  }
+
+  Future<V1Quiz?> quizzGenerator({
+    required String groupId,
+    required String noteId,
+  }) async {
+    final userNotifier = ref.read(userProvider);
+    try {
+      final response = await ref.read(apiProvider).notesAPIGenerateQuiz(
+          groupId: groupId,
+          noteId: noteId,
+          headers: {"Authorization": "Bearer ${userNotifier.token}"});
+
+      if (response.statusCode != 200 || response.data == null) {
+        if (kDebugMode) {
+          print(
+            "inside try : code = ${response.statusCode}, error = ${response.toString()}",
+          );
+        }
+        return null;
+
+        // throw Failure(message: response.toString());
+      }
+      V1Quiz quizz = response.data!.quiz!;
+
+      print("quizz : $quizz");
+
+      print("Taille du quizz : ${quizz.questions!.length}");
+
+      for (var question in quizz.questions!) {
+        print("question : ${question.question}");
+        for (var element in question.answers!) {
+          print("possible reponse : $element");
+        }
+        for (var element in question.solutions!) {
+          print("solution : $element");
+        }
+      }
+
+      return quizz;
+    } on DioException catch (e) {
+      String error = DioExceptions.fromDioError(e).toString();
+      if (kDebugMode) {
+        print("error $error\n");
+      }
+      // throw Failure(message: error);
+    }
+    return null;
+  }
 }

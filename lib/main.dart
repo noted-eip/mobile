@@ -20,6 +20,9 @@ import 'package:noted_mobile/pages/notes/notes_list_screen.dart';
 import 'package:noted_mobile/pages/notes/note_detail_screen.dart';
 import 'package:noted_mobile/pages/notifications/notification_page.dart';
 import 'package:noted_mobile/pages/home/splash_screen.dart';
+import 'package:noted_mobile/pages/quizz/quizz_screen.dart';
+
+//TODO: use material 3 and apply al need changes
 
 void main() async {
   init();
