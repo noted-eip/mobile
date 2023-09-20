@@ -16,6 +16,7 @@ import 'package:noted_mobile/data/models/group/group.dart';
 import 'package:noted_mobile/data/providers/group_provider.dart';
 import 'package:noted_mobile/data/providers/invite_provider.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
+import 'package:noted_mobile/pages/groups/group_activity_card.dart';
 import 'package:noted_mobile/utils/string_extension.dart';
 import 'package:openapi/openapi.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
@@ -438,7 +439,7 @@ class _GroupActivitiesState extends ConsumerState<GroupActivities> {
   @override
   Widget build(BuildContext context) {
     final AsyncValue<List<V1GroupActivity>?> activites =
-        ref.read(groupActivitiesProvider(widget.groupId));
+        ref.watch(groupActivitiesProvider(widget.groupId));
 
     return activites.when(
         data: ((data) {
@@ -461,7 +462,10 @@ class _GroupActivitiesState extends ConsumerState<GroupActivities> {
             itemBuilder: (context, index) {
               print(data[index]);
               print(data[index].type);
-              return ListTile(
+              return GroupActivityCard(
+                  groupActivity: data[index], groupId: widget.groupId);
+
+              ListTile(
                 title: Text(data[index].event),
               );
             },
