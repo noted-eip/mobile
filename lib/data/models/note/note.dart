@@ -37,30 +37,6 @@ class Note {
     );
   }
 
-  // factory Note.fromJson(Map<String, dynamic> json) {
-  //   return Note(
-  //     id: json['id'] ?? '',
-  //     authorId: json['authorAccountId'] ?? '',
-  //     title: json['title'] ?? '',
-  //     groupId: json['groupId'] ?? '',
-  //     createdAt:
-  //         json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
-  //     modifiedAt: json['modifiedAt'] != null
-  //         ? DateTime.parse(json['modifiedAt'])
-  //         : null,
-  //     analysedAt: json['analysedAt'] != null
-  //         ? DateTime.parse(json['analysedAt'])
-  //         : null,
-  //     blocks: json['blocks'] == null
-  //         ? null
-  //         : List<Block>.from(
-  //             json['blocks'].map(
-  //               (block) => Block.fromJson(block),
-  //             ),
-  //           ),
-  //   );
-  // }
-
   Map<String, dynamic> toJson() {
     return {
       'id': id,

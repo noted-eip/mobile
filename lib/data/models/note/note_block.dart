@@ -23,58 +23,6 @@ class Block {
     required this.text,
   });
 
-  // factory Block.fromJson(Map<String, dynamic> json) {
-  //   BlockType type = BlockType.unknown;
-
-  //   switch (V1BlockType) {
-  //     case V1BlockType.hEADING1:
-  //       type = BlockType.heading1;
-  //       break;
-  //     case 'TYPE_HEADING_2':
-  //       type = BlockType.heading2;
-  //       break;
-  //     case 'TYPE_HEADING_3':
-  //       type = BlockType.heading3;
-  //       break;
-  //     case 'TYPE_PARAGRAPH':
-  //       type = BlockType.paragraph;
-  //       break;
-  //     case 'TYPE_BULLET_POINT':
-  //       type = BlockType.bulletPoint;
-  //       break;
-  //     case 'TYPE_NUMBER_POINT':
-  //       type = BlockType.numberPoint;
-  //       break;
-  //     default:
-  //       type = BlockType.paragraph;
-  //       break;
-  //   }
-
-  //   String text = '';
-
-  //   if (json['type'] == 'TYPE_HEADING_1' ||
-  //       json['type'] == 'TYPE_HEADING_2' ||
-  //       json['type'] == 'TYPE_HEADING_3') {
-  //     text = json['heading'] ?? '';
-  //   } else if (json['type'] == 'TYPE_BULLET_POINT') {
-  //     text = json['bulletPoint'] ?? '';
-  //   } else if (json['type'] == 'TYPE_NUMBER_POINT') {
-  //     text = json['numberPoint'] ?? '';
-  //   } else {
-  //     text = json['paragraph'] ?? '';
-  //   }
-
-  //   return Block(
-  //     id: json['id'] ?? '',
-  //     type: type,
-  //     text: json['type'] == 'TYPE_HEADING_1' ||
-  //             json['type'] == 'TYPE_HEADING_2' ||
-  //             json['type'] == 'TYPE_HEADING_3'
-  //         ? json['heading'] ?? ''
-  //         : json['paragraph'] ?? '',
-  //   );
-  // }
-
   factory Block.fromApi(V1Block block) {
     BlockType type = BlockType.unknown;
     String text = '';

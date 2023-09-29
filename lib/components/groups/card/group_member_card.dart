@@ -7,13 +7,8 @@ import 'package:openapi/openapi.dart';
 
 class GroupMemberCard extends ConsumerStatefulWidget {
   const GroupMemberCard(
-      {
-      // required this.member,
-      required this.memberData,
-      required this.actions,
-      super.key});
+      {required this.memberData, required this.actions, super.key});
 
-  // final GroupMember member;
   final V1GroupMember memberData;
   final List<ActionSlidable> actions;
 

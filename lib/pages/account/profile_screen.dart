@@ -262,6 +262,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                           ),
                                           enabled: false, //isEditing,
                                           controller: emailController,
+                                          //TODO : add email validation
                                           // validator: (value) {
                                           //   if (value!.isEmpty) {
                                           //     return "Email cannot be empty";
@@ -312,7 +313,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                           validator: (value) {
                                             if (value!.isEmpty) {
                                               return null;
-                                              // return "Password cannot be empty";
                                             } else if (value.length < 4) {
                                               return "Password must be at least 4 characters";
                                             }
@@ -357,7 +357,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                           validator: (value) {
                                             if (value!.isEmpty) {
                                               return null;
-                                              // return "Confirm Password cannot be empty";
                                             } else if (value.length < 4) {
                                               return "Confirm Password must be at least 4 characters";
                                             } else if (value !=
@@ -424,7 +423,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         leading: IconButton(
           icon: const Icon(Icons.menu),
           onPressed: () {
-            // ZoomDrawer.of(context)!.toggle();
             Scaffold.of(context).openDrawer();
           },
         ),

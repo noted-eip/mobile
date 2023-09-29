@@ -9,6 +9,7 @@ import 'package:noted_mobile/data/providers/note_provider.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:tuple/tuple.dart';
+//TODO: refactor this widget
 
 class NotesList extends ConsumerStatefulWidget {
   const NotesList({

@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:noted_mobile/pages/recommendation/webview_widget.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -82,39 +81,6 @@ class _WebsiteWidgetState extends State<WebsiteWidget> {
     }
 
     return const SizedBox();
-
-    // return CachedNetworkImage(
-    //   imageUrl: 'https://en.m.wikipedia.org/wiki/File:France_2_logo.png',
-    //   placeholder: (context, url) => CircularProgressIndicator(),
-    //   errorWidget: (context, url, error) {
-    //     print(error);
-    //     return Icon(Icons.error);
-    //   },
-    // );
-    // if (widget.widget.imageUrl == null) {
-    //   return null;
-    // }
-    // final String imageUrl = widget.widget.imageUrl!;
-
-    // if (imageUrl.endsWith(".png") ||
-    //     imageUrl.endsWith(".jpg") ||
-    //     imageUrl.endsWith(".jpeg")) {
-    //   return CachedNetworkImage(
-    //     imageUrl: 'https://en.m.wikipedia.org/wiki/File:France_2_logo.png',
-    //     placeholder: (context, url) => CircularProgressIndicator(),
-    //     errorWidget: (context, url, error) => Icon(Icons.error),
-    //   );
-    // } else if (imageUrl.endsWith(".svg")) {
-    //   return SvgPicture.network(
-    //     imageUrl,
-    //     semanticsLabel: 'A shark?!',
-    //     placeholderBuilder: (BuildContext context) => Container(
-    //         padding: const EdgeInsets.all(30.0),
-    //         child: const CircularProgressIndicator()),
-    //   );
-    // }
-
-    // return null;
   }
 
   @override

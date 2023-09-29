@@ -1,10 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/data/clients/group_client.dart';
 import 'package:noted_mobile/data/models/group/group.dart';
-// import 'package:noted_mobile/data/providers/utils/cache_timeout.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
-import 'package:noted_mobile/pages/groups/group_detail_page.dart';
 import 'package:openapi/openapi.dart';
+// TODO: add cache timeout
 
 final groupClientProvider =
     Provider<GroupClient>((ref) => GroupClient(ref: ref));

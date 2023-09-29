@@ -3,10 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/data/models/account/account.dart';
 import 'package:noted_mobile/data/models/note/note.dart';
 import 'package:noted_mobile/data/providers/account_provider.dart';
-import 'package:noted_mobile/data/providers/note_provider.dart';
-import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:openapi/openapi.dart';
-import 'package:tuple/tuple.dart';
+
+//TODO: Add a way to get the note from the group activity
 
 enum GroupActivityType {
   addNote,
@@ -55,7 +54,6 @@ class _GroupActivityCardState extends ConsumerState<GroupActivityCard> {
   }
 
   String getDateToString(DateTime dateTime) {
-    // return date with this format : dd/mm/yyyy hh:mm
     return "${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute}";
   }
 

@@ -7,6 +7,7 @@ import 'package:noted_mobile/data/providers/utils/api_provider.dart';
 import 'package:noted_mobile/data/services/api_execption.dart';
 import 'package:noted_mobile/data/services/failure.dart';
 import 'package:openapi/openapi.dart';
+//TODO: revoir la gestion d'erreur
 
 class GroupClient {
   ProviderRef<GroupClient> ref;

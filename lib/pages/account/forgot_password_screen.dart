@@ -141,6 +141,7 @@ class ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                               if (val!.isEmpty) {
                                 return "Please enter your email";
                               }
+                              // TODO: Add email validation
                               // else if (!val.isEmail()) {
                               //   return "Enter a valid email address";
                               // }

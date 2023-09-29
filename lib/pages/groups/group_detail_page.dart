@@ -449,8 +449,6 @@ class _GroupActivitiesState extends ConsumerState<GroupActivities> {
             );
           }
 
-          print("data.length: ${data.length}");
-
           if (data.isEmpty) {
             return const Center(
               child: Text("No data"),
@@ -460,20 +458,13 @@ class _GroupActivitiesState extends ConsumerState<GroupActivities> {
           return ListView.builder(
             itemCount: data.length,
             itemBuilder: (context, index) {
-              print(data[index]);
-              print(data[index].type);
               return GroupActivityCard(
                   groupActivity: data[index], groupId: widget.groupId);
-
-              ListTile(
-                title: Text(data[index].event),
-              );
             },
           );
         }),
         error: ((error, stackTrace) => Text(error.toString())),
         loading: () {
-          print("loading");
           return const Center(
             child: CircularProgressIndicator(),
           );

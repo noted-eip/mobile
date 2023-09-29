@@ -1,13 +1,7 @@
-// group.dart file
 import 'dart:convert';
-
-// import 'package:json_annotation/json_annotation.dart';
 import 'package:noted_mobile/data/models/group/group_data.dart';
 import 'package:openapi/openapi.dart';
 
-// part 'group.g.dart';
-
-// @JsonSerializable()
 class Group {
   Group({
     required this.data,

@@ -261,6 +261,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           if (val!.isEmpty) {
                             return "Please enter your email";
                           }
+                          // TODO: Uncomment this when email validation is fixed
                           //  else if (!val.isEmail()) {
                           //   return "Enter a valid email address";
                           // }

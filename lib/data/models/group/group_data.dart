@@ -1,14 +1,9 @@
-// user_data.dart file
-
 // ignore_for_file: non_constant_identifier_names
 
 import 'dart:convert';
-
-import 'package:json_annotation/json_annotation.dart';
 import 'package:noted_mobile/utils/format_helper.dart';
 import 'package:openapi/openapi.dart';
 
-@JsonSerializable()
 class GroupData {
   const GroupData({
     required this.id,
@@ -98,7 +93,6 @@ class GroupData {
       };
 }
 
-@JsonSerializable()
 class GroupMember {
   GroupMember({
     required this.account_id,
@@ -113,19 +107,6 @@ class GroupMember {
   final String created_at;
   String? name;
   String? email;
-
-  // factory GroupMember.fromRawJson(String str) =>
-  //     GroupMember.fromJson(json.decode(str));
-
-  // factory GroupMember.fromJson(Map<String, dynamic> json) {
-  //   return GroupMember(
-  //     account_id: json["account_id"] ?? "",
-  //     name: json["name"] ?? "",
-  //     email: json["email"] ?? "",
-  //     created_at: json["created_at"] ?? "",
-  //     role: json["role"] ?? "",
-  //   );
-  // }
 
   Map<String, dynamic> toJson() => {
         "account_id": account_id,

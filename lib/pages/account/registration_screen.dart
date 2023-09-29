@@ -221,6 +221,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                                 if (val!.isEmpty) {
                                   return "Please enter an email adress";
                                 }
+                                //TODO: fix email validation
                                 // else if (!val.isEmail()) {
                                 //   print(!val.isEmail());
                                 //   print("not an email");

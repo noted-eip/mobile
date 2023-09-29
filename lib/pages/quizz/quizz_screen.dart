@@ -246,23 +246,5 @@ class _QuizzPageState extends ConsumerState<QuizzPage> {
         );
       },
     );
-
-    // return quizz.when(
-    //     data: (quizz) {
-    //       if (quizz == null) {
-    //         // update note and retry
-    //         return const Center(child: Text("No quizz found"));
-    //       }
-
-    //       if (quizz.questions == null) {
-    //         return const Center(child: Text("No Questions found"));
-    //       }
-    //       // currentQuiz.setGroupId(infos.item2);
-    //       // currentQuiz.setNoteId(infos.item1);
-    //       // currentQuiz.setNbQuestion(quizz.questions!.length);
-
-    //     },
-    //     error: (err, stack) => Center(child: Text(err.toString())),
-    //     loading: () => const Center(child: CircularProgressIndicator()));
   }
 }

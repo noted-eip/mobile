@@ -124,32 +124,6 @@ class _LatestsFilesListState extends ConsumerState<LatestsFilesList> {
                     child: buildSearchBar(),
                   ),
                 ),
-                // if (ref.read(searchNoteProvider) == '')
-                //   SliverSafeArea(
-                //     top: false,
-                //     sliver: SliverFixedExtentList(
-                //       itemExtent: 200,
-                //       delegate: SliverChildBuilderDelegate(
-                //         (BuildContext context, int index) {
-                //           return Theme(
-                //             data: ThemeData(dividerColor: Colors.transparent),
-                //             child: Expanded(
-                //                 child: ListView(
-                //               children: expansionTiles,
-                //             )),
-                //           );
-                //           // return const Material(
-                //           //   color: Colors.transparent,
-                //           //   child: Center(
-                //           //     child: Text("No notes found",
-                //           //         style: TextStyle(fontSize: 18)),
-                //           //   ),
-                //           // );
-                //         },
-                //         childCount: 1,
-                //       ),
-                //     ),
-                //   ),
                 notes.when(
                   data: (data) {
                     if (data == null || data.isEmpty) {
@@ -215,10 +189,6 @@ class _LatestsFilesListState extends ConsumerState<LatestsFilesList> {
                           },
                           childCount: data.length,
                         ),
-                        // gridDelegate:
-                        //     const SliverGridDelegateWithFixedCrossAxisCount(
-                        //   crossAxisCount: 2,
-                        // ),
                       ),
                     );
                   },
@@ -235,10 +205,6 @@ class _LatestsFilesListState extends ConsumerState<LatestsFilesList> {
                         },
                         childCount: 6,
                       ),
-                      // gridDelegate:
-                      //     const SliverGridDelegateWithFixedCrossAxisCount(
-                      //   crossAxisCount: 2,
-                      // ),
                     ),
                   ),
                   error: (error, stack) => SliverSafeArea(
@@ -252,10 +218,6 @@ class _LatestsFilesListState extends ConsumerState<LatestsFilesList> {
                         },
                         childCount: 6,
                       ),
-                      // gridDelegate:
-                      //     const SliverGridDelegateWithFixedCrossAxisCount(
-                      //   crossAxisCount: 2,
-                      // ),
                     ),
                   ),
                 ),

@@ -106,12 +106,6 @@ class GroupCard extends StatelessWidget {
                   ],
                 ),
               ),
-              // displaySeeMore
-              //     ? const SizedBox()
-              //     : AutoSizeText(
-              //         '$groupNotesCount notes',
-              //         style: const TextStyle(fontSize: 15, color: Colors.white),
-              //       ),
             ],
           ),
         ),

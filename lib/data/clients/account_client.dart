@@ -12,6 +12,7 @@ import 'package:noted_mobile/data/services/failure.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:openapi/openapi.dart';
 import 'package:tuple/tuple.dart';
+//TODO: revoir la gestion d'erreur
 
 class AccountClient {
   AccountClient({required this.ref});
