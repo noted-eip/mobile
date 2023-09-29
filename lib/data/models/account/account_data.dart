@@ -2,12 +2,12 @@
 
 // import 'dart:convert';
 
-import 'package:json_annotation/json_annotation.dart';
+// import 'package:json_annotation/json_annotation.dart';
 import 'package:openapi/openapi.dart';
 
-part 'account_data.g.dart';
+// part 'account_data.g.dart';
 
-@JsonSerializable()
+// @JsonSerializable()
 class AccountData {
   AccountData({
     required this.id,
