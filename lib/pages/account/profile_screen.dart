@@ -492,24 +492,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 ),
                 const Spacer(),
                 TextButton(
-                  onPressed: () async {
-                    throw Exception("Crash Test");
-                  },
-                  child: const Text(
-                    'Crash App',
-                    style: TextStyle(color: Colors.green),
-                  ),
-                ),
-                TextButton(
-                  onPressed: () async {
-                    ref.read(trackerProvider).trackPage(TrackPage.test);
-                  },
-                  child: const Text(
-                    'SEND EVENT',
-                    style: TextStyle(color: Colors.green),
-                  ),
-                ),
-                TextButton(
                   onPressed: () async => deleteAccount(),
                   child: const Text(
                     'Delete Account',
