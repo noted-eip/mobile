@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/data/models/account/account.dart';
-import 'package:noted_mobile/data/models/note/note.dart';
 import 'package:noted_mobile/data/providers/account_provider.dart';
 import 'package:openapi/openapi.dart';
 
@@ -62,11 +61,11 @@ class _GroupActivityCardState extends ConsumerState<GroupActivityCard> {
 
     switch (type) {
       case GroupActivityType.addNote:
-        return " has added the note ";
+        return " a ajouté la note ";
       case GroupActivityType.addMember:
-        return " joined the group";
+        return " a rejoint le groupe";
       case GroupActivityType.removeMember:
-        return " leaved the group";
+        return " a quitté le groupe";
       default:
         return "Erreur";
     }
@@ -123,7 +122,7 @@ class _GroupActivityCardState extends ConsumerState<GroupActivityCard> {
     );
   }
 
-  _buildListTile(Account? user, Note? note, GroupActivityType type) {
+  _buildListTile(Account? user, V1Note? note, GroupActivityType type) {
     String title = "";
 
     if (type == GroupActivityType.addNote) {
@@ -174,4 +173,56 @@ class _GroupActivityCardState extends ConsumerState<GroupActivityCard> {
       ),
     );
   }
+
+  // _buildListTile(Account? user, Note? note, GroupActivityType type) {
+  //   String title = "";
+
+  //   if (type == GroupActivityType.addNote) {
+  //     if (user != null && note != null) {
+  //       title =
+  //           "${user.data.name}${getTitleFromEvent(widget.groupActivity.event)}${note.title}.";
+  //     } else if (user != null && note == null) {
+  //       title =
+  //           "${user.data.name}${getTitleFromEvent(widget.groupActivity.event)} ...";
+  //     } else if (user == null && note != null) {
+  //       title =
+  //           "...${getTitleFromEvent(widget.groupActivity.event)}${note.title}.";
+  //     } else {
+  //       title = "...${getTitleFromEvent(widget.groupActivity.event)}...";
+  //     }
+  //   } else if (type == GroupActivityType.addMember ||
+  //       type == GroupActivityType.removeMember) {
+  //     if (user != null) {
+  //       title =
+  //           "${user.data.name}${getTitleFromEvent(widget.groupActivity.event)}";
+  //     } else {
+  //       title = "...${getTitleFromEvent(widget.groupActivity.event)}";
+  //     }
+  //   } else {
+  //     title = "Erreur";
+  //   }
+
+  //   return ListTile(
+  //     contentPadding: const EdgeInsets.all(8.0),
+  //     leading: Icon(
+  //       getIcon(type),
+  //       color: Colors.deepPurpleAccent,
+  //     ),
+  //     title: Text(
+  //       title,
+  //       maxLines: 2,
+  //       style: const TextStyle(
+  //         fontWeight: FontWeight.bold,
+  //         fontSize: 16.0,
+  //       ),
+  //     ),
+  //     subtitle: Text(
+  //       getDateToString(widget.groupActivity.createdAt),
+  //       style: const TextStyle(
+  //         fontStyle: FontStyle.italic,
+  //         fontSize: 14.0,
+  //       ),
+  //     ),
+  //   );
+  // }
 }

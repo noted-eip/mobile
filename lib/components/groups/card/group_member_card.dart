@@ -26,7 +26,7 @@ class _GroupMemberCardState extends ConsumerState<GroupMemberCard> {
       data: (account) {
         if (account == null) {
           return const Center(
-            child: Text("No members"),
+            child: Text("Pas de compte trouvé"),
           );
         }
 
@@ -48,7 +48,7 @@ class _GroupMemberCardState extends ConsumerState<GroupMemberCard> {
           color: Colors.red, borderRadius: BorderRadius.circular(16)),
       child: CustomSlide(
         title: account.data.email,
-        subtitle: widget.memberData.isAdmin ? "Admin" : "User",
+        subtitle: widget.memberData.isAdmin ? "Admin" : "Utilisateur",
         avatar: account.data.name.substring(0, 1).toUpperCase(),
         actions: widget.actions,
         color: Colors.blueGrey.shade800,

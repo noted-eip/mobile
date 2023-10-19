@@ -47,7 +47,7 @@ class _ListInvitesWidgetState extends ConsumerState<ListInvitesWidget> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          "Pending Invitations",
+          "Invitations en attente",
           textAlign: TextAlign.start,
           style: TextStyle(
               color: Colors.black, fontSize: 24, fontWeight: FontWeight.bold),
@@ -75,7 +75,7 @@ class _ListInvitesWidgetState extends ConsumerState<ListInvitesWidget> {
                     },
                     child: ListView(
                       children: const [
-                        Center(child: Text("No pending invites")),
+                        Center(child: Text("Aucunes invitations trouvées")),
                       ],
                     ),
                   );
@@ -110,7 +110,7 @@ class _ListInvitesWidgetState extends ConsumerState<ListInvitesWidget> {
                 );
               }),
               error: ((error, stackTrace) {
-                return const Center(child: Text("Error"));
+                return const Center(child: Text("Erreur"));
               }),
               loading: () => ListView.builder(
                 itemCount: 2,
@@ -142,7 +142,7 @@ class _ListInvitesWidgetState extends ConsumerState<ListInvitesWidget> {
                     },
                     child: ListView(
                       children: const [
-                        Center(child: Text("No pending invites")),
+                        Center(child: Text("Aucunes invitations trouvées")),
                       ],
                     ),
                   );
@@ -166,10 +166,10 @@ class _ListInvitesWidgetState extends ConsumerState<ListInvitesWidget> {
                 );
               }),
               error: ((error, stackTrace) {
-                return const Center(child: Text("Error"));
+                return const Center(child: Text("Erreur"));
               }),
               loading: () => const Center(
-                child: Text("CACA LOADING ...."),
+                child: Text("Chargement ...."),
               ),
             ),
           ),
@@ -192,7 +192,7 @@ class _ListInvitesWidgetState extends ConsumerState<ListInvitesWidget> {
                     },
                     child: ListView(
                       children: const [
-                        Center(child: Text("No pending invites")),
+                        Center(child: Text("Aucunes invitations trouvées")),
                       ],
                     ),
                   );
@@ -217,10 +217,10 @@ class _ListInvitesWidgetState extends ConsumerState<ListInvitesWidget> {
                 );
               }),
               error: ((error, stackTrace) {
-                return const Center(child: Text("Error"));
+                return const Center(child: Text("Erreur"));
               }),
               loading: () => const Center(
-                child: Text("CACA LOADING ...."),
+                child: Text("Chargement ...."),
               ),
             ),
           ),

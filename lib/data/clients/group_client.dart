@@ -239,7 +239,7 @@ class GroupClient {
     V1GroupMember? member = await getGroupMember(groupId, memberId, token);
 
     if (member == null) {
-      throw Failure(message: "Member not found");
+      throw Failure(message: "Membre non trouvé");
     }
 
     V1GroupMember updatedMember = member.rebuild((p0) => p0..isAdmin = isAdmin);

@@ -41,10 +41,10 @@ class _GroupInfosInputState extends ConsumerState<GroupInfosInput> {
               TextFormField(
                 controller: widget.titleController,
                 decoration: ThemeHelper()
-                    .textInputDecoration('Group Title', 'Enter a Title'),
+                    .textInputDecoration('Titre du groupe', 'Entre un Titre'),
                 validator: (val) {
                   if (val!.isEmpty) {
-                    return "Please enter a Title";
+                    return "Entrer un Titre";
                   }
                   return null;
                 },
@@ -55,10 +55,10 @@ class _GroupInfosInputState extends ConsumerState<GroupInfosInput> {
                 maxLines: 3,
                 controller: widget.descriptionController,
                 decoration: ThemeHelper().textInputDecoration(
-                    'Group Description', 'Enter a Description'),
+                    'Description du Groupe', 'Entrer une Description'),
                 validator: (val) {
                   if (val!.isEmpty) {
-                    return 'Please enter a Description';
+                    return 'Entrer une Description';
                   }
                   return null;
                 },

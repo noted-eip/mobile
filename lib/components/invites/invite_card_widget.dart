@@ -41,7 +41,7 @@ class _InviteCardState extends ConsumerState<InviteCard> {
           .acceptInvite(inviteId: inviteId, groupId: groupId);
       if (mounted) {
         CustomToast.show(
-          message: "Invite accepted",
+          message: "Invitation acceptée",
           type: ToastType.success,
           context: context,
           gravity: ToastGravity.BOTTOM,

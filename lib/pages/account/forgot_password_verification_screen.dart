@@ -60,10 +60,10 @@ class ForgotPasswordVerificationPageState
                     const SizedBox(height: 32),
                     Container(
                       alignment: Alignment.topLeft,
-                      child: Column(
+                      child: const Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children: [
                           Text(
                             'Verification',
                             style: TextStyle(

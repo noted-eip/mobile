@@ -78,10 +78,10 @@ class MyMenuItem {
 }
 
 class MyMenuItems {
-  static const home = MyMenuItem(icon: Icons.home, title: 'Home');
-  static const groups = MyMenuItem(icon: Icons.group, title: 'My Groups');
-  static const notes = MyMenuItem(icon: Icons.description, title: 'My Notes');
-  static const profil = MyMenuItem(icon: Icons.person, title: 'Profile');
+  static const home = MyMenuItem(icon: Icons.home, title: 'Accueil');
+  static const groups = MyMenuItem(icon: Icons.group, title: 'Mes Groupes');
+  static const notes = MyMenuItem(icon: Icons.description, title: 'Mes Notes');
+  static const profil = MyMenuItem(icon: Icons.person, title: 'Profil');
 
   static const all = <MyMenuItem>[
     home,
@@ -178,7 +178,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                     context, '/login', (r) => false);
               },
               leading: const Icon(Icons.logout),
-              title: const Text("Logout"),
+              title: const Text("Déconnexion"),
             ),
           ],
         ),

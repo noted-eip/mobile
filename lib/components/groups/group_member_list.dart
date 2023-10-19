@@ -90,7 +90,7 @@ class _GroupMembersListState extends ConsumerState<GroupMembersList> {
 
     if (widget.members == null) {
       return const Center(
-        child: Text("No members"),
+        child: Text("Pas de membres trouvés"),
       );
     } else {
       return Container(

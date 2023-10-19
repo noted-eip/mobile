@@ -99,7 +99,7 @@ class _GroupDetailHeaderState extends ConsumerState<GroupDetailHeader> {
                   ),
                   itemBuilder: ((context) {
                     return [
-                      if (member.value!.isAdmin)
+                      if (member.value != null && member.value!.isAdmin)
                         PopupMenuItem(
                           child: TextButton(
                             onPressed: () async {
@@ -123,7 +123,7 @@ class _GroupDetailHeaderState extends ConsumerState<GroupDetailHeader> {
                                   width: 10,
                                 ),
                                 Text(
-                                  "Edit",
+                                  "Modifier",
                                   style: TextStyle(
                                     color: Colors.grey.shade900,
                                     fontSize: 16,
@@ -134,7 +134,7 @@ class _GroupDetailHeaderState extends ConsumerState<GroupDetailHeader> {
                             ),
                           ),
                         ),
-                      if (member.value!.isAdmin)
+                      if (member.value != null && member.value!.isAdmin)
                         PopupMenuItem(
                           child: TextButton(
                             onPressed: () async {
@@ -142,9 +142,9 @@ class _GroupDetailHeaderState extends ConsumerState<GroupDetailHeader> {
                                 context: context,
                                 builder: ((context) {
                                   return CustomAlertDialog(
-                                    title: "Delete Group",
+                                    title: "Supprimer le Groupe",
                                     content:
-                                        "Are you sure you want to delete this group?",
+                                        "Êtes-vous sûr de vouloir supprimer ce groupe ?",
                                     onConfirm: () async {
                                       await widget.deleteGroup();
                                     },
@@ -171,7 +171,7 @@ class _GroupDetailHeaderState extends ConsumerState<GroupDetailHeader> {
                                   width: 10,
                                 ),
                                 Text(
-                                  "Delete",
+                                  "Supprimer",
                                   style: TextStyle(
                                     color: Colors.grey.shade900,
                                     fontSize: 16,
@@ -189,13 +189,13 @@ class _GroupDetailHeaderState extends ConsumerState<GroupDetailHeader> {
                               context: context,
                               builder: ((context) {
                                 return CustomAlertDialog(
-                                  title: "Leave the Group in header",
+                                  title: "Quitter le Groupe",
                                   content:
-                                      "Are you sure you want to leave this group ?",
+                                      "Êtes-vous sûr de vouloir quitter ce groupe ?",
                                   onConfirm: () async {
                                     await widget.leaveGroup();
                                   },
-                                  confirmText: "Leave",
+                                  confirmText: "Quitter",
                                 );
                               }),
                             );
@@ -219,7 +219,7 @@ class _GroupDetailHeaderState extends ConsumerState<GroupDetailHeader> {
                                 width: 10,
                               ),
                               Text(
-                                "Leave",
+                                "Quitter",
                                 style: TextStyle(
                                     color: Colors.grey.shade900,
                                     fontSize: 16,

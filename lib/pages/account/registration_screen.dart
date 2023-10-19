@@ -93,7 +93,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
 
         if (loginRes != null && mounted) {
           CustomToast.show(
-            message: "Account created",
+            message: "Compte créé avec succès !",
             type: ToastType.success,
             context: context,
             gravity: ToastGravity.BOTTOM,
@@ -175,7 +175,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                           ),
                           const SizedBox(height: 24),
                           const Text(
-                            'Create your Noted Account',
+                            'Créez votre compte Noted',
                             style: TextStyle(color: Colors.grey, fontSize: 24),
                           ),
                           const SizedBox(height: 32),
@@ -186,8 +186,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                               autofocus: true,
                               controller: _nameController,
                               decoration: ThemeHelper()
-                                  .textInputDecoration(
-                                      'Name', 'Enter your name')
+                                  .textInputDecoration('Nom', 'Enter votre nom')
                                   .copyWith(
                                     prefixIcon: const Icon(
                                       Icons.person_outline,
@@ -196,7 +195,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                                   ),
                               validator: (val) {
                                 if ((val!.isEmpty)) {
-                                  return "Enter an name";
+                                  return "Entrer votre nom";
                                 }
                                 return null;
                               },
@@ -210,7 +209,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                               controller: _emailController,
                               decoration: ThemeHelper()
                                   .textInputDecoration(
-                                      'Email', 'Enter your Email')
+                                      'Email', 'Enter votre email')
                                   .copyWith(
                                     prefixIcon: const Icon(
                                       Icons.mail_outline,
@@ -219,7 +218,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                                   ),
                               validator: (val) {
                                 if (val!.isEmpty) {
-                                  return "Please enter an email adress";
+                                  return "Veuillez entrer votre email";
                                 }
                                 //TODO: fix email validation
                                 // else if (!val.isEmail()) {
@@ -239,8 +238,8 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                               controller: _passwordController,
                               obscureText: _obscureText,
                               decoration: ThemeHelper()
-                                  .textInputDecoration(
-                                      "Password*", "Enter your password")
+                                  .textInputDecoration("Mot de passe*",
+                                      "Entrer votre mot de passe")
                                   .copyWith(
                                     prefixIcon: const Icon(
                                         Icons.lock_outline_rounded,
@@ -263,7 +262,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                                   ),
                               validator: (val) {
                                 if (val!.isEmpty) {
-                                  return "Please enter your password";
+                                  return "Veuillez entrer votre mot de passe";
                                 }
                                 return null;
                               },
@@ -287,7 +286,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                                             });
                                           }),
                                       const Text(
-                                        "I accept all terms and conditions.",
+                                        "J'accepte les conditions générales d'utilisation",
                                         style: TextStyle(color: Colors.grey),
                                       ),
                                     ],
@@ -308,7 +307,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                             },
                             validator: (value) {
                               if (!checkboxValue) {
-                                return 'You need to accept terms and conditions';
+                                return 'Vous devez accepter les conditions générales d\'utilisation';
                               } else {
                                 return null;
                               }
@@ -321,11 +320,11 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                                 _emailController.text,
                                 _passwordController.text),
                             btnController: btnController,
-                            text: 'Create',
+                            text: 'Créer',
                           ),
                           const SizedBox(height: 32.0),
                           const Text(
-                            "Or create account using social media",
+                            "Ou connectez-vous avec",
                             style: TextStyle(color: Colors.grey),
                           ),
                           const SizedBox(height: 24.0),
@@ -344,7 +343,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                               TextSpan(
                                 children: [
                                   const TextSpan(
-                                      text: "Already have an account? "),
+                                      text: "Vous avez déjà un compte ? "),
                                   TextSpan(
                                     text: 'Login',
                                     recognizer: TapGestureRecognizer()

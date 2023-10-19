@@ -25,3 +25,9 @@ active-android-debug:
 
 desactive-android-debug:
 	adb shell setprop debug.firebase.analytics.app .none.
+
+show-fix:
+	dart fix --dry-run
+
+fix:
+	dart fix --apply

@@ -93,13 +93,13 @@ class _QuizzPageState extends ConsumerState<QuizzPage> {
     PageController controller = PageController();
     String getFinishText() {
       if (nbRightAnswer == nbQuestion) {
-        return "Perfect";
+        return "Parfait !";
       } else if (nbRightAnswer == 0) {
-        return "Try again!";
+        return "Réésaie !";
       } else if (nbRightAnswer < nbQuestion / 2) {
-        return "You can do better !";
+        return "Tu peux mieux faire !";
       } else {
-        return "Well done";
+        return "Bien joué !";
       }
     }
 
@@ -113,7 +113,7 @@ class _QuizzPageState extends ConsumerState<QuizzPage> {
             children: [
               Image.asset("images/illustration.png"),
               const Spacer(),
-              Text("You have $nbRightAnswer / $nbQuestion good answers !",
+              Text("Vous avez $nbRightAnswer / $nbQuestion bonnes réponses !",
                   style: const TextStyle(fontSize: 20)),
               const SizedBox(height: 20),
               RatingBarIndicator(
@@ -136,7 +136,7 @@ class _QuizzPageState extends ConsumerState<QuizzPage> {
 
                   Navigator.pop(context);
                 },
-                child: const Text("Quit"),
+                child: const Text("Quitter"),
               ),
             ],
           );
@@ -147,7 +147,7 @@ class _QuizzPageState extends ConsumerState<QuizzPage> {
 
         return Column(
           children: [
-            Text(widget.quiz.questions![index].question ?? "No question",
+            Text(widget.quiz.questions![index].question ?? "Pas de question",
                 style: const TextStyle(fontSize: 20)),
             const SizedBox(height: 20),
             Expanded(
@@ -197,8 +197,8 @@ class _QuizzPageState extends ConsumerState<QuizzPage> {
             if (isVerified)
               Text(
                 isValid
-                    ? "Good Answer"
-                    : "Wrong Answer, the good answer is : ${currentSolutions.join(", ")}",
+                    ? "Bonne réponse"
+                    : "Mauvaise Réponse, la bonne réponse est : ${currentSolutions.join(", ")}",
                 style: TextStyle(
                   color: isValid ? Colors.green : Colors.red,
                 ),
@@ -236,7 +236,7 @@ class _QuizzPageState extends ConsumerState<QuizzPage> {
                 }
               },
               child: Text(
-                isVerified ? "Next" : "Check",
+                isVerified ? "Suivant" : "Vérifier",
                 style: TextStyle(
                   color: isVerified ? Colors.white : Colors.black,
                 ),

@@ -14,10 +14,10 @@ class _LatestFilesState extends ConsumerState<LatestFiles> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
-      child: Column(
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          Text("Latest Notes", style: TextStyle(fontSize: 20)),
+        children: [
+          Text("Mes Dernières Notes", style: TextStyle(fontSize: 20)),
           SizedBox(height: 16),
           Expanded(
               child: Padding(

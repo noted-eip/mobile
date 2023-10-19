@@ -167,7 +167,7 @@ class GroupInfos extends StatelessWidget {
               ),
             ],
           ),
-          Text("Group Description",
+          Text("Description",
               style: TextStyle(
                   color: Colors.grey.shade900,
                   fontSize: 24,

@@ -34,7 +34,7 @@ class _CreateGroupModalState extends ConsumerState<CreateGroupModal> {
   String groupId = "";
   PageController pageController = PageController(initialPage: 0);
   int pageIndex = 0;
-  String buttonText = "Next";
+  String buttonText = "Suivant";
 
   Future<void> createGroup(UserNotifier user) async {
     if (pageIndex == 0) {
@@ -102,7 +102,7 @@ class _CreateGroupModalState extends ConsumerState<CreateGroupModal> {
             formKey: _formKey,
             descriptionController: _descriptionController,
             titleController: _titleController,
-            title: "Create Group",
+            title: "Créer un Groupe",
           ),
         );
       });
@@ -127,9 +127,9 @@ class _CreateGroupModalState extends ConsumerState<CreateGroupModal> {
                 setState(() {
                   pageIndex = value;
                   if (pageIndex == 1) {
-                    buttonText = "Finish";
+                    buttonText = "Terminer";
                   } else {
-                    buttonText = "Next";
+                    buttonText = "Suivant";
                   }
                 });
               },

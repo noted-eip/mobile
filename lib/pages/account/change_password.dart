@@ -59,10 +59,10 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
                   const SizedBox(height: 32),
                   Container(
                     alignment: Alignment.topLeft,
-                    child: Column(
+                    child: const Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
+                      children: [
                         Text(
                           'Create a New Password',
                           style: TextStyle(

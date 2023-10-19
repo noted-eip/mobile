@@ -37,7 +37,7 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
           child: ListView(
             padding: EdgeInsets.zero,
             children: const [
-              Center(child: Text("No invitations found")),
+              Center(child: Text("Aucunes invitations trouvées")),
             ],
           ),
         );
@@ -51,7 +51,7 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
           child: ListView(
             padding: EdgeInsets.zero,
             children: const [
-              Center(child: Text("No invitations found")),
+              Center(child: Text("Aucunes invitations trouvées")),
             ],
           ),
         );
@@ -103,10 +103,10 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
                 indicatorColor: Colors.grey.shade900,
                 tabs: const [
                   Tab(
-                    text: "Sent",
+                    text: "Envoyées",
                   ),
                   Tab(
-                    text: "Received",
+                    text: "Reçues",
                   ),
                 ],
               ),

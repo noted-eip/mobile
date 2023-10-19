@@ -50,12 +50,12 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
       context: context,
       builder: ((context) {
         return CustomAlertDialog(
-          title: "Leave the Group ?",
-          content: "Are you sure you want to leave this group ?",
+          title: "Quitter le groupe",
+          content: "Êtes-vous sûr de vouloir quitter ce groupe ?",
           onConfirm: () async {
             await deleteGroupMember(userTkn, userId, groupId, true);
           },
-          confirmText: "Leave",
+          confirmText: "Quitter",
         );
       }),
     );
@@ -119,7 +119,7 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
       if (mounted) {
         Navigator.pop(context, true);
         CustomToast.show(
-          message: "Group deleted successfully",
+          message: "Le groupe a été supprimé avec succès",
           type: ToastType.success,
           context: context,
           gravity: ToastGravity.BOTTOM,
@@ -221,10 +221,10 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
                                   ),
                                   // if (!isWorkspace)
                                   Tab(
-                                    text: "Members",
+                                    text: "Membres",
                                   ),
                                   Tab(
-                                    text: "Activities",
+                                    text: "Activitées",
                                   ),
                                 ],
                               ),
@@ -363,10 +363,10 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
                               text: "Notes",
                             ),
                             Tab(
-                              text: "Members",
+                              text: "Membres",
                             ),
                             Tab(
-                              text: "Activities",
+                              text: "Activitées",
                             ),
                           ],
                         ),

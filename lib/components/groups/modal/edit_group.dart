@@ -91,7 +91,7 @@ class _EditGroupModalState extends ConsumerState<EditGroupModal> {
             child: GroupInfosInput(
               titleController: _titleController,
               descriptionController: _descriptionController,
-              title: "Edit Group",
+              title: "Modifier le Groupe",
               formKey: _formKey,
             ),
           ),
@@ -102,7 +102,7 @@ class _EditGroupModalState extends ConsumerState<EditGroupModal> {
                 await editGroup();
               }
             },
-            text: "VALIDATE",
+            text: "Enregistrer",
           ),
         ],
       ),

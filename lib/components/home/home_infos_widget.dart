@@ -18,14 +18,14 @@ class HomeInfos extends ConsumerWidget {
             children: [
               RichText(
                 text: TextSpan(
-                  text: 'Hello,\n',
+                  text: 'Salut,\n',
                   style: const TextStyle(fontSize: 20, color: Colors.black),
                   children: <TextSpan>[
                     TextSpan(
                         text: user.name == '' ? 'Name !\n' : '${user.name} !\n',
                         style: const TextStyle(fontWeight: FontWeight.bold)),
                     const TextSpan(
-                      text: 'Let\'s start to write our story !',
+                      text: 'Commençons à écrire notre histoire !',
                       style: TextStyle(color: Colors.grey),
                     ),
                   ],

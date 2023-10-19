@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/components/common/custom_slide.dart';
 import 'package:noted_mobile/data/models/account/account.dart';
-import 'package:noted_mobile/data/models/note/note.dart';
 import 'package:noted_mobile/data/providers/account_provider.dart';
 import 'package:noted_mobile/utils/constant.dart';
+import 'package:openapi/openapi.dart';
 import 'package:shimmer/shimmer.dart';
 
 class NoteCard extends ConsumerStatefulWidget {
@@ -30,7 +30,8 @@ class NoteCard extends ConsumerStatefulWidget {
           baseColor: null,
         );
 
-  final Note? note;
+  final V1Note? note;
+  // final Note? note;
   final Color? color;
   final IconData? icon;
   final bool? displaySeeMore;
@@ -127,7 +128,8 @@ class _NoteCardState extends ConsumerState<NoteCard> {
       return const CustomSlide.empty();
     }
 
-    final account = ref.watch(accountProvider(widget.note!.authorId));
+    // final account = ref.watch(accountProvider(widget.note!.authorId));
+    final account = ref.watch(accountProvider(widget.note!.authorAccountId));
 
     return buildCard(account);
   }

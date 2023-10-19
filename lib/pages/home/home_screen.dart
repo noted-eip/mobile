@@ -72,8 +72,8 @@ class _HomePageState extends ConsumerState<HomePage> {
             children: [
               SizedBox(
                 height: homePageHeight,
-                child: Column(
-                  children: const [
+                child: const Column(
+                  children: [
                     Expanded(flex: 2, child: HomeInfos()),
                     Expanded(flex: 4, child: LatestsGroups()),
                     Expanded(flex: 6, child: LatestFiles()),

@@ -96,12 +96,12 @@ class _CustomSwitchState extends State<CustomSwitch> {
               alignment: Alignment.center,
               clipBehavior: Clip.none,
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    children: const [
+                    children: [
                       Expanded(
                           child: Text(
                         'USER',

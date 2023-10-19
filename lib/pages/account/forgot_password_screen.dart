@@ -86,10 +86,10 @@ class ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                     child: const Icon(Icons.key, size: 80, color: Colors.black),
                   ),
                   const SizedBox(height: 32),
-                  Column(
+                  const Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       Text(
                         'Forgot Password?',
                         style: TextStyle(

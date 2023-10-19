@@ -123,8 +123,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       context: context,
       builder: ((context) {
         return CustomAlertDialog(
-          title: "Delete Account",
-          content: "Are you sure you want to delete your account ?",
+          title: "Supprimer le compte",
+          content: "Êtes-vous sûr de vouloir supprimer votre compte ?",
           onConfirm: () async {
             try {
               bool res = await ref.read(accountClientProvider).deleteAccount();
@@ -175,7 +175,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Profile Page",
+          "Profil",
           style: TextStyle(
               color: Colors.grey.shade900, fontWeight: FontWeight.bold),
         ),
@@ -211,7 +211,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                               child: Column(
                                 children: [
                                   const Text(
-                                    "Edit Account",
+                                    "Modifier le profil",
                                     style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold),
@@ -226,8 +226,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                         TextFormField(
                                           decoration:
                                               ThemeHelper().textInputProfile(
-                                            labelText: "Name",
-                                            hintText: "Enter your name",
+                                            labelText: "Nom",
+                                            hintText: "Entre votre nom",
                                             prefixIcon:
                                                 const Icon(Icons.person),
                                           ),
@@ -243,9 +243,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                           },
                                           validator: (value) {
                                             if (value!.isEmpty) {
-                                              return "Name cannot be empty";
+                                              return "Le Nom ne peut pas être vide";
                                             } else if (value.length < 4) {
-                                              return "Name must be at least 4 characters";
+                                              return "Le Nom doit contenir au moins 4 caractères";
                                             }
                                             return null;
                                           },
@@ -257,7 +257,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                           decoration:
                                               ThemeHelper().textInputProfile(
                                             labelText: "Email",
-                                            hintText: "Enter your email",
+                                            hintText: "Entrer votre email",
                                             prefixIcon: const Icon(Icons.email),
                                           ),
                                           enabled: false, //isEditing,
@@ -278,7 +278,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                         TextFormField(
                                           decoration:
                                               ThemeHelper().textInputProfile(
-                                            labelText: "Password",
+                                            labelText: "Mot de passe",
                                             hintText: "••••",
                                             prefixIcon: const Icon(Icons.lock),
                                             suffixIcon: IconButton(
@@ -314,7 +314,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                             if (value!.isEmpty) {
                                               return null;
                                             } else if (value.length < 4) {
-                                              return "Password must be at least 4 characters";
+                                              return "Le mot de passe doit contenir au moins 4 caractères";
                                             }
                                             return null;
                                           },
@@ -325,7 +325,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                         TextFormField(
                                           decoration:
                                               ThemeHelper().textInputProfile(
-                                            labelText: "Confirm Password",
+                                            labelText:
+                                                "Confirmer le mot de passe",
                                             hintText: "••••",
                                             prefixIcon: const Icon(Icons.lock),
                                             suffixIcon: IconButton(
@@ -358,10 +359,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                             if (value!.isEmpty) {
                                               return null;
                                             } else if (value.length < 4) {
-                                              return "Confirm Password must be at least 4 characters";
+                                              return "Le mot de passe doit contenir au moins 4 caractères";
                                             } else if (value !=
                                                 passwordController.text) {
-                                              return "Confirm Password must be same as Password";
+                                              return "Les mots de passe ne correspondent pas";
                                             }
                                             return null;
                                           },
@@ -409,7 +410,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                               }
                             },
                             btnController: _btnControllerSave,
-                            text: 'Save',
+                            text: 'Enregistrer',
                           ),
                         ],
                       ),
@@ -471,8 +472,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 ),
                 TextField(
                   decoration: ThemeHelper().textInputProfile(
-                    labelText: "Name",
-                    hintText: "Enter your name",
+                    labelText: "Nom",
+                    hintText: "Entrer votre nom",
                     prefixIcon: const Icon(Icons.person),
                   ),
                   controller: nameController,
@@ -484,7 +485,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 TextField(
                   decoration: ThemeHelper().textInputProfile(
                     labelText: "Email",
-                    hintText: "Enter your email",
+                    hintText: "Entrer votre email",
                     prefixIcon: const Icon(Icons.email),
                   ),
                   controller: emailController,
@@ -494,7 +495,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 TextButton(
                   onPressed: () async => deleteAccount(),
                   child: const Text(
-                    'Delete Account',
+                    'Supprimer le compte',
                     style: TextStyle(color: Colors.redAccent),
                   ),
                 ),

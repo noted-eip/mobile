@@ -53,7 +53,7 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> {
               widget.onCancel!();
             }
           },
-          child: Text(widget.cancelText ?? "Cancel"),
+          child: Text(widget.cancelText ?? "Annuler"),
         ),
         TextButton(
           onPressed: () {
@@ -63,7 +63,7 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> {
           style: ButtonStyle(
             foregroundColor: MaterialStateProperty.all(Colors.red),
           ),
-          child: Text(widget.confirmText ?? "Delete"),
+          child: Text(widget.confirmText ?? "Supprimer"),
         ),
       ],
     );

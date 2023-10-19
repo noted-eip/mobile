@@ -49,7 +49,8 @@ class _LatestsGroupsState extends ConsumerState<LatestsGroups> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text("Latest Groups", style: TextStyle(fontSize: 20)),
+                const Text("Mes Derniers Groupes",
+                    style: TextStyle(fontSize: 20)),
                 Expanded(
                   child: GridView.builder(
                     gridDelegate:
@@ -77,7 +78,7 @@ class _LatestsGroupsState extends ConsumerState<LatestsGroups> {
                         );
                       } else {
                         return GroupCard(
-                          groupName: "See More ...",
+                          groupName: "Voir plus ...",
                           groupIcon: Icons.add,
                           displaySeeMore: true,
                           onTap: () {
@@ -98,12 +99,13 @@ class _LatestsGroupsState extends ConsumerState<LatestsGroups> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text("Start with Groups", style: TextStyle(fontSize: 20)),
+                const Text("Commencer avec les groupes",
+                    style: TextStyle(fontSize: 20)),
                 Expanded(
                   child: Row(
                     children: [
                       GroupCard(
-                        groupName: "Create a Group",
+                        groupName: "Créer un groupe",
                         groupIcon: Icons.add,
                         displaySeeMore: true,
                         onTap: () async {
@@ -151,7 +153,7 @@ class _LatestsGroupsState extends ConsumerState<LatestsGroups> {
           );
         },
         error: (error, stack) => const Center(
-          child: Text("Error"),
+          child: Text("Erreur"),
         ),
       ),
     );

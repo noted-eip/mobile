@@ -33,12 +33,13 @@ class _GroupsListPageState extends ConsumerState<GroupsListPage> {
 
   Widget buildSearchBar() {
     return TextField(
-      decoration: ThemeHelper().textInputDecoration('', 'Search ...').copyWith(
-          prefixIcon: const Icon(
-            Icons.search_outlined,
-            color: Colors.grey,
-          ),
-          floatingLabelBehavior: FloatingLabelBehavior.always),
+      decoration:
+          ThemeHelper().textInputDecoration('', 'Rechercher ...').copyWith(
+              prefixIcon: const Icon(
+                Icons.search_outlined,
+                color: Colors.grey,
+              ),
+              floatingLabelBehavior: FloatingLabelBehavior.always),
       onChanged: (value) {
         ref.read(searchProvider.notifier).update((state) => value);
       },
@@ -54,205 +55,210 @@ class _GroupsListPageState extends ConsumerState<GroupsListPage> {
         onTap: () {
           FocusScope.of(context).unfocus();
         },
-        child: CupertinoPageScaffold(
-          child: RefreshIndicator(
-            triggerMode: RefreshIndicatorTriggerMode.onEdge,
-            displacement: 60,
-            edgeOffset:
-                kToolbarHeight + 16 + MediaQuery.of(context).padding.top + 100,
-            onRefresh: () async {
-              return await Future.delayed(
-                const Duration(milliseconds: 200),
-              ).then((value) => ref.invalidate(groupsProvider));
-            },
-            child: CustomScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              slivers: <Widget>[
-                CupertinoSliverNavigationBar(
-                  border: Border.all(color: CupertinoColors.white),
-                  padding: const EdgeInsetsDirectional.only(
-                    start: 8,
-                    end: 8,
-                  ),
-                  backgroundColor: Colors.white,
-                  leading: Material(
-                    child: IconButton(
-                      padding: EdgeInsets.zero,
-                      iconSize: 32,
-                      icon: Icon(
-                        Icons.menu,
-                        color: Colors.grey.shade900,
-                      ),
-                      onPressed: () {
-                        Scaffold.of(context).openDrawer();
-                      },
+        child: SafeArea(
+          child: CupertinoPageScaffold(
+            child: RefreshIndicator(
+              triggerMode: RefreshIndicatorTriggerMode.onEdge,
+              displacement: 60,
+              edgeOffset: kToolbarHeight +
+                  16 +
+                  MediaQuery.of(context).padding.top +
+                  100,
+              onRefresh: () async {
+                return await Future.delayed(
+                  const Duration(milliseconds: 200),
+                ).then((value) => ref.invalidate(groupsProvider));
+              },
+              child: CustomScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                slivers: <Widget>[
+                  CupertinoSliverNavigationBar(
+                    border: Border.all(color: CupertinoColors.white),
+                    padding: const EdgeInsetsDirectional.only(
+                      start: 8,
+                      end: 8,
                     ),
-                  ),
-                  largeTitle: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    textBaseline: TextBaseline.alphabetic,
-                    children: [
-                      const Text(
-                        "My Groups",
+                    backgroundColor: Colors.white,
+                    leading: Material(
+                      color: Colors.transparent,
+                      child: IconButton(
+                        padding: EdgeInsets.zero,
+                        iconSize: 32,
+                        icon: Icon(
+                          Icons.menu,
+                          color: Colors.grey.shade900,
+                        ),
+                        onPressed: () {
+                          Scaffold.of(context).openDrawer();
+                        },
                       ),
-                      const Spacer(),
-                      Material(
-                        color: Colors.transparent,
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
-                          child: IconButton(
-                            padding: EdgeInsets.zero,
-                            color: Colors.grey.shade900,
-                            splashColor: Colors.black,
-                            splashRadius: 35,
-                            focusColor: Colors.blueAccent,
-                            iconSize: 32,
-                            onPressed: () => openCreateGroupModal(),
-                            icon: const Icon(Icons.add),
+                    ),
+                    largeTitle: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      textBaseline: TextBaseline.alphabetic,
+                      children: [
+                        const Text(
+                          "Mes Groupes",
+                        ),
+                        const Spacer(),
+                        Material(
+                          color: Colors.transparent,
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: IconButton(
+                              padding: EdgeInsets.zero,
+                              color: Colors.grey.shade900,
+                              splashColor: Colors.black,
+                              splashRadius: 35,
+                              focusColor: Colors.blueAccent,
+                              iconSize: 32,
+                              onPressed: () => openCreateGroupModal(),
+                              icon: const Icon(Icons.add),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  trailing: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Material(
-                        color: Colors.transparent,
-                        child: IconButton(
-                          padding: EdgeInsets.zero,
-                          iconSize: 24,
-                          onPressed: (() {
-                            if (kDebugMode) {
-                              print("Send button pressed");
-                            }
-                            ref
-                                .read(trackerProvider)
-                                .trackPage(TrackPage.notification);
-                            Navigator.pushNamed(context, "/notif");
-                          }),
-                          icon: Icon(Icons.send_rounded,
-                              color: Colors.grey.shade900),
+                      ],
+                    ),
+                    trailing: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Material(
+                          color: Colors.transparent,
+                          child: IconButton(
+                            padding: EdgeInsets.zero,
+                            iconSize: 24,
+                            onPressed: (() {
+                              if (kDebugMode) {
+                                print("Send button pressed");
+                              }
+                              ref
+                                  .read(trackerProvider)
+                                  .trackPage(TrackPage.notification);
+                              Navigator.pushNamed(context, "/notif");
+                            }),
+                            icon: Icon(Icons.send_rounded,
+                                color: Colors.grey.shade900),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                SliverPersistentHeader(
-                  pinned: true,
-                  delegate: OurDelegate(
-                    closedHeight: 16,
-                    openHeight: 16,
-                    toolBarHeight: kToolbarHeight,
-                    child: buildSearchBar(),
+                  SliverPersistentHeader(
+                    pinned: true,
+                    delegate: OurDelegate(
+                      closedHeight: 16,
+                      openHeight: 16,
+                      toolBarHeight: kToolbarHeight,
+                      child: buildSearchBar(),
+                    ),
                   ),
-                ),
-                groups.when(
-                  data: (data) {
-                    if (data == null || data.isEmpty) {
-                      final media = MediaQuery.of(context);
-                      final bodyHeight = media.size.height -
-                          media.padding.top -
-                          16 -
-                          media.viewPadding.top -
-                          media.viewPadding.bottom -
-                          media.padding.bottom -
-                          kToolbarHeight;
+                  groups.when(
+                    data: (data) {
+                      if (data == null || data.isEmpty) {
+                        final media = MediaQuery.of(context);
+                        final bodyHeight = media.size.height -
+                            media.padding.top -
+                            16 -
+                            media.viewPadding.top -
+                            media.viewPadding.bottom -
+                            media.padding.bottom -
+                            kToolbarHeight;
+
+                        return SliverSafeArea(
+                          top: false,
+                          sliver: SliverFixedExtentList(
+                            itemExtent: bodyHeight,
+                            delegate: SliverChildBuilderDelegate(
+                              (BuildContext context, int index) {
+                                return const Material(
+                                  color: Colors.transparent,
+                                  child: Center(
+                                    child: Text("No groups found",
+                                        style: TextStyle(fontSize: 18)),
+                                  ),
+                                );
+                              },
+                              childCount: 1,
+                            ),
+                          ),
+                        );
+                      }
 
                       return SliverSafeArea(
                         top: false,
-                        sliver: SliverFixedExtentList(
-                          itemExtent: bodyHeight,
+                        minimum: const EdgeInsets.all(16),
+                        sliver: SliverGrid(
                           delegate: SliverChildBuilderDelegate(
-                            (BuildContext context, int index) {
-                              return const Material(
+                            (context, index) {
+                              final group = data[index].data;
+                              return Material(
                                 color: Colors.transparent,
-                                child: Center(
-                                  child: Text("No groups found",
-                                      style: TextStyle(fontSize: 18)),
+                                child: GroupCard(
+                                  groupName: group.name,
+                                  groupDescription: group.description,
+                                  groupNotesCount: 0,
+                                  onTap: () async {
+                                    ref
+                                        .read(trackerProvider)
+                                        .trackPage(TrackPage.groupDetail);
+                                    final res = await Navigator.pushNamed(
+                                        context, "/group-detail",
+                                        arguments: group.id);
+
+                                    if (res == true) {
+                                      ref.invalidate(groupsProvider);
+                                      ref.invalidate(latestGroupsProvider);
+                                    }
+                                  },
                                 ),
                               );
                             },
-                            childCount: 1,
+                            childCount: data.length,
+                          ),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
                           ),
                         ),
                       );
-                    }
-
-                    return SliverSafeArea(
+                    },
+                    loading: () => SliverSafeArea(
                       top: false,
                       minimum: const EdgeInsets.all(16),
                       sliver: SliverGrid(
                         delegate: SliverChildBuilderDelegate(
                           (context, index) {
-                            final group = data[index].data;
-                            return Material(
-                              color: Colors.transparent,
-                              child: GroupCard(
-                                groupName: group.name,
-                                groupDescription: group.description,
-                                groupNotesCount: 0,
-                                onTap: () async {
-                                  ref
-                                      .read(trackerProvider)
-                                      .trackPage(TrackPage.groupDetail);
-                                  final res = await Navigator.pushNamed(
-                                      context, "/group-detail",
-                                      arguments: group.id);
-
-                                  if (res == true) {
-                                    ref.invalidate(groupsProvider);
-                                    ref.invalidate(latestGroupsProvider);
-                                  }
-                                },
-                              ),
-                            );
+                            return const GroupCard.empty();
                           },
-                          childCount: data.length,
+                          childCount: 6,
                         ),
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
                         ),
                       ),
-                    );
-                  },
-                  loading: () => SliverSafeArea(
-                    top: false,
-                    minimum: const EdgeInsets.all(16),
-                    sliver: SliverGrid(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                          return const GroupCard.empty();
-                        },
-                        childCount: 6,
-                      ),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
+                    ),
+                    error: (error, stack) => SliverSafeArea(
+                      sliver: SliverGrid(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                            return const GroupCard.empty();
+                          },
+                          childCount: 6,
+                        ),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                        ),
                       ),
                     ),
                   ),
-                  error: (error, stack) => SliverSafeArea(
-                    sliver: SliverGrid(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                          return const GroupCard.empty();
-                        },
-                        childCount: 6,
-                      ),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

@@ -122,7 +122,7 @@ class _InviteFieldState extends ConsumerState<InviteField> {
       autofocus: true,
       controller: widget.controller,
       decoration: ThemeHelper()
-          .textInputDecoration('Email', 'Enter an user email')
+          .textInputDecoration('Email', 'Entrer un Email')
           .copyWith(
             suffixIcon: suffixIcon,
           ),
@@ -131,12 +131,12 @@ class _InviteFieldState extends ConsumerState<InviteField> {
             .hasMatch(widget.controller.text);
 
         if (widget.controller.text.isEmpty || !isEmailValidReg) {
-          return "This email is not valid";
+          return "Cette adresse email n'est pas valide";
         }
         checkEmail();
 
         if (isLoading) {
-          return "Checking email, please wait...";
+          return "Verification de l'Email, veuiller patienter...";
         }
         return null;
       },
@@ -213,7 +213,7 @@ class _InviteMemberState extends ConsumerState<InviteMemberWidget> {
     return Column(
       children: [
         const Text(
-          "Invite Members",
+          "Inviter un membre",
           style: TextStyle(
               color: Colors.black, fontSize: 24, fontWeight: FontWeight.bold),
         ),
@@ -260,11 +260,11 @@ class _InviteMemberState extends ConsumerState<InviteMemberWidget> {
                       ? Colors.grey.shade900
                       : Colors.grey.shade400,
                   animateOnTap: isValidEmailAdress ? true : false,
-                  width: MediaQuery.of(context).size.width / 2,
+                  width: double.infinity,
                   onPressed: () async => isValidEmailAdress
                       ? sendInvite()
                       : widget.formKey.currentState!.validate(),
-                  text: "Send Invite",
+                  text: "Envoyer l'invitation",
                 ),
                 const SizedBox(
                   height: 32,
