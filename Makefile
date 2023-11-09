@@ -32,3 +32,6 @@ show-fix:
 
 fix:
 	dart fix --apply
+
+clean-auto: 
+	@find . -name "*.g.dart" -exec rm -f {} \;
