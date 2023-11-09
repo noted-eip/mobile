@@ -9,24 +9,17 @@ final searchNoteProvider = StateProvider((ref) => '');
 
 final noteClientProvider = Provider<NoteClient>((ref) => NoteClient(ref: ref));
 
-// final notesProvider = FutureProvider<List<Note>?>((ref) async {
-//   final account = ref.watch(userProvider);
-//   final notelist =
-//       await ref.watch(noteClientProvider).listNotes(account.id, account.token);
-
 final notesProvider = FutureProvider<List<V1Note>?>((ref) async {
   final account = ref.watch(userProvider);
   final notelist =
       await ref.watch(noteClientProvider).listNotes(account.id, account.token);
 
   final search = ref.watch(searchNoteProvider);
-  final grouplist =
-      await ref.watch(noteClientProvider).listNotes(account.id, account.token);
 
   // cacheTimeout(ref, 'fetchGroups');
 
   if (search == "") {
-    return grouplist;
+    return notelist;
   } else {
     return notelist
         ?.where(

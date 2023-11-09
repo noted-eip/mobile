@@ -27,7 +27,9 @@ class NoteClient {
       final response = await ref.read(apiProvider).notesAPICreateNote(
           groupId: groupId,
           body: NotesAPICreateNoteRequest(
-            ((body) => body..title = title),
+            ((body) => body
+              ..title = title
+              ..lang = "fr"),
           ),
 
           // V1CreateNoteRequest(
@@ -174,8 +176,10 @@ class NoteClient {
 
         // throw Failure(message: response.toString());
       }
+      print("notes : ${response.data!.notes!.toList()}");
       return response.data!.notes!.toList();
     } on DioException catch (e) {
+      print("error: $e\n");
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
         print("Exception when calling DefaultApi->listNotes: $error\n");
