@@ -68,6 +68,8 @@ dependencies:
   webview_flutter_android: ^3.10.1
   webview_flutter_wkwebview: ^3.7.4
   super_editor: ^0.2.6
+  flutter_markdown: ^0.6.18
+  built_collection: ^5.1.1
 
 dev_dependencies:
   flutter_test:

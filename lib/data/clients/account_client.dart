@@ -54,8 +54,7 @@ class AccountClient {
     } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
-        print(
-            "Exception when calling DefaultApi->accountsAPIResetPassword: $error\n");
+        print("Exception when calling DefaultApi->resetPassword: $error\n");
       }
       throw Failure(message: error);
     }
@@ -93,8 +92,7 @@ class AccountClient {
         print("error : $error");
         print("error : ${e.response!.data}");
         print("error : ${e.response!.statusCode}");
-        print(
-            "Exception when calling DefaultApi->accountsAPIVerifyToken: $error\n");
+        print("Exception when calling DefaultApi->verifyToken: $error\n");
       }
       throw Failure(message: error);
     }
@@ -128,7 +126,7 @@ class AccountClient {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
         print(
-            "Exception when calling DefaultApi->accountsAPIAuthenticate: $error\n");
+            "Exception when calling DefaultApi->forgetAccountPassword: $error\n");
       }
       throw Failure(message: error);
     }
@@ -155,6 +153,7 @@ class AccountClient {
             "inside try : code = ${response.statusCode}, error = ${response.toString()}",
           );
         }
+
         throw Failure(message: response.toString());
       }
 
@@ -199,8 +198,7 @@ class AccountClient {
     } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
-        print(
-            "Exception when calling DefaultApi->accountsAPIAuthenticate: $error\n");
+        print("Exception when calling DefaultApi->loginWithGoogle: $error\n");
       }
       throw Failure(message: error);
     }
@@ -273,8 +271,7 @@ class AccountClient {
     } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
-        print(
-            "Exception when calling DefaultApi->accountsAPIAuthenticate: $error\n");
+        print("Exception when calling DefaultApi->login: $error\n");
       }
       throw Failure(message: error);
     }
@@ -312,8 +309,7 @@ class AccountClient {
     } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
-        print(
-            "Exception when calling DefaultApi->accountsAPICreateAccount: $error\n");
+        print("Exception when calling DefaultApi->createAccount: $error\n");
       }
       throw Failure(message: error);
     }
@@ -358,8 +354,7 @@ class AccountClient {
     } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
-        print(
-            "Exception when calling DefaultApi->accountsAPIUpdateAccount: $error\n");
+        print("Exception when calling DefaultApi->updateAccount: $error\n");
       }
       throw Failure(message: error);
     }
@@ -394,8 +389,7 @@ class AccountClient {
     } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
-        print(
-            "Exception when calling DefaultApi->accountsAPIDeleteAccount: $error\n");
+        print("Exception when calling DefaultApi->deleteAccount: $error\n");
       }
       throw Failure(message: error);
     }
@@ -425,8 +419,7 @@ class AccountClient {
     } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
-        print(
-            "Exception when calling DefaultApi->accountsAPIGetAccount: $error\n");
+        print("Exception when calling DefaultApi->getAccountById: $error\n");
       }
       throw Failure(message: error);
     }
@@ -457,8 +450,7 @@ class AccountClient {
     } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
-        print(
-            "Exception when calling DefaultApi->accountsAPIGetAccount: $error\n");
+        print("Exception when calling DefaultApi->getAccountByEmail: $error\n");
       }
       throw Failure(message: error);
     }

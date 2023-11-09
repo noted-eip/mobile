@@ -51,55 +51,11 @@ class NoteClient {
     } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
-        print(
-            "Exception when calling DefaultApi->accountsAPIGetAccount: $error\n");
+        print("Exception when calling DefaultApi->createNote: $error\n");
       }
       throw Failure(message: error);
     }
   }
-
-  // Future<Note?> createNote({
-  //   required String groupId,
-  //   required String title,
-  // }) async {
-  //   final userNotifier = ref.read(userProvider);
-
-  //   try {
-  //     final response = await ref.read(apiProvider).notesAPICreateNote(
-  //         groupId: groupId,
-  //         body: NotesAPICreateNoteRequest(
-  //           ((body) => body..title = title),
-  //         ),
-
-  //         // V1CreateNoteRequest(
-  //         //   title: title,
-  //         //   content: content,
-  //         // ),
-  //         headers: {"Authorization": "Bearer ${userNotifier.token}"});
-
-  //     if (response.statusCode != 200 || response.data == null) {
-  //       if (kDebugMode) {
-  //         print(
-  //           "inside try : code = ${response.statusCode}, error = ${response.toString()}",
-  //         );
-  //       }
-  //       return null;
-
-  //       // throw Failure(message: response.toString());
-  //     }
-
-  //     return Note.fromApi(response.data!.note);
-  //   } on DioException catch (e) {
-  //     String error = DioExceptions.fromDioError(e).toString();
-  //     if (kDebugMode) {
-  //       print(
-  //           "Exception when calling DefaultApi->accountsAPIGetAccount: $error\n");
-  //     }
-  //     throw Failure(message: error);
-  //   }
-  // }
-
-  // updateNote
 
   Future<V1Note?> updateNote({
     required String groupId,
@@ -110,10 +66,13 @@ class NoteClient {
 
     try {
       final response = await ref.read(apiProvider).notesAPIUpdateNote(
-          groupId: groupId,
-          noteId: noteId,
-          note: note,
-          headers: {"Authorization": "Bearer ${userNotifier.token}"});
+        groupId: groupId,
+        noteId: noteId,
+        note: note,
+        headers: {
+          "Authorization": "Bearer ${userNotifier.token}",
+        },
+      );
 
       if (response.statusCode != 200 || response.data == null) {
         if (kDebugMode) {
@@ -136,42 +95,6 @@ class NoteClient {
       throw Failure(message: error);
     }
   }
-
-  // Future<Note?> updateNote({
-  //   required String groupId,
-  //   required String noteId,
-  //   required V1Note note,
-  // }) async {
-  //   final userNotifier = ref.read(userProvider);
-
-  //   try {
-  //     final response = await ref.read(apiProvider).notesAPIUpdateNote(
-  //         groupId: groupId,
-  //         noteId: noteId,
-  //         note: note,
-  //         headers: {"Authorization": "Bearer ${userNotifier.token}"});
-
-  //     if (response.statusCode != 200 || response.data == null) {
-  //       if (kDebugMode) {
-  //         print(
-  //           "inside try : code = ${response.statusCode}, error = ${response.toString()}",
-  //         );
-  //       }
-  //       return null;
-
-  //       // throw Failure(message: response.toString());
-  //     }
-
-  //     return Note.fromApi(response.data!.note);
-  //   } on DioException catch (e) {
-  //     String error = DioExceptions.fromDioError(e).toString();
-  //     if (kDebugMode) {
-  //       print(
-  //           "Exception when calling DefaultApi->accountsAPIGetAccount: $error\n");
-  //     }
-  //     throw Failure(message: error);
-  //   }
-  // }
 
   Future<V1Note?> getNote(String noteId, String groupId, String token) async {
     final userNotifier = ref.read(userProvider);
@@ -197,43 +120,11 @@ class NoteClient {
     } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
-        print(
-            "Exception when calling DefaultApi->accountsAPIGetAccount: $error\n");
+        print("Exception when calling DefaultApi->getNote: $error\n");
       }
       throw Failure(message: error);
     }
   }
-
-  // Future<Note?> getNote(String noteId, String groupId, String token) async {
-  //   final userNotifier = ref.read(userProvider);
-
-  //   try {
-  //     final response = await ref.read(apiProvider).notesAPIGetNote(
-  //         groupId: groupId,
-  //         noteId: noteId,
-  //         headers: {"Authorization": "Bearer ${userNotifier.token}"});
-
-  //     if (response.statusCode != 200 || response.data == null) {
-  //       if (kDebugMode) {
-  //         print(
-  //           "inside try : code = ${response.statusCode}, error = ${response.toString()}",
-  //         );
-  //       }
-  //       return null;
-
-  //       // throw Failure(message: response.toString());
-  //     }
-
-  //     return Note.fromApi(response.data!.note);
-  //   } on DioException catch (e) {
-  //     String error = DioExceptions.fromDioError(e).toString();
-  //     if (kDebugMode) {
-  //       print(
-  //           "Exception when calling DefaultApi->accountsAPIGetAccount: $error\n");
-  //     }
-  //     throw Failure(message: error);
-  //   }
-  // }
 
   Future<List<V1Note>?> listGroupNotes(String groupId, String token) async {
     final apiP = ref.read(apiProvider);
@@ -259,43 +150,11 @@ class NoteClient {
     } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
-        print(
-            "Exception when calling DefaultApi->accountsAPIGetAccount: $error\n");
+        print("Exception when calling DefaultApi->listGroupNotes: $error\n");
       }
       throw Failure(message: error);
     }
   }
-
-  // Future<List<Note>?> listGroupNotes(String groupId, String token) async {
-  //   final apiP = ref.read(apiProvider);
-  //   final userNotifier = ref.read(userProvider);
-
-  //   try {
-  //     final Response<V1ListNotesResponse> response = await apiP
-  //         .notesAPIListNotes2(
-  //             groupId: groupId,
-  //             headers: {"Authorization": "Bearer ${userNotifier.token}"});
-
-  //     if (response.statusCode != 200 || response.data == null) {
-  //       if (kDebugMode) {
-  //         print(
-  //           "inside try : code = ${response.statusCode}, error = ${response.toString()}",
-  //         );
-  //       }
-  //       return null;
-
-  //       // throw Failure(message: response.toString());
-  //     }
-  //     return response.data!.notes!.map((e) => Note.fromApi(e)).toList();
-  //   } on DioException catch (e) {
-  //     String error = DioExceptions.fromDioError(e).toString();
-  //     if (kDebugMode) {
-  //       print(
-  //           "Exception when calling DefaultApi->accountsAPIGetAccount: $error\n");
-  //     }
-  //     throw Failure(message: error);
-  //   }
-  // }
 
   Future<List<V1Note>?> listNotes(String authorId, String token) async {
     final userNotifier = ref.read(userProvider);
@@ -319,80 +178,49 @@ class NoteClient {
     } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
-        print(
-            "Exception when calling DefaultApi->accountsAPIGetAccount: $error\n");
+        print("Exception when calling DefaultApi->listNotes: $error\n");
       }
       // throw Failure(message: error);
     }
     return null;
   }
 
-  // Future<List<Note>?> listNotes(String authorId, String token) async {
-  //   final userNotifier = ref.read(userProvider);
+  Future<String?> summaryGenerator({
+    required String noteId,
+    required String groupId,
+  }) async {
+    final userNotifier = ref.read(userProvider);
+    try {
+      final response = await ref.read(apiProvider).notesAPIGenerateSummary(
+          groupId: groupId,
+          noteId: noteId,
+          headers: {"Authorization": "Bearer ${userNotifier.token}"});
 
-  //   try {
-  //     final response = await ref.read(apiProvider).notesAPIListNotes(
-  //         authorAccountId: authorId,
-  //         headers: {"Authorization": "Bearer ${userNotifier.token}"});
+      if (response.statusCode != 200 || response.data == null) {
+        if (kDebugMode) {
+          print(
+            "inside try : code = ${response.statusCode}, error = ${response.toString()}",
+          );
+        }
+        return null;
 
-  //     if (response.statusCode != 200 || response.data == null) {
-  //       if (kDebugMode) {
-  //         print(
-  //           "inside try : code = ${response.statusCode}, error = ${response.toString()}",
-  //         );
-  //       }
-  //       return null;
+        // throw Failure(message: response.toString());
+      }
 
-  //       // throw Failure(message: response.toString());
-  //     }
-  //     return response.data!.notes!.map((e) => Note.fromApi(e)).toList();
-  //   } on DioException catch (e) {
-  //     String error = DioExceptions.fromDioError(e).toString();
-  //     if (kDebugMode) {
-  //       print(
-  //           "Exception when calling DefaultApi->accountsAPIGetAccount: $error\n");
-  //     }
-  //     // throw Failure(message: error);
-  //   }
-  //   return null;
-  // }
+      print("summary : ${response.data!.summary}");
 
-  // summaryGenerator
-  // Future<String?> summaryGenerator({
-  //   required String groupId,
-  //   required String noteId,
-  // }) async {
-  //   final userNotifier = ref.read(userProvider);
-  //   try {
-  //     final response = await ref
-  //         .read(apiProvider)
-  //         .recommendationsAPIGenerateSummary(
-  //             groupId: groupId,
-  //             noteId: noteId,
-  //             headers: {"Authorization": "Bearer ${userNotifier.token}"});
+      return response.data!.summary;
+    } on DioException catch (e) {
+      print("summary $e");
 
-  //     if (response.statusCode != 200 || response.data == null) {
-  //       if (kDebugMode) {
-  //         print(
-  //           "inside try : code = ${response.statusCode}, error = ${response.toString()}",
-  //         );
-  //       }
-  //       return null;
-
-  //       // throw Failure(message: response.toString());
-  //     }
-
-  //     return response.data!.summary;
-  //   } on DioException catch (e) {
-  //     String error = DioExceptions.fromDioError(e).toString();
-  //     if (kDebugMode) {
-  //       print(
-  //           "Exception when calling DefaultApi->accountsAPIGetAccount: $error\n");
-  //     }
-  //     // throw Failure(message: error);
-  //   }
-  //   return null;
-  // }
+      String error = DioExceptions.fromDioError(e).toString();
+      if (kDebugMode) {
+        print("Exception when calling DefaultApi->summaryGenerator: $error\n");
+      }
+      // throw Failure(message: error);
+    }
+    return null;
+  }
 
   Future<List<V1Widget>?> recommendationGenerator({
     required String groupId,
@@ -423,7 +251,7 @@ class NoteClient {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
         print(
-            "Exception when calling DefaultApi->accountsAPIGetAccount: $error\n");
+            "Exception when calling DefaultApi->recommendationGenerator : $error\n");
       }
       // throw Failure(message: error);
     }

@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/components/common/custom_modal.dart';
 import 'package:noted_mobile/data/providers/note_provider.dart';
 import 'package:noted_mobile/pages/notes/editor/_toolbar.dart';
+import 'package:noted_mobile/pages/notes/editor/note_utility.dart';
 import 'package:noted_mobile/pages/notes/note_summary_screen.dart';
 import 'package:noted_mobile/pages/quizz/quizz_screen.dart';
 import 'package:noted_mobile/pages/recommendation/recommendation_screen.dart';
@@ -53,136 +54,6 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
 
   Timer? _timer;
 
-  DocumentNode getNodeFromBlock(V1Block block) {
-    String text = getBlockTextFromV1Block(block);
-
-    switch (block.type) {
-      case V1BlockType.hEADING1:
-        return ParagraphNode(
-          id: block.id != '' ? block.id : UniqueKey().toString(),
-          text: AttributedText(text: text),
-          metadata: {
-            'blockType': header1Attribution,
-          },
-        );
-      case V1BlockType.hEADING2:
-        return ParagraphNode(
-          id: block.id != '' ? block.id : UniqueKey().toString(),
-          text: AttributedText(text: text),
-          metadata: {
-            'blockType': header2Attribution,
-          },
-        );
-      case V1BlockType.hEADING3:
-        return ParagraphNode(
-          id: block.id != '' ? block.id : UniqueKey().toString(),
-          text: AttributedText(text: text),
-          metadata: {
-            'blockType': header3Attribution,
-          },
-        );
-      case V1BlockType.BULLET_POINT:
-        return ListItemNode.unordered(
-          id: block.id != '' ? block.id : UniqueKey().toString(),
-          text: AttributedText(text: text),
-        );
-
-      case V1BlockType.NUMBER_POINT:
-        return ListItemNode.ordered(
-          id: block.id != '' ? block.id : UniqueKey().toString(),
-          text: AttributedText(text: text),
-        );
-
-      default:
-        return ParagraphNode(
-          id: block.id != '' ? block.id : UniqueKey().toString(),
-          text: AttributedText(text: text),
-        );
-    }
-  }
-
-  // DocumentNode getNodeFromBlock(Block block) {
-  //   switch (block.type) {
-  //     case BlockType.heading1:
-  //       return ParagraphNode(
-  //         id: block.id != '' ? block.id : UniqueKey().toString(),
-  //         text: AttributedText(text: block.text),
-  //         metadata: {
-  //           'blockType': header1Attribution,
-  //         },
-  //       );
-  //     case BlockType.heading2:
-  //       return ParagraphNode(
-  //         id: block.id != '' ? block.id : UniqueKey().toString(),
-  //         text: AttributedText(text: block.text),
-  //         metadata: {
-  //           'blockType': header2Attribution,
-  //         },
-  //       );
-  //     case BlockType.heading3:
-  //       return ParagraphNode(
-  //         id: block.id != '' ? block.id : UniqueKey().toString(),
-  //         text: AttributedText(text: block.text),
-  //         metadata: {
-  //           'blockType': header3Attribution,
-  //         },
-  //       );
-  //     case BlockType.bulletPoint:
-  //       return ListItemNode.unordered(
-  //         id: block.id != '' ? block.id : UniqueKey().toString(),
-  //         text: AttributedText(text: block.text),
-  //         // metadata: {
-  //         //   'blockType': bulletAttribution,
-  //         // },
-  //       );
-
-  //     case BlockType.numberPoint:
-  //       return ListItemNode.ordered(
-  //         id: block.id != '' ? block.id : UniqueKey().toString(),
-  //         text: AttributedText(text: block.text),
-  //         // metadata: {
-  //         //   'blockType': bulletAttribution,
-  //         // },
-  //       );
-
-  //     default:
-  //       return ParagraphNode(
-  //         id: block.id != '' ? block.id : UniqueKey().toString(),
-  //         text: AttributedText(text: block.text),
-  //       );
-  //   }
-  // }
-
-  String getBlockTextFromV1Block(V1Block block) {
-    switch (block.type) {
-      case V1BlockType.hEADING1:
-        return block.heading ?? '';
-      case V1BlockType.hEADING2:
-        return block.heading ?? '';
-      case V1BlockType.hEADING3:
-        return block.heading ?? '';
-      case V1BlockType.BULLET_POINT:
-        return block.bulletPoint ?? '';
-      case V1BlockType.NUMBER_POINT:
-        return block.numberPoint ?? '';
-      default:
-        return block.paragraph ?? '';
-    }
-  }
-
-  MutableDocument createInitialDocument() {
-    List<DocumentNode>? nodes = [];
-
-    if (widget.note.blocks != null) {
-      widget.note.blocks!.asMap().forEach((key, block) {
-        print(
-            "key: $key, block: ${getBlockTextFromV1Block(block)}, ${block.id}, ${block.type}");
-        nodes.add(getNodeFromBlock(block));
-      });
-    }
-    return MutableDocument(nodes: nodes);
-  }
-
   void _resetTimer() {
     if (_timer != null && _timer!.isActive) {
       _timer!.cancel();
@@ -194,12 +65,18 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
     _resetTimer();
 
     _timer = Timer(const Duration(seconds: 5), () {
-      V1Note updatedNote = V1Note();
       print("L'objet n'a pas été modifié depuis 5 secondes.");
-      ref.read(noteClientProvider).updateNote(
-          noteId: widget.infos.item1,
-          groupId: widget.infos.item2,
-          note: updatedNote);
+
+      V1Note updatedNote = getNodeFromDoc(_doc, widget.note);
+
+      print(updatedNote.blocks!.length);
+
+      //TODO: update note
+      // ref.read(noteClientProvider).updateNote(
+      //       noteId: widget.infos.item1,
+      //       groupId: widget.infos.item2,
+      //       note: updatedNote,
+      //     );
     });
   }
 
@@ -208,7 +85,7 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
     super.initState();
     _composer = DocumentComposer();
 
-    _doc = createInitialDocument();
+    _doc = createInitialDocument(widget.note);
 
     _doc.addListener(updateNote);
     _docEditor = DocumentEditor(document: _doc);
@@ -283,6 +160,8 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
     final AsyncValue<V1Quiz?> quizz = ref.watch(quizzProvider(widget.infos));
     final AsyncValue<List<V1Widget>?> widgetsList =
         ref.watch(recommendationListProvider(widget.infos));
+    final AsyncValue<String?> summary =
+        ref.watch(noteSummaryProvider(widget.infos));
 
     return Stack(
       children: [
@@ -418,7 +297,7 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
                                     onPressed: () async {
                                       Navigator.of(context).pop();
 
-                                      if (!widgetsList.hasValue) {
+                                      if (!summary.hasValue) {
                                         return;
                                       }
 
@@ -434,8 +313,7 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
                                             },
                                             child: SummaryScreen(
                                               infos: widget.infos,
-                                              summary:
-                                                  "Ceci est un résumé, il est généré automatiquement. Vous pouvez le modifier à votre guise. Il est généré à partir de vos notes. Vous pouvez le modifier à votre guise. Il est généré à partir de vos notes. Vous pouvez le modifier à votre guise. Il est généré à partir de vos notes. Vous pouvez le modifier à votre guise. Il est généré à partir de vos notes. Vous pouvez le modifier à votre guise. Il est généré à partir de vos notes. Vous pouvez le modifier à votre guise. Il est généré à partir de vos notes. Vous pouvez le modifier à votre guise. Il est généré à partir de vos notes.",
+                                              summary: summary.value ?? "",
                                             ),
                                           );
                                         },
@@ -599,84 +477,6 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
         // );
       },
     );
-  }
-
-  List<NotedEditorTextStyle> getAttributionFromDoc(MutableDocument doc) {
-    List<NotedEditorTextStyle> textStyles = [];
-
-    for (var node in doc.nodes) {
-      if (node is ParagraphNode) {
-        AttributedSpans spans = node.text.spans;
-
-        List<SpanMarker> spanMarkers = spans.markers.toList();
-
-        for (SpanMarker startMarker
-            in spanMarkers.where((m) => m.markerType == SpanMarkerType.start)) {
-          SpanMarker correspondingEndMarker = spanMarkers.firstWhere(
-            (m) =>
-                m.markerType == SpanMarkerType.end &&
-                m.attribution == startMarker.attribution &&
-                m.offset >= startMarker.offset,
-          );
-
-          textStyles.add(NotedEditorTextStyle(
-              start: startMarker.offset,
-              end: correspondingEndMarker.offset,
-              attribution: startMarker.attribution));
-        }
-      }
-    }
-
-    return textStyles;
-  }
-
-  void printDocument(MutableDocument doc) {
-    print("printDocument");
-
-    List<NotedEditorTextStyle> textStyles = getAttributionFromDoc(doc);
-
-    print("---------------------------------");
-    print("TEXT STYLES");
-
-    for (var element in textStyles) {
-      print(element);
-    }
-
-    print("---------------------------------");
-
-    for (var node in doc.nodes) {
-      // print(node);
-      // print(node.)
-      node.metadata.forEach((key, value) {
-        print("  $key: $value");
-      });
-
-      if (node is ParagraphNode) {
-        print(node.text.text);
-        print("--------------------");
-        // print(node.text.spans);
-
-        // for (var marker in spans.markers) {
-        //   print(marker);
-        // }
-
-        //
-
-        print("--------------------");
-      }
-      if (node is ImageNode) {
-        print(node.metadata);
-      }
-      if (node is ListItemNode) {
-        print(node.text.text);
-      }
-      if (node is HorizontalRuleNode) {
-        print(node.metadata);
-      }
-      if (node is TaskNode) {
-        print(node.text.text);
-      }
-    }
   }
 }
 

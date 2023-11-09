@@ -4,9 +4,10 @@ update-submodules:
 	git submodule update --init --remote
 
 build-runner:
-	flutter pub get
-	flutter pub upgrade
-	flutter pub upgrade --major-versions
+	cd ./protorepo/openapi/dart-dio/ ; \
+	flutter pub get; \
+	flutter pub upgrade; \
+	flutter pub upgrade --major-versions; \
 	flutter pub run build_runner build --delete-conflicting-outputs
 
 clean:

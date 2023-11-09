@@ -100,3 +100,13 @@ final recommendationListProvider = FutureProvider.autoDispose
 
   return recommendationList;
 });
+
+final noteSummaryProvider =
+    FutureProvider.family<String?, Tuple2<String, String>>((ref, infos) async {
+  final noteAnalysis = await ref.watch(noteClientProvider).summaryGenerator(
+        noteId: infos.item1,
+        groupId: infos.item2,
+      );
+
+  return noteAnalysis;
+});

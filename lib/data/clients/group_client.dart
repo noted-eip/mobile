@@ -47,8 +47,7 @@ class GroupClient {
     } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
-        print(
-            "Exception when calling DefaultApi->groupsAPICreateGroup: $error\n");
+        print("Exception when calling DefaultApi->createGroup: $error\n");
       }
       throw Failure(message: error);
     }
@@ -91,8 +90,7 @@ class GroupClient {
     } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
-        print(
-            "Exception when calling DefaultApi->groupsAPIUpdateGroup: $error\n");
+        print("Exception when calling DefaultApi->updateGroup: $error\n");
       }
       throw Failure(message: error);
     }
@@ -121,8 +119,7 @@ class GroupClient {
     } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
-        print(
-            "Exception when calling DefaultApi->groupsAPIDeleteGroup: $error\n");
+        print("Exception when calling DefaultApi->deleteGroup: $error\n");
       }
       throw Failure(message: error);
     }
@@ -163,8 +160,7 @@ class GroupClient {
     } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
-        print(
-            "Exception when calling DefaultApi->groupsAPIListGroups: $error\n");
+        print("Exception when calling DefaultApi->listGroups: $error\n");
       }
       throw Failure(message: error);
     }
@@ -193,7 +189,7 @@ class GroupClient {
     } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
-        print("Exception when calling DefaultApi->groupsAPIGetGroup: $error\n");
+        print("Exception when calling DefaultApi->getGroup: $error\n");
       }
       throw Failure(message: error);
     }
@@ -223,8 +219,7 @@ class GroupClient {
     } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
-        print(
-            "Exception when calling DefaultApi->groupsAPIGetGroupMember: $error\n");
+        print("Exception when calling DefaultApi->getGroupMember: $error\n");
       }
       // throw Failure(message: error);
     }
@@ -265,8 +260,7 @@ class GroupClient {
     } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
-        print(
-            "Exception when calling DefaultApi->groupsAPIUpdateGroupMember: $error\n");
+        print("Exception when calling DefaultApi->updateGroupMember: $error\n");
       }
       throw Failure(message: error);
     }
@@ -293,8 +287,7 @@ class GroupClient {
     } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
-        print(
-            "Exception when calling DefaultApi->groupsAPIDeleteGroupMember: $error\n");
+        print("Exception when calling DefaultApi->deleteGroupMember: $error\n");
       }
       throw Failure(message: error);
     }
@@ -329,7 +322,10 @@ class GroupClient {
       return response.data!.activities.toList();
     } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
-      if (kDebugMode) print("Exception when calling DefaultApi->: $error\n");
+      if (kDebugMode) {
+        print(
+            "Exception when calling DefaultApi->getGroupsActivities: $error\n");
+      }
       throw Failure(message: error);
     }
   }
