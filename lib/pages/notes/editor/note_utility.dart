@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:built_collection/built_collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:noted_mobile/pages/notes/editor/noted_editor.dart';

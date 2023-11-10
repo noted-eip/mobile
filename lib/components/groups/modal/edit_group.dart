@@ -68,12 +68,14 @@ class _EditGroupModalState extends ConsumerState<EditGroupModal> {
       if (kDebugMode) {
         print(e);
       }
-      CustomToast.show(
-        message: e.toString().capitalize(),
-        type: ToastType.error,
-        context: context,
-        gravity: ToastGravity.BOTTOM,
-      );
+      if (mounted) {
+        CustomToast.show(
+          message: e.toString().capitalize(),
+          type: ToastType.error,
+          context: context,
+          gravity: ToastGravity.BOTTOM,
+        );
+      }
       widget.btnController.error();
       Future.delayed(const Duration(seconds: 1), () {
         widget.btnController.reset();

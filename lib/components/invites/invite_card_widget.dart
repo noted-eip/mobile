@@ -50,12 +50,14 @@ class _InviteCardState extends ConsumerState<InviteCard> {
 
       return true;
     } catch (e) {
-      CustomToast.show(
-        message: e.toString().capitalize(),
-        type: ToastType.error,
-        context: context,
-        gravity: ToastGravity.BOTTOM,
-      );
+      if (mounted) {
+        CustomToast.show(
+          message: e.toString().capitalize(),
+          type: ToastType.error,
+          context: context,
+          gravity: ToastGravity.BOTTOM,
+        );
+      }
 
       return false;
     }
@@ -82,12 +84,14 @@ class _InviteCardState extends ConsumerState<InviteCard> {
 
       return true;
     } catch (e) {
-      CustomToast.show(
-        message: e.toString().capitalize(),
-        type: ToastType.error,
-        context: context,
-        gravity: ToastGravity.BOTTOM,
-      );
+      if (mounted) {
+        CustomToast.show(
+          message: e.toString().capitalize(),
+          type: ToastType.error,
+          context: context,
+          gravity: ToastGravity.BOTTOM,
+        );
+      }
 
       return false;
     }
@@ -113,12 +117,14 @@ class _InviteCardState extends ConsumerState<InviteCard> {
 
       return true;
     } catch (e) {
-      CustomToast.show(
-        message: e.toString().capitalize(),
-        type: ToastType.error,
-        context: context,
-        gravity: ToastGravity.BOTTOM,
-      );
+      if (mounted) {
+        CustomToast.show(
+          message: e.toString().capitalize(),
+          type: ToastType.error,
+          context: context,
+          gravity: ToastGravity.BOTTOM,
+        );
+      }
 
       return false;
     }

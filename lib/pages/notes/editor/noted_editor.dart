@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/components/common/custom_modal.dart';
 import 'package:noted_mobile/data/providers/note_provider.dart';
@@ -61,22 +62,19 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
   }
 
   void updateNote() {
-    print("updateNote");
     _resetTimer();
 
-    _timer = Timer(const Duration(seconds: 5), () {
-      print("L'objet n'a pas été modifié depuis 5 secondes.");
-
+    _timer = Timer(const Duration(seconds: 3), () {
       V1Note updatedNote = getNodeFromDoc(_doc, widget.note);
 
       print(updatedNote.blocks!.length);
 
-      // TODO: update note
       ref.read(noteClientProvider).updateNote(
             noteId: widget.infos.item1,
             groupId: widget.infos.item2,
             note: updatedNote,
           );
+      ref.invalidate(noteProvider(widget.infos));
     });
   }
 
@@ -163,248 +161,301 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
     final AsyncValue<String?> summary =
         ref.watch(noteSummaryProvider(widget.infos));
 
-    return Stack(
-      children: [
-        Column(
-          children: [
-            SizedBox(
-              height: kToolbarHeight,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(Icons.arrow_back),
-                  ),
-                  Text(
-                    widget.note.title,
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  quizz.when(
-                      data: (quiz) {
-                        if (quiz == null) {
-                          return const SizedBox();
-                        }
-                        return Material(
-                          color: Colors.transparent,
-                          child: PopupMenuButton(
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(16),
-                              ),
-                            ),
-                            itemBuilder: ((context) {
-                              return [
-                                PopupMenuItem(
-                                  child: TextButton(
-                                    onPressed: () async {
-                                      Navigator.pop(context);
-
-                                      return showModalBottomSheet(
-                                        backgroundColor: Colors.transparent,
-                                        context: context,
-                                        isScrollControlled: true,
-                                        builder: (context) {
-                                          return CustomModal(
-                                            height: 0.9,
-                                            onClose: (context) {
-                                              print("close");
-                                              ref.invalidate(
-                                                  quizzProvider(widget.infos));
-                                              Navigator.pop(context);
-                                            },
-                                            child: QuizzPage(
-                                              quiz: quiz,
-                                              infos: widget.infos,
-                                            ),
-                                          );
-                                        },
-                                      );
-                                    },
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.quiz,
-                                          color: Colors.grey.shade900,
-                                          size: 30,
-                                        ),
-                                        const SizedBox(
-                                          width: 10,
-                                        ),
-                                        Text(
-                                          "Quiz",
-                                          style: TextStyle(
-                                            color: Colors.grey.shade900,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                PopupMenuItem(
-                                  child: TextButton(
-                                    onPressed: () async {
-                                      Navigator.of(context).pop();
-
-                                      if (!widgetsList.hasValue) {
-                                        return;
-                                      }
-
-                                      return showModalBottomSheet(
-                                        backgroundColor: Colors.transparent,
-                                        context: context,
-                                        isScrollControlled: true,
-                                        builder: (context) {
-                                          return CustomModal(
-                                            height: 1,
-                                            onClose: (context) {
-                                              Navigator.pop(context);
-                                            },
-                                            child: RecommendationPage(
-                                              infos: widget.infos,
-                                              widgetList: widgetsList.value!,
-                                            ),
-                                          );
-                                        },
-                                      );
-                                    },
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.recommend,
-                                          color: Colors.grey.shade900,
-                                          size: 30,
-                                        ),
-                                        const SizedBox(
-                                          width: 10,
-                                        ),
-                                        Text(
-                                          "Recommandation",
-                                          style: TextStyle(
-                                            color: Colors.grey.shade900,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                PopupMenuItem(
-                                  child: TextButton(
-                                    onPressed: () async {
-                                      Navigator.of(context).pop();
-
-                                      if (!summary.hasValue) {
-                                        return;
-                                      }
-
-                                      return showModalBottomSheet(
-                                        backgroundColor: Colors.transparent,
-                                        context: context,
-                                        isScrollControlled: true,
-                                        builder: (context) {
-                                          return CustomModal(
-                                            height: 1,
-                                            onClose: (context) {
-                                              Navigator.pop(context);
-                                            },
-                                            child: SummaryScreen(
-                                              infos: widget.infos,
-                                              summary: summary.value ?? "",
-                                            ),
-                                          );
-                                        },
-                                      );
-                                    },
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.summarize,
-                                          color: Colors.grey.shade900,
-                                          size: 30,
-                                        ),
-                                        const SizedBox(
-                                          width: 10,
-                                        ),
-                                        Text(
-                                          "Résumé",
-                                          style: TextStyle(
-                                            color: Colors.grey.shade900,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ];
-                            }),
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16),
-                              child: Icon(
-                                Icons.more_vert,
-                                color: Colors.grey.shade900,
-                                size: 32,
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                      error: (err, stack) => const SizedBox(),
-                      loading: () => const SizedBox(
-                            height: 36,
-                            child: Padding(
-                                padding: EdgeInsets.only(right: 16),
-                                child: CircularProgressIndicator()),
-                          )),
-                ],
-              ),
-            ),
-            Expanded(
-              child: _buildEditor(context),
-            ),
-            if (_isMobile) _buildMountedToolbar(),
-          ],
-        ),
-        Align(alignment: Alignment.bottomRight, child: _buildCornerFabs()),
-      ],
-    );
-  }
-
-  Widget _buildCornerFabs() {
-    return const Padding(
-      padding: EdgeInsets.only(right: 16, bottom: 16 + 40),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
+    return Scaffold(
+      floatingActionButton: _buildNoteTools(),
+      body: Stack(
         children: [
-          // _buildLightAndDarkModeToggle(),
+          Column(
+            children: [
+              SizedBox(
+                height: kToolbarHeight,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: const Icon(Icons.arrow_back),
+                    ),
+                    Text(
+                      widget.note.title,
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    quizz.when(
+                        data: (quiz) {
+                          if (quiz == null) {
+                            return const SizedBox();
+                          }
+                          return Material(
+                            color: Colors.transparent,
+                            child: PopupMenuButton(
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(16),
+                                ),
+                              ),
+                              itemBuilder: ((context) {
+                                return [
+                                  PopupMenuItem(
+                                    child: TextButton(
+                                      onPressed: () async {
+                                        Navigator.pop(context);
+
+                                        return showModalBottomSheet(
+                                          backgroundColor: Colors.transparent,
+                                          context: context,
+                                          isScrollControlled: true,
+                                          builder: (context) {
+                                            return CustomModal(
+                                              height: 0.9,
+                                              onClose: (context) {
+                                                print("close");
+                                                ref.invalidate(quizzProvider(
+                                                    widget.infos));
+                                                Navigator.pop(context);
+                                              },
+                                              child: QuizzPage(
+                                                quiz: quiz,
+                                                infos: widget.infos,
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      },
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.quiz,
+                                            color: Colors.grey.shade900,
+                                            size: 30,
+                                          ),
+                                          const SizedBox(
+                                            width: 10,
+                                          ),
+                                          Text(
+                                            "Quiz",
+                                            style: TextStyle(
+                                              color: Colors.grey.shade900,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  PopupMenuItem(
+                                    child: TextButton(
+                                      onPressed: () async {
+                                        Navigator.of(context).pop();
+
+                                        if (!widgetsList.hasValue) {
+                                          return;
+                                        }
+
+                                        return showModalBottomSheet(
+                                          backgroundColor: Colors.transparent,
+                                          context: context,
+                                          isScrollControlled: true,
+                                          builder: (context) {
+                                            return CustomModal(
+                                              height: 1,
+                                              onClose: (context) {
+                                                Navigator.pop(context);
+                                              },
+                                              child: RecommendationPage(
+                                                infos: widget.infos,
+                                                widgetList: widgetsList.value!,
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      },
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.recommend,
+                                            color: Colors.grey.shade900,
+                                            size: 30,
+                                          ),
+                                          const SizedBox(
+                                            width: 10,
+                                          ),
+                                          Text(
+                                            "Recommandation",
+                                            style: TextStyle(
+                                              color: Colors.grey.shade900,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  PopupMenuItem(
+                                    child: TextButton(
+                                      onPressed: () async {
+                                        Navigator.of(context).pop();
+
+                                        if (!summary.hasValue) {
+                                          return;
+                                        }
+
+                                        return showModalBottomSheet(
+                                          backgroundColor: Colors.transparent,
+                                          context: context,
+                                          isScrollControlled: true,
+                                          builder: (context) {
+                                            return CustomModal(
+                                              height: 1,
+                                              onClose: (context) {
+                                                Navigator.pop(context);
+                                              },
+                                              child: SummaryScreen(
+                                                infos: widget.infos,
+                                                summary: summary.value ?? "",
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      },
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.summarize,
+                                            color: Colors.grey.shade900,
+                                            size: 30,
+                                          ),
+                                          const SizedBox(
+                                            width: 10,
+                                          ),
+                                          Text(
+                                            "Résumé",
+                                            style: TextStyle(
+                                              color: Colors.grey.shade900,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ];
+                              }),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
+                                child: Icon(
+                                  Icons.more_vert,
+                                  color: Colors.grey.shade900,
+                                  size: 32,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        error: (err, stack) => const SizedBox(),
+                        loading: () => const SizedBox(
+                              height: 36,
+                              child: Padding(
+                                  padding: EdgeInsets.only(right: 16),
+                                  child: CircularProgressIndicator()),
+                            )),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: _buildEditor(context),
+              ),
+              if (_isMobile) _buildMountedToolbar(),
+            ],
+          ),
+          Align(alignment: Alignment.topCenter, child: _buildCornerFabs()),
         ],
       ),
     );
   }
 
-  Widget _buildLightAndDarkModeToggle() {
-    return FloatingActionButton(
-      heroTag: "light_dark_mode_toggle",
-      backgroundColor: _brightness.value == Brightness.light
-          ? _darkBackground
-          : _lightBackground,
-      foregroundColor: _brightness.value == Brightness.light
-          ? _lightBackground
-          : _darkBackground,
-      elevation: 5,
-      onPressed: () {
-        printDocument(_doc);
-      },
-      child: const Icon(
-        Icons.print,
+  Widget _buildCornerFabs() {
+    return Padding(
+      padding: const EdgeInsets.only(right: 16, bottom: 16 + 40),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          _buildNoteTools(),
+        ],
       ),
+    );
+  }
+
+  Widget _buildNoteTools() {
+    return ExpandableFab(
+      openButtonBuilder: RotateFloatingActionButtonBuilder(
+        child: const Icon(Icons.account_box),
+        fabSize: ExpandableFabSize.regular,
+        foregroundColor: Colors.amber,
+        backgroundColor: Colors.green,
+        shape: const CircleBorder(),
+      ),
+      closeButtonBuilder: DefaultFloatingActionButtonBuilder(
+        child: const Icon(Icons.close),
+        fabSize: ExpandableFabSize.small,
+        foregroundColor: Colors.deepOrangeAccent,
+        backgroundColor: Colors.lightGreen,
+        shape: const CircleBorder(),
+      ),
+      children: [
+        FloatingActionButton(
+          heroTag: "quiz",
+          backgroundColor: _brightness.value == Brightness.light
+              ? _darkBackground
+              : _lightBackground,
+          foregroundColor: _brightness.value == Brightness.light
+              ? _lightBackground
+              : _darkBackground,
+          elevation: 5,
+          onPressed: () {
+            printDocument(_doc);
+          },
+          child: const Icon(
+            Icons.quiz,
+          ),
+        ),
+        FloatingActionButton(
+          heroTag: "recommendation",
+          backgroundColor: _brightness.value == Brightness.light
+              ? _darkBackground
+              : _lightBackground,
+          foregroundColor: _brightness.value == Brightness.light
+              ? _lightBackground
+              : _darkBackground,
+          elevation: 5,
+          onPressed: () {
+            printDocument(_doc);
+          },
+          child: const Icon(
+            Icons.recommend,
+          ),
+        ),
+        FloatingActionButton(
+          heroTag: "summary",
+          backgroundColor: _brightness.value == Brightness.light
+              ? _darkBackground
+              : _lightBackground,
+          foregroundColor: _brightness.value == Brightness.light
+              ? _lightBackground
+              : _darkBackground,
+          elevation: 5,
+          onPressed: () {
+            printDocument(_doc);
+          },
+          child: const Icon(
+            Icons.summarize_outlined,
+          ),
+        ),
+      ],
     );
   }
 
@@ -496,37 +547,3 @@ class NotedEditorTextStyle {
     return "start: $start, end: $end, attribution: $attribution";
   }
 }
-
-// Makes text light, for use during dark mode styling.
-final _darkModeStyles = [
-  StyleRule(
-    BlockSelector.all,
-    (doc, docNode) {
-      return {
-        "textStyle": const TextStyle(
-          color: Color(0xFFCCCCCC),
-        ),
-      };
-    },
-  ),
-  StyleRule(
-    const BlockSelector("header1"),
-    (doc, docNode) {
-      return {
-        "textStyle": const TextStyle(
-          color: Color(0xFF888888),
-        ),
-      };
-    },
-  ),
-  StyleRule(
-    const BlockSelector("header2"),
-    (doc, docNode) {
-      return {
-        "textStyle": const TextStyle(
-          color: Color(0xFF888888),
-        ),
-      };
-    },
-  ),
-];

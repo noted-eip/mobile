@@ -3,11 +3,13 @@
         "title" : "Connectez-vous à votre compte",
         "email" : {
             "label" : "Email",
-            "hint" : "Entrez votre adresse email"
+            "hint" : "Entrez votre adresse email",
+            "validator": "Veuillez entrer une adresse email valide"
         },
         "password" : {
             "label" : "Mot de passe",
-            "hint" : "Entrez votre mot de passe"
+            "hint" : "Entrez votre mot de passe",
+            "validator" : "Veuillez entrer votre mot de passe"
         },
         "forgot" : "Mot de passe oublié ?",
         "button" : "Se connecter",
@@ -19,15 +21,19 @@
         "title" : "Créez votre compte",
         "name" : {
             "label" : "Nom",
-            "hint" : "Entrez votre nom"
+            "hint" : "Entrez votre nom",
+            "validator": "Veuillez entrer un nom"
+
         },
         "email" : {
             "label" : "Email",
-            "hint" : "Entrez votre adresse email"
+            "hint" : "Entrez votre adresse email",
+            "validator": "Veuillez entrer une adresse email valide"
         },
         "password" : {
             "label" : "Mot de passe",
-            "hint" : "Entrez votre mot de passe"
+            "hint" : "Entrez votre mot de passe",
+            "validator" : "Veuillez entrer votre mot de passe"
         },
         "button" : "S'inscrire",
         "other" : "Ou inscrivez-vous avec",
@@ -41,7 +47,8 @@
             "description2" : "Nous vous enverrons un code de vérification pour réinitialiser votre mot de passe.",
             "email" : {
                 "label" : "Email",
-                "hint" : "Entrez votre adresse email"
+                "hint" : "Entrez votre adresse email",
+                "validator": "Veuillez entrer une adresse email valide"
             },
             "button" : "Envoyer",
             "remember" : "Vous vous souvenez de votre mot de passe ?",
@@ -51,6 +58,7 @@
             "title": "Code de vérification",
             "description": "Entrez le code de vérification envoyé à votre adresse email.",
             "not-received": "Vous n'avez pas reçu le code ?",
+            "validator": "Veuillez entrer un code valide",
             "resend": "Renvoyer",
             "resend-pop-up": {
                 "title": "Envoyé avec succès",

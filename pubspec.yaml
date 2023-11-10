@@ -109,6 +109,7 @@ flutter:
     - images/illustration.png
     - assets/translations/fr-FRA.json
     - assets/translations/en-EN.json
+    - assets/translations/de-DE.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

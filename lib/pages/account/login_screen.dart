@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -49,14 +50,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       'controller': RoundedLoadingButtonController(),
       'onPressed': () {},
     },
-    if (Platform.isIOS)
-      {
-        'name': 'Apple',
-        'icon': FontAwesomeIcons.apple,
-        'color': Colors.black,
-        'controller': RoundedLoadingButtonController(),
-        'onPressed': () {},
-      },
   ];
 
   Future<bool> handleSignIn() async {
@@ -188,12 +181,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           Navigator.of(context).pushReplacementNamed('/home');
         }
       } catch (e) {
-        CustomToast.show(
-          message: e.toString().capitalize(),
-          type: ToastType.error,
-          context: context,
-          gravity: ToastGravity.BOTTOM,
-        );
+        if (mounted) {
+          CustomToast.show(
+            message: e.toString().capitalize(),
+            type: ToastType.error,
+            context: context,
+            gravity: ToastGravity.BOTTOM,
+          );
+        }
 
         btnController.error();
         resetButton(btnController);
@@ -238,9 +233,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                const Text(
-                  'Signin into your account',
-                  style: TextStyle(color: Colors.grey, fontSize: 24),
+                Text(
+                  'signin.title'.tr(),
+                  style: const TextStyle(color: Colors.grey, fontSize: 24),
+                  textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 32.0),
                 Form(
@@ -250,7 +246,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       TextFormField(
                         controller: _emailController,
                         decoration: ThemeHelper()
-                            .textInputDecoration('Email', 'Enter your Email')
+                            .textInputDecoration('signin.email.label'.tr(),
+                                'signin.email.hint'.tr())
                             .copyWith(
                               prefixIcon: const Icon(
                                 Icons.mail_outline,
@@ -259,7 +256,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             ),
                         validator: (val) {
                           if (val!.isEmpty) {
-                            return "Please enter your email";
+                            return "signin.email.validator".tr();
                           }
                           // TODO: Uncomment this when email validation is fixed
                           //  else if (!val.isEmail()) {
@@ -274,7 +271,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         obscureText: _obscureText,
                         decoration: ThemeHelper()
                             .textInputDecoration(
-                                'Password', 'Enter your password')
+                              'signin.password.label'.tr(),
+                              'signin.password.hint'.tr(),
+                            )
                             .copyWith(
                               prefixIcon: const Icon(Icons.lock_outline_rounded,
                                   color: Colors.grey),
@@ -296,7 +295,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             ),
                         validator: (val) {
                           if (val!.isEmpty) {
-                            return 'Please enter your password';
+                            return 'signin.password.validator'.tr();
                           }
                           return null;
                         },
@@ -313,9 +312,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
                             Navigator.pushNamed(context, '/forgot-password');
                           },
-                          child: const Text(
-                            "Forgot your password?",
-                            style: TextStyle(
+                          child: Text(
+                            "signin.forgot".tr(),
+                            style: const TextStyle(
                               color: Colors.grey,
                             ),
                           ),
@@ -328,12 +327,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           _passwordController.text,
                         ),
                         btnController: btnController,
-                        text: 'Sign In',
+                        text: 'signin.button'.tr(),
                       ),
                       const SizedBox(height: 30.0),
-                      const Text(
-                        "Or sign in account using social media",
-                        style: TextStyle(color: Colors.grey),
+                      Text(
+                        "signin.other".tr(),
+                        style: const TextStyle(color: Colors.grey),
                       ),
                       const SizedBox(height: 24.0),
                       Row(
@@ -348,9 +347,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         child: Text.rich(
                           TextSpan(
                             children: [
-                              const TextSpan(text: "Don't have an account? "),
+                              TextSpan(text: "signin.signup".tr()),
+                              const TextSpan(text: " "),
                               TextSpan(
-                                text: 'Create',
+                                text: 'signin.signupButton'.tr(),
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () {
                                     ref

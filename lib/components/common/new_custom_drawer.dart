@@ -6,6 +6,7 @@ import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:noted_mobile/pages/groups/groups_list_screen.dart';
 import 'package:noted_mobile/pages/notes/notes_list_screen.dart';
 import 'package:noted_mobile/pages/account/profile_screen.dart';
+import 'package:noted_mobile/utils/language.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../pages/home/home_screen.dart';
@@ -171,7 +172,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                 prefs!.remove('email');
                 prefs!.remove('name');
                 prefs!.remove('id');
-
+                LanguagePreferences.resetLanguage();
                 ref.read(mainScreenProvider).setItem(MyMenuItems.home);
                 ref.read(trackerProvider).trackPage(TrackPage.login);
 

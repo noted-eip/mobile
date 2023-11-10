@@ -157,7 +157,7 @@ class _GroupDetailHeaderState extends ConsumerState<GroupDetailHeader> {
                                     const Duration(milliseconds: 500),
                                     (() => Navigator.of(context).pop(true)));
                               } else {
-                                Navigator.of(context).pop();
+                                if (mounted) Navigator.of(context).pop();
                               }
                             },
                             child: Row(
@@ -205,7 +205,7 @@ class _GroupDetailHeaderState extends ConsumerState<GroupDetailHeader> {
                                   const Duration(milliseconds: 500),
                                   (() => Navigator.of(context).pop(true)));
                             } else {
-                              Navigator.of(context).pop();
+                              if (mounted) Navigator.of(context).pop();
                             }
                           },
                           child: Row(

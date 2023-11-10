@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -42,12 +43,14 @@ class ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
     } on DioException catch (e) {
       if (e.response != null) {
         final error = e.response!.data['error'];
-        CustomToast.show(
-          message: error.toString(),
-          type: ToastType.error,
-          context: context,
-          gravity: ToastGravity.BOTTOM,
-        );
+        if (mounted) {
+          CustomToast.show(
+            message: error.toString(),
+            type: ToastType.error,
+            context: context,
+            gravity: ToastGravity.BOTTOM,
+          );
+        }
       }
       rethrow;
     }
@@ -86,33 +89,33 @@ class ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                     child: const Icon(Icons.key, size: 80, color: Colors.black),
                   ),
                   const SizedBox(height: 32),
-                  const Column(
+                  Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Forgot Password?',
-                        style: TextStyle(
+                        'forgot.step1.title'.tr(),
+                        style: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                             color: Colors.black54),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 8,
                       ),
                       Text(
-                        'Enter the email address associated with your account.',
-                        style: TextStyle(
+                        'forgot.step1.description'.tr(),
+                        style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: Colors.black54),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 8,
                       ),
                       Text(
-                        'We will email you a verification code to check your authenticity.',
-                        style: TextStyle(
+                        'forgot.step1.description2'.tr(),
+                        style: const TextStyle(
                           color: Colors.black38,
                         ),
                       ),
@@ -130,7 +133,9 @@ class ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                             autofocus: true,
                             decoration: ThemeHelper()
                                 .textInputDecoration(
-                                    'Email', 'Enter your Email')
+                                  'forgot.step1.email.label'.tr(),
+                                  'forgot.step1.email.hint'.tr(),
+                                )
                                 .copyWith(
                                   prefixIcon: const Icon(
                                     Icons.mail_outline,
@@ -139,7 +144,7 @@ class ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                                 ),
                             validator: (val) {
                               if (val!.isEmpty) {
-                                return "Please enter your email";
+                                return "forgot.step1.email.validator".tr();
                               }
                               // TODO: Add email validation
                               // else if (!val.isEmail()) {
@@ -160,15 +165,16 @@ class ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                               resetButton(btnController);
                             }
                           },
-                          text: 'Send',
+                          text: 'forgot.step1.button'.tr(),
                         ),
                         const SizedBox(height: 32.0),
                         Text.rich(
                           TextSpan(
                             children: [
-                              const TextSpan(text: "Remember your password? "),
+                              TextSpan(text: "forgot.step1.remember".tr()),
+                              const TextSpan(text: " "),
                               TextSpan(
-                                text: 'Login',
+                                text: 'forgot.step1.signin'.tr(),
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () {
                                     ref

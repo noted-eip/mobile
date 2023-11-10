@@ -81,12 +81,14 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
         }
       }
     } catch (e) {
-      CustomToast.show(
-        message: e.toString().capitalize(),
-        type: ToastType.error,
-        context: context,
-        gravity: ToastGravity.BOTTOM,
-      );
+      if (mounted) {
+        CustomToast.show(
+          message: e.toString().capitalize(),
+          type: ToastType.error,
+          context: context,
+          gravity: ToastGravity.BOTTOM,
+        );
+      }
       if (kDebugMode) {
         print(e.toString());
       }
@@ -126,12 +128,14 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
         );
       }
     } catch (e) {
-      CustomToast.show(
-        message: e.toString().capitalize(),
-        type: ToastType.error,
-        context: context,
-        gravity: ToastGravity.BOTTOM,
-      );
+      if (mounted) {
+        CustomToast.show(
+          message: e.toString().capitalize(),
+          type: ToastType.error,
+          context: context,
+          gravity: ToastGravity.BOTTOM,
+        );
+      }
       if (kDebugMode) {
         print(e.toString());
       }

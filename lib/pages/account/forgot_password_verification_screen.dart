@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -60,23 +61,23 @@ class ForgotPasswordVerificationPageState
                     const SizedBox(height: 32),
                     Container(
                       alignment: Alignment.topLeft,
-                      child: const Column(
+                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Verification',
-                            style: TextStyle(
+                            'forgot.step2.title'.tr(),
+                            style: const TextStyle(
                                 fontSize: 32,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black54),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 8,
                           ),
                           Text(
-                            'Enter the verification code we just sent you on your email address.',
-                            style: TextStyle(
+                            'forgot.step2.description'.tr(),
+                            style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black54),
                           ),
@@ -123,7 +124,7 @@ class ForgotPasswordVerificationPageState
                             },
                             validator: (val) {
                               if (val!.length < 4) {
-                                return 'Please enter a valid code';
+                                return 'forgot.step2.validator'.tr();
                               } else {
                                 return null;
                               }
@@ -134,22 +135,27 @@ class ForgotPasswordVerificationPageState
                           Text.rich(
                             TextSpan(
                               children: [
-                                const TextSpan(
-                                  text: "If you didn't receive a code! ",
-                                  style: TextStyle(
+                                TextSpan(
+                                  text: "forgot.step2.not-received".tr(),
+                                  style: const TextStyle(
                                     color: Colors.black38,
                                   ),
                                 ),
+                                const TextSpan(
+                                  text: ' ',
+                                ),
                                 TextSpan(
-                                  text: 'Resend',
+                                  text: 'forgot.step2.resend'.tr(),
                                   recognizer: TapGestureRecognizer()
                                     ..onTap = () {
                                       showDialog(
                                         context: context,
                                         builder: (BuildContext context) {
                                           return ThemeHelper().alartDialog(
-                                              "Successful",
-                                              "Verification code resend successful.",
+                                              "forgot.step2.resend-pop-up.title"
+                                                  .tr(),
+                                              "forgot.step2.resend-pop-up.description"
+                                                  .tr(),
                                               context);
                                         },
                                       );
@@ -175,7 +181,7 @@ class ForgotPasswordVerificationPageState
                                 resetButton(btnController);
                               }
                             },
-                            text: 'Verify',
+                            text: 'forgot.step2.button'.tr(),
                           ),
                         ],
                       ),
@@ -200,21 +206,25 @@ class ForgotPasswordVerificationPageState
       }
     } on DioException catch (e) {
       if (e.response!.statusCode == 400) {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return ThemeHelper()
-                .alartDialog("Error", "Verification code is invalid.", context);
-          },
-        );
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return ThemeHelper().alartDialog(
+                  "Error", "Verification code is invalid.", context);
+            },
+          );
+        }
       } else {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return ThemeHelper()
-                .alartDialog("Error", "Something went wrong.", context);
-          },
-        );
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return ThemeHelper()
+                  .alartDialog("Error", "Something went wrong.", context);
+            },
+          );
+        }
       }
       rethrow;
     }

@@ -195,12 +195,14 @@ class _InviteMemberState extends ConsumerState<InviteMemberWidget> {
         });
       }
     } catch (e) {
-      CustomToast.show(
-        message: e.toString().capitalize(),
-        type: ToastType.error,
-        context: context,
-        gravity: ToastGravity.BOTTOM,
-      );
+      if (mounted) {
+        CustomToast.show(
+          message: e.toString().capitalize(),
+          type: ToastType.error,
+          context: context,
+          gravity: ToastGravity.BOTTOM,
+        );
+      }
       btnController.error();
       Timer(const Duration(seconds: 2), () {
         btnController.reset();

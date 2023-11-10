@@ -199,12 +199,14 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
                                 Navigator.pushNamedAndRemoveUntil(
                                     context, '/login', (route) => false);
                               } else {
-                                CustomToast.show(
-                                  message: 'Password Change Failed',
-                                  type: ToastType.error,
-                                  context: context,
-                                  gravity: ToastGravity.BOTTOM,
-                                );
+                                if (mounted) {
+                                  CustomToast.show(
+                                    message: 'Password Change Failed',
+                                    type: ToastType.error,
+                                    context: context,
+                                    gravity: ToastGravity.BOTTOM,
+                                  );
+                                }
                                 btnController.error();
                                 resetButton(btnController);
                               }

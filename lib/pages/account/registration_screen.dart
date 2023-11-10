@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -42,20 +43,6 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
       'controller': RoundedLoadingButtonController(),
       'onPressed': () {},
     },
-    {
-      'name': 'Facebook',
-      'icon': FontAwesomeIcons.facebook,
-      'color': Colors.blue,
-      'controller': RoundedLoadingButtonController(),
-      'onPressed': () {},
-    },
-    {
-      'name': 'Github',
-      'icon': FontAwesomeIcons.apple,
-      'color': Colors.black,
-      'controller': RoundedLoadingButtonController(),
-      'onPressed': () {},
-    },
   ];
 
   List<Widget> buildOAuthButtons() {
@@ -63,18 +50,34 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
 
     for (int i = 0; i < oAuth.length; i++) {
       buttons.add(
-        LoadingButton(
-          width: 48,
-          color: oAuth[i]['color'],
-          onPressed: () async {
-            (oAuth[i]['controller'] as RoundedLoadingButtonController).error();
-            resetButton(oAuth[i]['controller']);
-          },
-          btnController: oAuth[i]['controller'],
-          child: Icon(
-            oAuth[i]['icon'],
-            color: Colors.white,
-          ),
+        Expanded(
+          child: LoadingButton(
+              width: 48,
+              color: oAuth[i]['color'],
+              onPressed: () async {
+                (oAuth[i]['controller'] as RoundedLoadingButtonController)
+                    .error();
+                resetButton(oAuth[i]['controller']);
+              },
+              btnController: oAuth[i]['controller'],
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    oAuth[i]['icon'],
+                    color: Colors.white,
+                  ),
+                  const SizedBox(width: 16.0),
+                  Text(
+                    oAuth[i]['name'],
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              )),
         ),
       );
     }
@@ -105,13 +108,15 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
               context, '/login', (Route<dynamic> route) => false);
         }
       } catch (e) {
-        CustomToast.show(
-          message: e.toString().capitalize(),
-          type: ToastType.error,
-          context: context,
-          gravity: ToastGravity.BOTTOM,
-          duration: 4,
-        );
+        if (mounted) {
+          CustomToast.show(
+            message: e.toString().capitalize(),
+            type: ToastType.error,
+            context: context,
+            gravity: ToastGravity.BOTTOM,
+            duration: 4,
+          );
+        }
 
         if (kDebugMode) {
           print(e);
@@ -174,9 +179,10 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                             ),
                           ),
                           const SizedBox(height: 24),
-                          const Text(
-                            'Créez votre compte Noted',
-                            style: TextStyle(color: Colors.grey, fontSize: 24),
+                          Text(
+                            'signup.title'.tr(),
+                            style: const TextStyle(
+                                color: Colors.grey, fontSize: 24),
                           ),
                           const SizedBox(height: 32),
                           Container(
@@ -186,7 +192,10 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                               autofocus: true,
                               controller: _nameController,
                               decoration: ThemeHelper()
-                                  .textInputDecoration('Nom', 'Enter votre nom')
+                                  .textInputDecoration(
+                                    'signup.name.label'.tr(),
+                                    'signup.name.hint'.tr(),
+                                  )
                                   .copyWith(
                                     prefixIcon: const Icon(
                                       Icons.person_outline,
@@ -195,7 +204,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                                   ),
                               validator: (val) {
                                 if ((val!.isEmpty)) {
-                                  return "Entrer votre nom";
+                                  return "signup.name.validator".tr();
                                 }
                                 return null;
                               },
@@ -209,7 +218,9 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                               controller: _emailController,
                               decoration: ThemeHelper()
                                   .textInputDecoration(
-                                      'Email', 'Enter votre email')
+                                    'signup.email.title'.tr(),
+                                    'signup.email.hint'.tr(),
+                                  )
                                   .copyWith(
                                     prefixIcon: const Icon(
                                       Icons.mail_outline,
@@ -218,7 +229,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                                   ),
                               validator: (val) {
                                 if (val!.isEmpty) {
-                                  return "Veuillez entrer votre email";
+                                  return "signup.email.validator".tr();
                                 }
                                 //TODO: fix email validation
                                 // else if (!val.isEmail()) {
@@ -238,8 +249,10 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                               controller: _passwordController,
                               obscureText: _obscureText,
                               decoration: ThemeHelper()
-                                  .textInputDecoration("Mot de passe*",
-                                      "Entrer votre mot de passe")
+                                  .textInputDecoration(
+                                    "signup.password.label".tr(),
+                                    "signup.password.hint".tr(),
+                                  )
                                   .copyWith(
                                     prefixIcon: const Icon(
                                         Icons.lock_outline_rounded,
@@ -262,57 +275,13 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                                   ),
                               validator: (val) {
                                 if (val!.isEmpty) {
-                                  return "Veuillez entrer votre mot de passe";
+                                  return "signup.password.validator".tr();
                                 }
                                 return null;
                               },
                             ),
                           ),
                           const SizedBox(height: 16.0),
-                          FormField<bool>(
-                            builder: (state) {
-                              return Column(
-                                children: <Widget>[
-                                  Row(
-                                    children: <Widget>[
-                                      Checkbox(
-                                          fillColor: MaterialStateProperty.all(
-                                              Colors.grey.shade900),
-                                          value: checkboxValue,
-                                          onChanged: (value) {
-                                            setState(() {
-                                              checkboxValue = value!;
-                                              state.didChange(value);
-                                            });
-                                          }),
-                                      const Text(
-                                        "J'accepte les conditions générales d'utilisation",
-                                        style: TextStyle(color: Colors.grey),
-                                      ),
-                                    ],
-                                  ),
-                                  Container(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                      state.errorText ?? '',
-                                      textAlign: TextAlign.left,
-                                      style: const TextStyle(
-                                        color: Colors.redAccent,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              );
-                            },
-                            validator: (value) {
-                              if (!checkboxValue) {
-                                return 'Vous devez accepter les conditions générales d\'utilisation';
-                              } else {
-                                return null;
-                              }
-                            },
-                          ),
                           const SizedBox(height: 20.0),
                           LoadingButton(
                             onPressed: () async => createAccount(
@@ -320,12 +289,12 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                                 _emailController.text,
                                 _passwordController.text),
                             btnController: btnController,
-                            text: 'Créer',
+                            text: 'signup.button'.tr(),
                           ),
                           const SizedBox(height: 32.0),
-                          const Text(
-                            "Ou connectez-vous avec",
-                            style: TextStyle(color: Colors.grey),
+                          Text(
+                            "signup.other".tr(),
+                            style: const TextStyle(color: Colors.grey),
                           ),
                           const SizedBox(height: 24.0),
                           Row(
@@ -342,10 +311,10 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                             child: Text.rich(
                               TextSpan(
                                 children: [
-                                  const TextSpan(
-                                      text: "Vous avez déjà un compte ? "),
+                                  TextSpan(text: "signup.signin".tr()),
+                                  const TextSpan(text: " "),
                                   TextSpan(
-                                    text: 'Login',
+                                    text: 'signup.signinButton'.tr(),
                                     recognizer: TapGestureRecognizer()
                                       ..onTap = () {
                                         ref

@@ -75,12 +75,14 @@ class _GroupMembersListState extends ConsumerState<GroupMembersList> {
       if (kDebugMode) {
         print(e);
       }
-      CustomToast.show(
-        message: e.toString().capitalize(),
-        type: ToastType.error,
-        context: context,
-        gravity: ToastGravity.BOTTOM,
-      );
+      if (mounted) {
+        CustomToast.show(
+          message: e.toString().capitalize(),
+          type: ToastType.error,
+          context: context,
+          gravity: ToastGravity.BOTTOM,
+        );
+      }
     }
   }
 

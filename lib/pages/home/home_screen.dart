@@ -74,9 +74,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                 height: homePageHeight,
                 child: const Column(
                   children: [
-                    Expanded(flex: 2, child: HomeInfos()),
-                    Expanded(flex: 4, child: LatestsGroups()),
-                    Expanded(flex: 6, child: LatestFiles()),
+                    Expanded(flex: 3, child: HomeInfos()),
+                    Expanded(flex: 5, child: LatestsGroups()),
+                    Expanded(flex: 7, child: LatestFiles()),
                   ],
                 ),
               ),

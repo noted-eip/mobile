@@ -13,6 +13,7 @@ import 'package:noted_mobile/data/clients/tracker_client.dart';
 import 'package:noted_mobile/data/models/account/account.dart';
 import 'package:noted_mobile/data/providers/account_provider.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
+import 'package:noted_mobile/utils/language.dart';
 import 'package:noted_mobile/utils/string_extension.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
@@ -87,12 +88,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           });
         }
       } catch (e) {
-        CustomToast.show(
-          message: e.toString().capitalize(),
-          type: ToastType.error,
-          context: context,
-          gravity: ToastGravity.BOTTOM,
-        );
+        if (mounted) {
+          CustomToast.show(
+            message: e.toString().capitalize(),
+            type: ToastType.error,
+            context: context,
+            gravity: ToastGravity.BOTTOM,
+          );
+        }
         _btnControllerSave.error();
 
         Future.delayed(const Duration(seconds: 1), () {
@@ -498,19 +501,19 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                       ),
                     ),
                     const Spacer(),
-                    DropdownButton(
+                    DropdownButton<String>(
+                        borderRadius: BorderRadius.circular(16),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        underline: const SizedBox(),
+                        icon: const Icon(Icons.language),
+                        iconSize: 16,
                         value: context.locale.languageCode,
-                        items: const [
-                          DropdownMenuItem(
-                              value: "fr", child: Text("Français")),
-                          DropdownMenuItem(value: "en", child: Text("English")),
-                        ],
-                        onChanged: (t) {
-                          if (t == "fr") {
-                            context.setLocale(const Locale('fr', 'FRA'));
-                          } else {
-                            context.setLocale(const Locale('en', 'EN'));
-                          }
+                        items: LanguagePreferences.languageNameMap.entries
+                            .map((e) => DropdownMenuItem(
+                                value: e.key, child: Text(e.value)))
+                            .toList(),
+                        onChanged: <String>(code) async {
+                          await LanguagePreferences.setLangue(context, code);
                         })
                   ],
                 ),

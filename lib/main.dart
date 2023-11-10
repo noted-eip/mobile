@@ -22,6 +22,7 @@ import 'package:noted_mobile/pages/notes/notes_list_screen.dart';
 import 'package:noted_mobile/pages/notes/note_detail_screen.dart';
 import 'package:noted_mobile/pages/notifications/notification_page.dart';
 import 'package:noted_mobile/pages/home/splash_screen.dart';
+import 'package:noted_mobile/utils/language.dart';
 
 //TODO: use material 3 and apply al need changes
 
@@ -43,10 +44,13 @@ void main() async {
   };
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
+  Locale savedLanguage = await LanguagePreferences.loadLanguage();
+
   runApp(EasyLocalization(
-    supportedLocales: const [Locale('en', 'EN'), Locale('fr', 'FRA')],
+    supportedLocales: LanguagePreferences.languages,
     path: 'assets/translations',
     fallbackLocale: const Locale('fr', 'FRA'),
+    startLocale: savedLanguage,
     assetLoader: JsonAssetLoader(),
     child: const ProviderScope(child: MyApp()),
   ));

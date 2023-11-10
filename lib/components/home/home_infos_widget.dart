@@ -14,28 +14,25 @@ class HomeInfos extends ConsumerWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              RichText(
-                text: TextSpan(
-                  text: "home.hello".tr(),
-                  style: const TextStyle(fontSize: 20, color: Colors.black),
-                  children: <TextSpan>[
-                    const TextSpan(
-                      text: '\n',
-                    ),
-                    TextSpan(
-                        text: user.name == '' ? 'Name !\n' : '${user.name} !\n',
-                        style: const TextStyle(fontWeight: FontWeight.bold)),
-                    TextSpan(
-                      text: 'home.start'.tr(),
-                      style: const TextStyle(color: Colors.grey),
-                    ),
-                  ],
-                ),
-              )
-            ],
+          Expanded(
+            child: RichText(
+              text: TextSpan(
+                text: "home.hello".tr(),
+                style: const TextStyle(fontSize: 20, color: Colors.black),
+                children: <TextSpan>[
+                  const TextSpan(
+                    text: '\n',
+                  ),
+                  TextSpan(
+                      text: user.name == '' ? 'Name !\n' : '${user.name} !\n',
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                  TextSpan(
+                    text: 'home.start'.tr(),
+                    style: const TextStyle(color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),

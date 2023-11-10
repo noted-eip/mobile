@@ -71,12 +71,14 @@ class _CreateGroupModalState extends ConsumerState<CreateGroupModal> {
           if (kDebugMode) {
             print("Failed to create Group, Api response :${e.toString()}");
           }
-          CustomToast.show(
-            message: e.toString().capitalize(),
-            type: ToastType.error,
-            context: context,
-            gravity: ToastGravity.BOTTOM,
-          );
+          if (mounted) {
+            CustomToast.show(
+              message: e.toString().capitalize(),
+              type: ToastType.error,
+              context: context,
+              gravity: ToastGravity.BOTTOM,
+            );
+          }
           btnController.error();
           Future.delayed(const Duration(seconds: 1), () {
             btnController.reset();
