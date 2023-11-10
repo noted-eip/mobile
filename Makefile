@@ -3,6 +3,16 @@
 update-submodules:
 	git submodule update --init --remote
 
+
+update-ios:
+	flutter clean
+	flutter build ios
+	cd ./ios/ && \
+	pod install && \
+	pod update && \
+	pod repo update && \
+	pod install --repo-update
+
 build-runner:
 	cd ./protorepo/openapi/dart-dio/ ; \
 	flutter pub get; \

@@ -37,3 +37,23 @@ flutter pub get
 cd ios
 pod install
 arch -x86_64 pod install
+
+### check secu
+
+name : entre 4 et 20
+password : min 4 et 20
+email: valid
+
+code confirmation : 4 chiffres -> forgot pass et validation account
+
+204 : no content
+500: error server
+400 : user error -> argument pass no good
+403: user non identifé
+
+db :
+404 : 'not found'
+'invalid token'
+'already exist'
+'invalid argument'
+'internal error'

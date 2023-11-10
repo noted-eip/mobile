@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:easy_localization_loader/easy_localization_loader.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+// import 'package:firebase_performance/firebase_performance.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,6 +17,7 @@ import 'package:noted_mobile/pages/account/login_screen.dart';
 import 'package:noted_mobile/pages/account/profile_screen.dart';
 import 'package:noted_mobile/pages/account/registration_screen.dart';
 import 'package:noted_mobile/pages/account/forgot_password_verification_screen.dart';
+import 'package:noted_mobile/pages/account/registration_verification_screen.dart';
 import 'package:noted_mobile/pages/groups/group_detail_page.dart';
 import 'package:noted_mobile/pages/groups/groups_list_screen.dart';
 import 'package:noted_mobile/pages/notes/notes_list_screen.dart';
@@ -38,10 +40,12 @@ void main() async {
   FlutterError.onError = (errorDetails) {
     FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
   };
+
   PlatformDispatcher.instance.onError = (error, stack) {
     FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
     return true;
   };
+
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   Locale savedLanguage = await LanguagePreferences.loadLanguage();
@@ -85,6 +89,8 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const MyDrawer(),
         '/profile': (context) => const ProfilePage(),
         '/register': (context) => const RegistrationPage(),
+        '/register-verification': (context) =>
+            const RegistrationVerificationPage(),
         '/forgot-password': (context) => const ForgotPasswordPage(),
         '/forgot-password-verification': (context) =>
             const ForgotPasswordVerificationPage(),

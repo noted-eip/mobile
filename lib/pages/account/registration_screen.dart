@@ -86,48 +86,51 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
   }
 
   Future<void> createAccount(String name, String email, String password) async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        final loginRes = await ref.read(accountClientProvider).createAccount(
-              name: name,
-              email: email,
-              password: password,
-            );
+    Navigator.pushNamed(context, '/register-verification', arguments: "userId");
+    // if (_formKey.currentState!.validate()) {
+    //   try {
+    //     final loginRes = await ref.read(accountClientProvider).createAccount(
+    //           name: name,
+    //           email: email,
+    //           password: password,
+    //         );
 
-        if (loginRes != null && mounted) {
-          CustomToast.show(
-            message: "Compte créé avec succès !",
-            type: ToastType.success,
-            context: context,
-            gravity: ToastGravity.BOTTOM,
-          );
+    //     if (loginRes != null && mounted) {
+    //       CustomToast.show(
+    //         message: "Compte créé avec succès !",
+    //         type: ToastType.success,
+    //         context: context,
+    //         gravity: ToastGravity.BOTTOM,
+    //       );
 
-          ref.read(trackerProvider).trackPage(TrackPage.login);
+    //       ref.read(trackerProvider).trackPage(TrackPage.login);
 
-          Navigator.pushNamedAndRemoveUntil(
-              context, '/login', (Route<dynamic> route) => false);
-        }
-      } catch (e) {
-        if (mounted) {
-          CustomToast.show(
-            message: e.toString().capitalize(),
-            type: ToastType.error,
-            context: context,
-            gravity: ToastGravity.BOTTOM,
-            duration: 4,
-          );
-        }
+    //       Navigator.pushNamed(context, '/registration-verification');
 
-        if (kDebugMode) {
-          print(e);
-        }
-        btnController.error();
-        resetButton(btnController);
-      }
-    } else {
-      btnController.error();
-      resetButton(btnController);
-    }
+    //       // Navigator.pushNamedAndRemoveUntil(
+    //       //     context, '/login', (Route<dynamic> route) => false);
+    //     }
+    //   } catch (e) {
+    //     if (mounted) {
+    //       CustomToast.show(
+    //         message: e.toString().capitalize(),
+    //         type: ToastType.error,
+    //         context: context,
+    //         gravity: ToastGravity.BOTTOM,
+    //         duration: 4,
+    //       );
+    //     }
+
+    //     if (kDebugMode) {
+    //       print(e);
+    //     }
+    //     btnController.error();
+    //     resetButton(btnController);
+    //   }
+    // } else {
+    //   btnController.error();
+    //   resetButton(btnController);
+    // }
   }
 
   void resetButton(RoundedLoadingButtonController controller) async {
@@ -218,7 +221,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                               controller: _emailController,
                               decoration: ThemeHelper()
                                   .textInputDecoration(
-                                    'signup.email.title'.tr(),
+                                    'signup.email.label'.tr(),
                                     'signup.email.hint'.tr(),
                                   )
                                   .copyWith(

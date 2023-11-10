@@ -277,6 +277,37 @@ class AccountClient {
     }
   }
 
+  Future<Account?> verifyAccount({
+    required String token,
+    required String accountId,
+  }) async {
+    final apiP = ref.read(apiProvider);
+
+    try {
+      AccountsAPIValidateAccountRequest body =
+          AccountsAPIValidateAccountRequest(
+        (body) => body..validationToken = token,
+      );
+
+      Response<V1ValidateAccountResponse> response = await apiP
+          .accountsAPIValidateAccount(accountId: accountId, body: body);
+
+      if (response.statusCode != 200 || response.data == null) {
+        if (kDebugMode) {
+          print("inside try : code = ${response.statusCode}");
+        }
+        throw Failure(message: response.toString());
+      }
+      return Account.fromApi(response.data!.account);
+    } on DioException catch (e) {
+      String error = DioExceptions.fromDioError(e).toString();
+      if (kDebugMode) {
+        print("Exception when calling DefaultApi->createAccount: $error\n");
+      }
+      throw Failure(message: error);
+    }
+  }
+
   Future<Account?> createAccount({
     required String name,
     required String email,
