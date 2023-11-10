@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -49,9 +46,19 @@ class DefaultFirebaseOptions {
     }
   }
 
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyBAYMc_6XiZYQyHsCkwRXVXd7UofXF6YiQ',
+    appId: '1:871625340195:web:aa69f8236ad0da4e2fc896',
+    messagingSenderId: '871625340195',
+    projectId: 'noted-354512',
+    authDomain: 'noted-354512.firebaseapp.com',
+    storageBucket: 'noted-354512.appspot.com',
+    measurementId: 'G-XFC30W00DZ',
+  );
+
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDkb5xkY1R86XADULVc0I18mIhAFXtZzvE',
-    appId: '1:871625340195:android:b8049a5a228921c92fc896',
+    appId: '1:871625340195:android:a6b15188a36495bf2fc896',
     messagingSenderId: '871625340195',
     projectId: 'noted-354512',
     storageBucket: 'noted-354512.appspot.com',
@@ -63,9 +70,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '871625340195',
     projectId: 'noted-354512',
     storageBucket: 'noted-354512.appspot.com',
-    iosClientId:
-        '871625340195-vli3ajnounqk7u002mp2b5dahj2cmbs9.apps.googleusercontent.com',
+    iosClientId: '871625340195-vli3ajnounqk7u002mp2b5dahj2cmbs9.apps.googleusercontent.com',
     iosBundleId: 'com.noted.notedmobile',
-    measurementId: 'G-XFC30W00DZ',
   );
 }

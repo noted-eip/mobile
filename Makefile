@@ -3,6 +3,8 @@
 update-submodules:
 	git submodule update --init --remote
 
+firebase:
+	flutterfire configure
 
 update-ios:
 	flutter clean
