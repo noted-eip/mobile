@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/components/common/new_custom_drawer.dart';
@@ -49,8 +50,8 @@ class _LatestsGroupsState extends ConsumerState<LatestsGroups> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text("Mes Derniers Groupes",
-                    style: TextStyle(fontSize: 20)),
+                Text("home.lastest-groups".tr(),
+                    style: const TextStyle(fontSize: 20)),
                 Expanded(
                   child: GridView.builder(
                     gridDelegate:
@@ -78,7 +79,7 @@ class _LatestsGroupsState extends ConsumerState<LatestsGroups> {
                         );
                       } else {
                         return GroupCard(
-                          groupName: "Voir plus ...",
+                          groupName: "home.see-more".tr(),
                           groupIcon: Icons.add,
                           displaySeeMore: true,
                           onTap: () {
@@ -99,13 +100,13 @@ class _LatestsGroupsState extends ConsumerState<LatestsGroups> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text("Commencer avec les groupes",
-                    style: TextStyle(fontSize: 20)),
+                Text("home.start-w-group".tr(),
+                    style: const TextStyle(fontSize: 20)),
                 Expanded(
                   child: Row(
                     children: [
                       GroupCard(
-                        groupName: "Créer un groupe",
+                        groupName: "home.create-group".tr(),
                         groupIcon: Icons.add,
                         displaySeeMore: true,
                         onTap: () async {

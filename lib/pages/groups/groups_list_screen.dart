@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -33,8 +34,9 @@ class _GroupsListPageState extends ConsumerState<GroupsListPage> {
 
   Widget buildSearchBar() {
     return TextField(
-      decoration:
-          ThemeHelper().textInputDecoration('', 'Rechercher ...').copyWith(
+      decoration: ThemeHelper()
+          .textInputDecoration('', 'my-groups.search'.tr())
+          .copyWith(
               prefixIcon: const Icon(
                 Icons.search_outlined,
                 color: Colors.grey,
@@ -99,8 +101,8 @@ class _GroupsListPageState extends ConsumerState<GroupsListPage> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       textBaseline: TextBaseline.alphabetic,
                       children: [
-                        const Text(
-                          "Mes Groupes",
+                        Text(
+                          "my-groups.title".tr(),
                         ),
                         const Spacer(),
                         Material(

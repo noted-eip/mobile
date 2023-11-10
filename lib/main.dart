@@ -1,3 +1,5 @@
+import 'package:easy_localization/easy_localization.dart';
+import 'package:easy_localization_loader/easy_localization_loader.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
@@ -27,6 +29,7 @@ void main() async {
   init();
   singleton.get<APIHelper>().initApiClient();
   WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
   await Firebase.initializeApp(
     name: "Noted",
     options: DefaultFirebaseOptions.currentPlatform,
@@ -39,7 +42,14 @@ void main() async {
     return true;
   };
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  runApp(const ProviderScope(child: MyApp()));
+
+  runApp(EasyLocalization(
+    supportedLocales: const [Locale('en', 'EN'), Locale('fr', 'FRA')],
+    path: 'assets/translations',
+    fallbackLocale: const Locale('fr', 'FRA'),
+    assetLoader: JsonAssetLoader(),
+    child: const ProviderScope(child: MyApp()),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -52,6 +62,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'NOTED APP',
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: false,

@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:openapi/openapi.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 // import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 const String applicationJson = "application/json";
@@ -24,6 +26,13 @@ final apiProvider = Provider<DefaultApi>((ref) {
   //   connectTimeout: const Duration(seconds: 20),
   // );
 
+  var dio = Dio(
+    BaseOptions(
+      baseUrl: kBaseUrl,
+      receiveTimeout: const Duration(seconds: 20),
+    ),
+  );
+
   // var interceptor = [
   //   PrettyDioLogger(
   //     requestHeader: true,
@@ -32,15 +41,10 @@ final apiProvider = Provider<DefaultApi>((ref) {
   //   )
   // ];
   // if (!kReleaseMode) {
-  //   dio.interceptors.add();
+  //   dio.interceptors.add(interceptor);
   // }
 
   return Openapi(
-    dio: Dio(
-      BaseOptions(
-        baseUrl: kBaseUrl,
-        receiveTimeout: const Duration(seconds: 20),
-      ),
-    ),
+    dio: dio,
   ).getDefaultApi();
 });

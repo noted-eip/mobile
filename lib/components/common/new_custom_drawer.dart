@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/data/clients/tracker_client.dart';
@@ -78,10 +79,10 @@ class MyMenuItem {
 }
 
 class MyMenuItems {
-  static const home = MyMenuItem(icon: Icons.home, title: 'Accueil');
-  static const groups = MyMenuItem(icon: Icons.group, title: 'Mes Groupes');
-  static const notes = MyMenuItem(icon: Icons.description, title: 'Mes Notes');
-  static const profil = MyMenuItem(icon: Icons.person, title: 'Profil');
+  static const home = MyMenuItem(icon: Icons.home, title: 'menu.home');
+  static const groups = MyMenuItem(icon: Icons.group, title: 'menu.groups');
+  static const notes = MyMenuItem(icon: Icons.description, title: 'menu.notes');
+  static const profil = MyMenuItem(icon: Icons.person, title: 'menu.profile');
 
   static const all = <MyMenuItem>[
     home,
@@ -178,7 +179,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                     context, '/login', (r) => false);
               },
               leading: const Icon(Icons.logout),
-              title: const Text("Déconnexion"),
+              title: Text("menu.logout".tr()),
             ),
           ],
         ),
@@ -197,6 +198,6 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
           widget.onSelected(item);
         },
         leading: Icon(item.icon),
-        title: Text(item.title),
+        title: Text(item.title.tr()),
       );
 }

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -175,7 +176,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Profil",
+          "profil.title".tr(),
           style: TextStyle(
               color: Colors.grey.shade900, fontWeight: FontWeight.bold),
         ),
@@ -210,9 +211,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                             child: SingleChildScrollView(
                               child: Column(
                                 children: [
-                                  const Text(
-                                    "Modifier le profil",
-                                    style: TextStyle(
+                                  Text(
+                                    "profil.edit-profile".tr(),
+                                    style: const TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold),
                                   ),
@@ -226,8 +227,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                         TextFormField(
                                           decoration:
                                               ThemeHelper().textInputProfile(
-                                            labelText: "Nom",
-                                            hintText: "Entre votre nom",
+                                            labelText: "profil.name".tr(),
+                                            hintText: "profil.name-hint".tr(),
                                             prefixIcon:
                                                 const Icon(Icons.person),
                                           ),
@@ -243,9 +244,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                           },
                                           validator: (value) {
                                             if (value!.isEmpty) {
-                                              return "Le Nom ne peut pas être vide";
+                                              return "profil.name-empty".tr();
                                             } else if (value.length < 4) {
-                                              return "Le Nom doit contenir au moins 4 caractères";
+                                              return "profil.name-length".tr();
                                             }
                                             return null;
                                           },
@@ -256,8 +257,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                         TextFormField(
                                           decoration:
                                               ThemeHelper().textInputProfile(
-                                            labelText: "Email",
-                                            hintText: "Entrer votre email",
+                                            labelText: "profil.email".tr(),
+                                            hintText: "profil.email-hint".tr(),
                                             prefixIcon: const Icon(Icons.email),
                                           ),
                                           enabled: false, //isEditing,
@@ -278,7 +279,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                         TextFormField(
                                           decoration:
                                               ThemeHelper().textInputProfile(
-                                            labelText: "Mot de passe",
+                                            labelText: "profil.password".tr(),
                                             hintText: "••••",
                                             prefixIcon: const Icon(Icons.lock),
                                             suffixIcon: IconButton(
@@ -314,7 +315,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                             if (value!.isEmpty) {
                                               return null;
                                             } else if (value.length < 4) {
-                                              return "Le mot de passe doit contenir au moins 4 caractères";
+                                              return "profil.password-length"
+                                                  .tr();
                                             }
                                             return null;
                                           },
@@ -326,7 +328,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                           decoration:
                                               ThemeHelper().textInputProfile(
                                             labelText:
-                                                "Confirmer le mot de passe",
+                                                "profil.confirm-password".tr(),
                                             hintText: "••••",
                                             prefixIcon: const Icon(Icons.lock),
                                             suffixIcon: IconButton(
@@ -359,10 +361,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                             if (value!.isEmpty) {
                                               return null;
                                             } else if (value.length < 4) {
-                                              return "Le mot de passe doit contenir au moins 4 caractères";
+                                              return "profil.password-length"
+                                                  .tr();
                                             } else if (value !=
                                                 passwordController.text) {
-                                              return "Les mots de passe ne correspondent pas";
+                                              return "profil.password-no-match"
+                                                  .tr();
                                             }
                                             return null;
                                           },
@@ -396,21 +400,13 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
                                 if (nameController.text !=
                                     ref.read(userProvider).name) {
-                                  if (kDebugMode) {
-                                    print("name changed");
-                                  }
-
                                   _btnControllerSave.start();
                                   updateAccount();
                                 }
-                              } else {
-                                if (kDebugMode) {
-                                  print("form is invalid");
-                                }
-                              }
+                              } else {}
                             },
                             btnController: _btnControllerSave,
-                            text: 'Enregistrer',
+                            text: 'profil.button'.tr(),
                           ),
                         ],
                       ),
@@ -472,8 +468,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 ),
                 TextField(
                   decoration: ThemeHelper().textInputProfile(
-                    labelText: "Nom",
-                    hintText: "Entrer votre nom",
+                    labelText: "profil.name".tr(),
+                    hintText: "profil.name-hint".tr(),
                     prefixIcon: const Icon(Icons.person),
                   ),
                   controller: nameController,
@@ -484,20 +480,39 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 ),
                 TextField(
                   decoration: ThemeHelper().textInputProfile(
-                    labelText: "Email",
-                    hintText: "Entrer votre email",
+                    labelText: "profil.email".tr(),
+                    hintText: "profil.email-hint".tr(),
                     prefixIcon: const Icon(Icons.email),
                   ),
                   controller: emailController,
                   enabled: false,
                 ),
                 const Spacer(),
-                TextButton(
-                  onPressed: () async => deleteAccount(),
-                  child: const Text(
-                    'Supprimer le compte',
-                    style: TextStyle(color: Colors.redAccent),
-                  ),
+                Row(
+                  children: [
+                    TextButton(
+                      onPressed: () async => deleteAccount(),
+                      child: Text(
+                        'profil.delete-account'.tr(),
+                        style: const TextStyle(color: Colors.redAccent),
+                      ),
+                    ),
+                    const Spacer(),
+                    DropdownButton(
+                        value: context.locale.languageCode,
+                        items: const [
+                          DropdownMenuItem(
+                              value: "fr", child: Text("Français")),
+                          DropdownMenuItem(value: "en", child: Text("English")),
+                        ],
+                        onChanged: (t) {
+                          if (t == "fr") {
+                            context.setLocale(const Locale('fr', 'FRA'));
+                          } else {
+                            context.setLocale(const Locale('en', 'EN'));
+                          }
+                        })
+                  ],
                 ),
               ],
             ),

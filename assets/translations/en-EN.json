@@ -1,0 +1,165 @@
+{
+    "signin" : {
+        "title" : "Sign In to your account",
+        "email" : {
+            "label" : "Email",
+            "hint" : "Enter your email"
+        },
+        "password" : {
+            "label" : "Password",
+            "hint" : "Enter your password"
+        },
+        "forgot" : "Forgot password?",
+        "button" : "Sign In",
+        "other" : "Or sign in with",
+        "signup" : "Don't have an account?",
+        "signupButton" : "Sign Up"
+    },
+    "signup" : {
+        "title" : "Create your account",
+        "name" : {
+            "label" : "Name",
+            "hint" : "Enter your name"
+        },
+        "email" : {
+            "label" : "Email",
+            "hint" : "Enter your email"
+        },
+        "password" : {
+            "label" : "Password",
+            "hint" : "Enter your password"
+        },
+        "button" : "Sign Up",
+        "other" : "Or sign up with",
+        "signin" : "Already have an account?",
+        "signinButton" : "Sign In"
+    },
+    "forgot" : {
+        "step1": {
+            "title" : "Forgot password?",
+            "description" : "Enter your email address associated with your account.",
+            "description2" : "We will email you a verification code to reset your password.",
+            "email" : {
+                "label" : "Email",
+                "hint" : "Enter your email"
+            },
+            "button" : "Send",
+            "remember" : "Remember your password ?",
+            "signin" : "Sign In"
+        },
+        "step2": {
+            "title": "Verification code",
+            "description": "Enter the verification code sent to your email address.",
+            "not-received": "Didn't receive the code?",
+            "resend": "Resend",
+            "resend-pop-up": {
+                "title": "Successfully sent",
+                "description": "We have sent you a new verification code to your email address.",
+                "button": "Ok"
+            },
+            "button": "Verify"
+        }
+    },
+    "menu": {
+        "home": "Home",
+        "workspace": "My Workspace",
+        "groups": "My Groups",
+        "notes": "My Notes",
+        "profile": "Profile",
+        "logout": "Logout"
+    },
+    "home" : {
+        "hello" : "Hello,",
+        "start" : "Let's start to write our story !",
+        "lastest-groups" : "Lastest groups",
+        "lastest-notes" : "Lastest notes",
+        "see-more": "See more ...",
+        "start-w-group": "Start with a group",
+        "create-group": "Create a group"
+    },
+    "my-groups": {
+        "title": "My Groups",
+        "search": "Search ..."
+    },
+    "my-notes": {
+        "title": "My Notes",
+        "search": "Search ..."
+    },
+    "profil": {
+        "title": "My Profile",
+        "edit-profile": "Edit profile",
+        "name": "Name",
+        "name-hint": "Enter your name",
+        "name-empty": "Name is required",
+        "name-length": "Name must contain at least 4 characters",
+        "email": "Email",
+        "email-hint": "Enter your email",
+        "password": "Password",
+        "password-length": "Password must contain at least 4 characters",
+        "password-no-match": "Passwords do not match",
+        "confirm-password": "Confirm password",
+        "button": "Save",
+        "close": "Close",
+        "delete-account": "Delete account"
+    },
+    "group-detail": {
+        "title": "Group detail",
+        "description": "Description",
+        "created-on": "Created on",
+        "members": "Members",
+        "notes": "Notes",
+        "activities": "Activities",
+        "edit-group": "Edit group",
+        "delete-group": "Delete group",
+        "leave-group": "Leave group",
+        "edit-group-modal" : {
+            "title": "Edit group",
+            "name-label": "Group name",
+            "name-hint": "Enter group name",
+            "description-label": "Group description",
+            "description-hint": "Enter a group description",
+            "button": "Save",
+            "close": "Close"
+        }
+    },
+    "note-detail": {
+        "quiz": "Quiz",
+        "recommandations": "Recommandations",
+        "summary": "Summary"
+    },
+    "invites": {
+        "title": "Invites",
+        "sent-invites": "Sent",
+        "received-invites": "Received",
+        "empty": "No invites found !"
+    },
+    "pop-up": {
+        "delete-group": {
+            "title": "Delete group",
+            "description": "Are you sure you want to delete this group ?",
+            "button": "Delete",
+            "cancel": "Cancel"
+        },
+        "leave-group": {
+            "title": "Leave group",
+            "description": "Are you sure you want to leave this group ?",
+            "button": "Leave",
+            "cancel": "Cancel"
+        },
+        "edit-member": 
+        {
+            "title": "Edit member role",
+            "description": "Are you sure you want to change this member's role ?",
+            "button": "Promote",
+            "cancel": "Cancel"
+        },
+        "delete-member": 
+        {
+            "title": "Delete member",
+            "description": "Are you sure you want to delete this member ?",
+            "button": "Delete",
+            "cancel": "Cancel"
+        }
+    },
+    "close": "Close"
+}

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/components/common/base_container.dart';
@@ -36,8 +37,8 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
           },
           child: ListView(
             padding: EdgeInsets.zero,
-            children: const [
-              Center(child: Text("Aucunes invitations trouvées")),
+            children: [
+              Center(child: Text("invites.empty".tr())),
             ],
           ),
         );
@@ -50,8 +51,8 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
           },
           child: ListView(
             padding: EdgeInsets.zero,
-            children: const [
-              Center(child: Text("Aucunes invitations trouvées")),
+            children: [
+              Center(child: Text("invites.empty".tr())),
             ],
           ),
         );
@@ -91,7 +92,7 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
       body: BaseContainer(
         openDrawer: false,
         notif: true,
-        titleWidget: const Text("Invitations"),
+        titleWidget: Text("invites.title".tr()),
         body: DefaultTabController(
           length: 2,
           child: Column(
@@ -101,12 +102,12 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
               ),
               TabBar(
                 indicatorColor: Colors.grey.shade900,
-                tabs: const [
+                tabs: [
                   Tab(
-                    text: "Envoyées",
+                    text: "invites.sent-invites".tr(),
                   ),
                   Tab(
-                    text: "Reçues",
+                    text: "invites.received-invites".tr(),
                   ),
                 ],
               ),

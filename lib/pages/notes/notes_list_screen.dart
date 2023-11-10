@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -23,8 +24,9 @@ class LatestsFilesList extends ConsumerStatefulWidget {
 class _LatestsFilesListState extends ConsumerState<LatestsFilesList> {
   Widget buildSearchBar() {
     return TextField(
-      decoration:
-          ThemeHelper().textInputDecoration('', 'Rechercher ...').copyWith(
+      decoration: ThemeHelper()
+          .textInputDecoration('', 'my-notes.search'.tr())
+          .copyWith(
               prefixIcon: const Icon(
                 Icons.search_outlined,
                 color: Colors.grey,
@@ -90,8 +92,8 @@ class _LatestsFilesListState extends ConsumerState<LatestsFilesList> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       textBaseline: TextBaseline.alphabetic,
                       children: [
-                        const Text(
-                          "Mes Notes",
+                        Text(
+                          "my-notes.title".tr(),
                         ),
                         const Spacer(),
                         Material(

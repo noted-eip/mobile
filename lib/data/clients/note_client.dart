@@ -91,6 +91,7 @@ class NoteClient {
     } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
+        print(e);
         print(
             "Exception when calling DefaultApi->accountsAPIGetAccount: $error\n");
       }

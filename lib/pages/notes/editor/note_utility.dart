@@ -14,19 +14,6 @@ V1Note getNodeFromDoc(Document doc, V1Note note) {
   return note.rebuild((rebuild) {
     rebuild.blocks = ListBuilder<V1Block>(blocks);
   });
-
-  // return V1Note((p0) {
-  //   p0.id = note.id;
-  //   p0.groupId = note.groupId;
-  //   p0.authorAccountId = note.authorAccountId;
-  //   p0.title = note.title;
-  //   p0.createdAt = note.createdAt;
-  //   p0.modifiedAt = DateTime.now().toUtc();
-  //   p0.analyzedAt = note.analyzedAt;
-  //   p0.blocks = ListBuilder<V1Block>(blocks);
-  // });
-
-  // return {} as V1Note;
 }
 
 V1Block getBlockFromNode(DocumentNode node) {

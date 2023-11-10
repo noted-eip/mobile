@@ -71,12 +71,12 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
 
       print(updatedNote.blocks!.length);
 
-      //TODO: update note
-      // ref.read(noteClientProvider).updateNote(
-      //       noteId: widget.infos.item1,
-      //       groupId: widget.infos.item2,
-      //       note: updatedNote,
-      //     );
+      // TODO: update note
+      ref.read(noteClientProvider).updateNote(
+            noteId: widget.infos.item1,
+            groupId: widget.infos.item2,
+            note: updatedNote,
+          );
     });
   }
 

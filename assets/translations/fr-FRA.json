@@ -1,0 +1,165 @@
+{
+    "signin" : {
+        "title" : "Connectez-vous à votre compte",
+        "email" : {
+            "label" : "Email",
+            "hint" : "Entrez votre adresse email"
+        },
+        "password" : {
+            "label" : "Mot de passe",
+            "hint" : "Entrez votre mot de passe"
+        },
+        "forgot" : "Mot de passe oublié ?",
+        "button" : "Se connecter",
+        "other" : "Ou connectez-vous avec",
+        "signup" : "Vous n'avez pas de compte ?",
+        "signupButton" : "S'inscrire"
+    },
+    "signup" : {
+        "title" : "Créez votre compte",
+        "name" : {
+            "label" : "Nom",
+            "hint" : "Entrez votre nom"
+        },
+        "email" : {
+            "label" : "Email",
+            "hint" : "Entrez votre adresse email"
+        },
+        "password" : {
+            "label" : "Mot de passe",
+            "hint" : "Entrez votre mot de passe"
+        },
+        "button" : "S'inscrire",
+        "other" : "Ou inscrivez-vous avec",
+        "signin" : "Vous avez déjà un compte ?",
+        "signinButton" : "Se connecter"
+    },
+    "forgot" : {
+        "step1": {
+            "title" : "Mot de passe oublié ?",
+            "description" : "Entrez votre adresse email associée à votre compte.",
+            "description2" : "Nous vous enverrons un code de vérification pour réinitialiser votre mot de passe.",
+            "email" : {
+                "label" : "Email",
+                "hint" : "Entrez votre adresse email"
+            },
+            "button" : "Envoyer",
+            "remember" : "Vous vous souvenez de votre mot de passe ?",
+            "signin" : "Se connecter"
+        },
+        "step2": {
+            "title": "Code de vérification",
+            "description": "Entrez le code de vérification envoyé à votre adresse email.",
+            "not-received": "Vous n'avez pas reçu le code ?",
+            "resend": "Renvoyer",
+            "resend-pop-up": {
+                "title": "Envoyé avec succès",
+                "description": "Nous vous avons envoyé un nouveau code de vérification à votre adresse email.",
+                "button": "Ok"
+            },
+            "button": "Vérifier"
+        }
+    },
+    "menu": {
+        "home": "Accueil",
+        "workspace": "Mon Espace de Travail",
+        "groups": "Mes Groupes",
+        "notes": "Mes Notes",
+        "profile": "Profil",
+        "logout": "Déconnexion"
+    },
+    "home" : {
+        "hello" : "Salut,",
+        "start" : "Commençons à écrire notre histoire !",
+        "lastest-groups" : "Derniers groupes",
+        "lastest-notes" : "Dernières notes",
+        "see-more": "Voir plus ...",
+        "start-w-group": "Commencer avec un groupe",
+        "create-group": "Créer un groupe"
+    },
+    "my-groups": {
+        "title": "Mes Groupes",
+        "search": "Rechercher ..."
+    },
+    "my-notes": {
+        "title": "Mes Notes",
+        "search": "Rechercher ..."
+    },
+    "profil": {
+        "title": "Mon Profil",
+        "edit-profile": "Modifier le profil",
+        "name": "Nom",
+        "name-hint": "Entrez votre nom",
+        "name-empty": "Le nom ne peut pas être vide",
+        "name-length": "Le nom doit contenir au moins 4 caractères",
+        "email": "Email",
+        "email-hint": "Entrez votre adresse email",
+        "password": "Mot de passe",
+        "password-length": "Le mot de passe doit contenir au moins 4 caractères",
+        "password-no-match": "Les mots de passe ne correspondent pas",
+        "confirm-password": "Confirmez le mot de passe",
+        "button": "Enregistrer",
+        "close": "Fermer",
+        "delete-account": "Supprimer le compte"
+    },
+    "group-detail": {
+        "title": "Détails du Groupe",
+        "description": "Description",
+        "created-on": "Créé le",
+        "members": "Membres",
+        "notes": "Notes",
+        "activities": "Activités",
+        "edit-group": "Modifier le groupe",
+        "delete-group": "Supprimer le groupe",
+        "leave-group": "Quitter le groupe",
+        "edit-group-modal" : {
+            "title": "Modifier le groupe",
+            "name-label": "Nom du groupe",
+            "name-hint": "Entrez le nom du groupe",
+            "description-label": "Description du groupe",
+            "description-hint": "Entrez une description du groupe",
+            "button": "Enregistrer",
+            "close": "Fermer"
+        }
+    },
+    "note-detail": {
+        "quiz": "Quiz",
+        "recommandations": "Recommandations",
+        "summary": "Résumé"
+    },
+    "invites": {
+        "title": "Invitations",
+        "sent-invites": "Envoyées",
+        "received-invites": "Reçues",
+        "empty": "Aucune invitation trouvée !"
+    },
+    "pop-up": {
+        "delete-group": {
+            "title": "Supprimer le groupe",
+            "description": "Êtes-vous sûr de vouloir supprimer ce groupe ?",
+            "button": "Supprimer",
+            "cancel": "Annuler"
+        },
+        "leave-group": {
+            "title": "Quitter le groupe",
+            "description": "Êtes-vous sûr de vouloir quitter ce groupe ?",
+            "button": "Quitter",
+            "cancel": "Annuler"
+        },
+        "edit-member": 
+        {
+            "title": "Modifier le rôle du membre",
+            "description": "Êtes-vous sûr de vouloir changer le rôle de ce membre ?",
+            "button": "Promouvoir",
+            "cancel": "Annuler"
+        },
+        "delete-member": 
+        {
+            "title": "Supprimer le membre",
+            "description": "Êtes-vous sûr de vouloir supprimer ce membre ?",
+            "button": "Supprimer",
+            "cancel": "Annuler"
+        }
+    },
+    "close": "Fermer"
+}
