@@ -166,11 +166,50 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     return buttons;
   }
 
+  Future<bool?> isValidateAccount(
+      {required String email, required String password}) async {
+    try {
+      bool? isValidateAccount =
+          await ref.read(accountClientProvider).isAccountValidated(
+                email: email,
+                password: password,
+              );
+
+      return isValidateAccount;
+    } catch (e) {
+      if (mounted) {
+        CustomToast.show(
+          message: e.toString().capitalize(),
+          type: ToastType.error,
+          context: context,
+          gravity: ToastGravity.BOTTOM,
+        );
+      }
+      return null;
+    }
+  }
+
   Future<void> login(
     String email,
     String password,
   ) async {
     if (_formKey.currentState!.validate()) {
+      bool? isValidate =
+          await isValidateAccount(email: email, password: password);
+
+      if (isValidate == null) {
+        btnController.error();
+        resetButton(btnController);
+        return;
+      }
+
+      if (!isValidate) {
+        Navigator.pushNamed(context, '/verification', arguments: {
+          'email': email,
+          'password': password,
+        });
+      }
+
       try {
         final loginRes = await ref.read(accountClientProvider).login(
               email: _emailController.text,

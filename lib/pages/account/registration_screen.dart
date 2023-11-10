@@ -15,6 +15,7 @@ import 'package:noted_mobile/utils/string_extension.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
+import 'package:tuple/tuple.dart';
 
 class RegistrationPage extends ConsumerStatefulWidget {
   const RegistrationPage({super.key});
@@ -86,7 +87,8 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
   }
 
   Future<void> createAccount(String name, String email, String password) async {
-    Navigator.pushNamed(context, '/register-verification', arguments: "userId");
+    Navigator.pushNamed(context, '/register-verification',
+        arguments: Tuple2(email, password));
     // if (_formKey.currentState!.validate()) {
     //   try {
     //     final loginRes = await ref.read(accountClientProvider).createAccount(

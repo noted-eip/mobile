@@ -9,6 +9,7 @@ import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
+import 'package:tuple/tuple.dart';
 
 class RegistrationVerificationPage extends ConsumerStatefulWidget {
   const RegistrationVerificationPage({super.key});
@@ -27,7 +28,8 @@ class _RegistrationVerificationPageState
 
   @override
   Widget build(BuildContext context) {
-    final String userId = ModalRoute.of(context)!.settings.arguments as String;
+    final Tuple2<String, String> emailPassword =
+        ModalRoute.of(context)!.settings.arguments as Tuple2<String, String>;
     return Scaffold(
         backgroundColor: Colors.white,
         body: Center(
@@ -143,18 +145,26 @@ class _RegistrationVerificationPageState
                                 TextSpan(
                                   text: 'forgot.step2.resend'.tr(),
                                   recognizer: TapGestureRecognizer()
-                                    ..onTap = () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return ThemeHelper().alartDialog(
-                                              "forgot.step2.resend-pop-up.title"
-                                                  .tr(),
-                                              "forgot.step2.resend-pop-up.description"
-                                                  .tr(),
-                                              context);
-                                        },
-                                      );
+                                    ..onTap = () async {
+                                      await ref
+                                          .read(accountClientProvider)
+                                          .resendValidateToken(
+                                            email: emailPassword.item1,
+                                            password: emailPassword.item2,
+                                          );
+                                      if (mounted) {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return ThemeHelper().alartDialog(
+                                                "forgot.step2.resend-pop-up.title"
+                                                    .tr(),
+                                                "forgot.step2.resend-pop-up.description"
+                                                    .tr(),
+                                                context);
+                                          },
+                                        );
+                                      }
                                     },
                                   style: const TextStyle(
                                       fontWeight: FontWeight.bold,
@@ -167,10 +177,10 @@ class _RegistrationVerificationPageState
                           LoadingButton(
                             btnController: btnController,
                             onPressed: () async {
-                              verifyAccount(
-                                userId: userId,
-                                token: textEditingController.text,
-                              );
+                              // verifyAccount(
+                              //   userId: userId,
+                              //   token: textEditingController.text,
+                              // );
                               ref
                                   .read(trackerProvider)
                                   .trackPage(TrackPage.login);
@@ -199,9 +209,13 @@ class _RegistrationVerificationPageState
         ));
   }
 
-  void verifyAccount({required String userId, required String token}) async {
-    ref
-        .read(accountClientProvider)
-        .verifyAccount(token: token, accountId: userId);
+  void verifyAccount(
+      {required Tuple2<String, String> emailPassword,
+      required String token}) async {
+    ref.read(accountClientProvider).validateAccount(
+          token: token,
+          email: emailPassword.item1,
+          password: emailPassword.item2,
+        );
   }
 }
