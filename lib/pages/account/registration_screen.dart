@@ -11,11 +11,11 @@ import 'package:noted_mobile/components/common/loading_button.dart';
 import 'package:noted_mobile/data/clients/tracker_client.dart';
 import 'package:noted_mobile/data/providers/account_provider.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
+import 'package:noted_mobile/pages/account/helper/account.dart';
 import 'package:noted_mobile/utils/string_extension.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
-import 'package:tuple/tuple.dart';
 
 class RegistrationPage extends ConsumerStatefulWidget {
   const RegistrationPage({super.key});
@@ -86,53 +86,58 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
     return buttons;
   }
 
-  Future<void> createAccount(String name, String email, String password) async {
-    Navigator.pushNamed(context, '/register-verification',
-        arguments: Tuple2(email, password));
-    // if (_formKey.currentState!.validate()) {
-    //   try {
-    //     final loginRes = await ref.read(accountClientProvider).createAccount(
-    //           name: name,
-    //           email: email,
-    //           password: password,
-    //         );
+  Future<void> createAccount(String name, String email, String password,
+      RoundedLoadingButtonController btnController) async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        final loginRes = await ref.read(accountClientProvider).createAccount(
+              name: name,
+              email: email,
+              password: password,
+            );
 
-    //     if (loginRes != null && mounted) {
-    //       CustomToast.show(
-    //         message: "Compte créé avec succès !",
-    //         type: ToastType.success,
-    //         context: context,
-    //         gravity: ToastGravity.BOTTOM,
-    //       );
+        if (loginRes != null && mounted) {
+          CustomToast.show(
+            message: "Compte créé avec succès !",
+            type: ToastType.success,
+            context: context,
+            gravity: ToastGravity.BOTTOM,
+          );
 
-    //       ref.read(trackerProvider).trackPage(TrackPage.login);
+          ref.read(trackerProvider).trackPage(TrackPage.login);
 
-    //       Navigator.pushNamed(context, '/registration-verification');
+          await AccountHelper().login(
+            email: email,
+            password: password,
+            context: context,
+            btnController: btnController,
+            ref: ref,
+          );
 
-    //       // Navigator.pushNamedAndRemoveUntil(
-    //       //     context, '/login', (Route<dynamic> route) => false);
-    //     }
-    //   } catch (e) {
-    //     if (mounted) {
-    //       CustomToast.show(
-    //         message: e.toString().capitalize(),
-    //         type: ToastType.error,
-    //         context: context,
-    //         gravity: ToastGravity.BOTTOM,
-    //         duration: 4,
-    //       );
-    //     }
+          // Navigator.pushNamed(context, '/registration-verification',
+          //     arguments: Tuple2(email, password));
+        }
+      } catch (e) {
+        if (mounted) {
+          CustomToast.show(
+            message: e.toString().capitalize(),
+            type: ToastType.error,
+            context: context,
+            gravity: ToastGravity.BOTTOM,
+            duration: 4,
+          );
+        }
 
-    //     if (kDebugMode) {
-    //       print(e);
-    //     }
-    //     btnController.error();
-    //     resetButton(btnController);
-    //   }
-    // } else {
-    //   btnController.error();
-    //   resetButton(btnController);
-    // }
+        if (kDebugMode) {
+          print(e);
+        }
+        btnController.error();
+        resetButton(btnController);
+      }
+    } else {
+      btnController.error();
+      resetButton(btnController);
+    }
   }
 
   void resetButton(RoundedLoadingButtonController controller) async {
@@ -292,7 +297,8 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                             onPressed: () async => createAccount(
                                 _nameController.text,
                                 _emailController.text,
-                                _passwordController.text),
+                                _passwordController.text,
+                                btnController),
                             btnController: btnController,
                             text: 'signup.button'.tr(),
                           ),

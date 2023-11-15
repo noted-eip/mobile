@@ -1,12 +1,17 @@
+import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:noted_mobile/components/common/custom_toast.dart';
 import 'package:noted_mobile/components/common/loading_button.dart';
 import 'package:noted_mobile/data/clients/tracker_client.dart';
+import 'package:noted_mobile/data/models/account/account.dart';
+import 'package:noted_mobile/data/models/account/account_data.dart';
 import 'package:noted_mobile/data/providers/account_provider.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
-import 'package:noted_mobile/utils/theme_helper.dart';
+import 'package:noted_mobile/utils/string_extension.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:tuple/tuple.dart';
@@ -26,12 +31,75 @@ class _RegistrationVerificationPageState
   final RoundedLoadingButtonController btnController =
       RoundedLoadingButtonController();
 
+  Timer? countdownTimer;
+  Duration myDuration = const Duration(seconds: 30);
+
+  void _startTimer() {
+    _resetTimer();
+    setState(() {
+      isResend = true;
+    });
+    countdownTimer =
+        Timer.periodic(const Duration(seconds: 1), (_) => _setCountDown());
+  }
+
+  void _resetTimer() {
+    if (countdownTimer != null && countdownTimer!.isActive) {
+      countdownTimer!.cancel();
+    }
+
+    setState(() => myDuration = const Duration(seconds: 30));
+  }
+
+  void _setCountDown() {
+    const reduceSecondsBy = 1;
+    setState(() {
+      final seconds = myDuration.inSeconds - reduceSecondsBy;
+      if (seconds < 0) {
+        countdownTimer!.cancel();
+        isResend = false;
+      } else {
+        myDuration = Duration(seconds: seconds);
+      }
+    });
+  }
+
+  bool isResend = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _startTimer();
+    });
+  }
+
+  @override
+  void dispose() {
+    countdownTimer?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    String strDigits(int n) => n.toString().padLeft(2, '0');
+    final hours = strDigits(myDuration.inHours.remainder(24));
+    final minutes = strDigits(myDuration.inMinutes.remainder(60));
+    final seconds = strDigits(myDuration.inSeconds.remainder(60));
+
     final Tuple2<String, String> emailPassword =
         ModalRoute.of(context)!.settings.arguments as Tuple2<String, String>;
     return Scaffold(
         backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          leading: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: const Icon(Icons.arrow_back, color: Colors.black)),
+        ),
         body: Center(
           child: SingleChildScrollView(
             child: SafeArea(
@@ -146,55 +214,41 @@ class _RegistrationVerificationPageState
                                   text: 'forgot.step2.resend'.tr(),
                                   recognizer: TapGestureRecognizer()
                                     ..onTap = () async {
-                                      await ref
-                                          .read(accountClientProvider)
-                                          .resendValidateToken(
-                                            email: emailPassword.item1,
-                                            password: emailPassword.item2,
-                                          );
-                                      if (mounted) {
-                                        showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            return ThemeHelper().alartDialog(
-                                                "forgot.step2.resend-pop-up.title"
-                                                    .tr(),
-                                                "forgot.step2.resend-pop-up.description"
-                                                    .tr(),
-                                                context);
-                                          },
-                                        );
+                                      _startTimer();
+
+                                      if (isResend) {
+                                        return;
                                       }
+//TODO: uncomment this when backend is ready
+                                      await handleResentToken(
+                                        emailPassword: emailPassword,
+                                      );
                                     },
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black),
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color:
+                                        isResend ? Colors.grey : Colors.black,
+                                  ),
                                 ),
                               ],
+                            ),
+                          ),
+                          const SizedBox(height: 40.0),
+                          Text(
+                            isResend ? '$hours:$minutes:$seconds' : '',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
                             ),
                           ),
                           const SizedBox(height: 40.0),
                           LoadingButton(
                             btnController: btnController,
                             onPressed: () async {
-                              // verifyAccount(
-                              //   userId: userId,
-                              //   token: textEditingController.text,
-                              // );
-                              ref
-                                  .read(trackerProvider)
-                                  .trackPage(TrackPage.login);
-                              Navigator.pushNamedAndRemoveUntil(
-                                  context, '/login', (route) => false);
-                              // if (_formKey.currentState!.validate()) {
-                              //   tokenVerification(
-                              //     textEditingController.text,
-                              //     accountId,
-                              //   );
-                              // } else {
-                              //   btnController.error();
-                              //   resetButton(btnController);
-                              // }
+                              await handleVerification(
+                                emailPassword: emailPassword,
+                                token: textEditingController.text,
+                              );
                             },
                             text: 'forgot.step2.button'.tr(),
                           ),
@@ -209,13 +263,85 @@ class _RegistrationVerificationPageState
         ));
   }
 
-  void verifyAccount(
-      {required Tuple2<String, String> emailPassword,
-      required String token}) async {
-    ref.read(accountClientProvider).validateAccount(
-          token: token,
-          email: emailPassword.item1,
-          password: emailPassword.item2,
+  Future<void> handleVerification({
+    required Tuple2<String, String> emailPassword,
+    required String token,
+  }) async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        Account? account =
+            await ref.read(accountClientProvider).validateAccount(
+                  token: token,
+                  email: emailPassword.item1,
+                  password: emailPassword.item2,
+                );
+
+        if (account != null) {
+          try {
+            final loginRes = await ref.read(accountClientProvider).login(
+                  email: emailPassword.item1,
+                  password: emailPassword.item2,
+                );
+            if (loginRes) {
+              ref.read(trackerProvider).trackPage(TrackPage.home);
+              if (mounted) {
+                Navigator.of(context).pushReplacementNamed('/home');
+              }
+            }
+          } catch (e) {
+            if (mounted) {
+              CustomToast.show(
+                message: e.toString().capitalize(),
+                type: ToastType.error,
+                context: context,
+                gravity: ToastGravity.BOTTOM,
+              );
+            }
+          }
+        }
+      } catch (e) {
+        btnController.error();
+        resetButton(btnController);
+        if (mounted) {
+          CustomToast.show(
+            message: e.toString().capitalize(),
+            type: ToastType.error,
+            context: context,
+            gravity: ToastGravity.BOTTOM,
+          );
+        }
+      }
+    } else {
+      btnController.error();
+      resetButton(btnController);
+    }
+  }
+
+  Future<void> handleResentToken({
+    required Tuple2<String, String> emailPassword,
+  }) async {
+    try {
+      await ref.read(accountClientProvider).resendValidateToken(
+            email: emailPassword.item1,
+            password: emailPassword.item2,
+          );
+      if (mounted) {
+        CustomToast.show(
+          message: 'forgot.step2.resend-success'.tr(),
+          type: ToastType.success,
+          context: context,
+          gravity: ToastGravity.BOTTOM,
         );
+      }
+    } catch (e) {
+      if (mounted) {
+        CustomToast.show(
+          message: e.toString().capitalize(),
+          type: ToastType.error,
+          context: context,
+          gravity: ToastGravity.BOTTOM,
+        );
+      }
+    }
   }
 }

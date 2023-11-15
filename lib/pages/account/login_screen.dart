@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -13,6 +12,7 @@ import 'package:noted_mobile/components/common/loading_button.dart';
 import 'package:noted_mobile/data/clients/tracker_client.dart';
 import 'package:noted_mobile/data/providers/account_provider.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
+import 'package:noted_mobile/pages/account/helper/account.dart';
 import 'package:noted_mobile/utils/string_extension.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
@@ -166,73 +166,37 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     return buttons;
   }
 
-  Future<bool?> isValidateAccount(
-      {required String email, required String password}) async {
-    try {
-      bool? isValidateAccount =
-          await ref.read(accountClientProvider).isAccountValidated(
-                email: email,
-                password: password,
-              );
-
-      return isValidateAccount;
-    } catch (e) {
-      if (mounted) {
-        CustomToast.show(
-          message: e.toString().capitalize(),
-          type: ToastType.error,
-          context: context,
-          gravity: ToastGravity.BOTTOM,
-        );
-      }
-      return null;
-    }
-  }
-
-  Future<void> login(
+  Future<void> handleLogin(
     String email,
     String password,
   ) async {
     if (_formKey.currentState!.validate()) {
-      bool? isValidate =
-          await isValidateAccount(email: email, password: password);
+      await AccountHelper().login(
+        email: email,
+        password: password,
+        context: context,
+        btnController: btnController,
+        ref: ref,
+      );
+      // bool? isValidate =
+      //     await isValidateAccount(email: email, password: password);
 
-      if (isValidate == null) {
-        btnController.error();
-        resetButton(btnController);
-        return;
-      }
+      // print(isValidate);
 
-      if (!isValidate) {
-        Navigator.pushNamed(context, '/verification', arguments: {
-          'email': email,
-          'password': password,
-        });
-      }
+      // if (isValidate == null) {
+      //   btnController.error();
+      //   resetButton(btnController);
+      //   return;
+      // }
 
-      try {
-        final loginRes = await ref.read(accountClientProvider).login(
-              email: _emailController.text,
-              password: _passwordController.text,
-            );
-        if (loginRes && mounted) {
-          ref.read(trackerProvider).trackPage(TrackPage.home);
-          Navigator.of(context).pushReplacementNamed('/home');
-        }
-      } catch (e) {
-        if (mounted) {
-          CustomToast.show(
-            message: e.toString().capitalize(),
-            type: ToastType.error,
-            context: context,
-            gravity: ToastGravity.BOTTOM,
-          );
-        }
-
-        btnController.error();
-        resetButton(btnController);
-        return;
-      }
+      // if (!isValidate && mounted) {
+      //   btnController.reset();
+      //   Navigator.pushNamed(context, '/register-verification',
+      //       arguments: Tuple2(
+      //         email,
+      //         password,
+      //       ));
+      // } else {
     } else {
       btnController.error();
       resetButton(btnController);
@@ -361,7 +325,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       ),
                       const SizedBox(height: 30.0),
                       LoadingButton(
-                        onPressed: () async => login(
+                        onPressed: () async => handleLogin(
                           _emailController.text,
                           _passwordController.text,
                         ),

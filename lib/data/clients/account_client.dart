@@ -282,24 +282,24 @@ class AccountClient {
     required String password,
   }) async {
     final apiP = ref.read(apiProvider);
-    // try {
-    //   Response<V1IsAccountValidateResponse> response = await apiP
-    //       .accountsAPIIsAccountValidate(email: email, password: password);
+    try {
+      Response<V1IsAccountValidateResponse> response = await apiP
+          .accountsAPIIsAccountValidate(email: email, password: password);
 
-    //   if (response.statusCode != 200 || response.data == null) {
-    //     if (kDebugMode) {
-    //       print("inside try : code = ${response.statusCode}");
-    //     }
-    //     throw Failure(message: response.toString());
-    //   }
-    //   return response.data!.isAccountValidate;
-    // } on DioException catch (e) {
-    //   String error = DioExceptions.fromDioError(e).toString();
-    //   if (kDebugMode) {
-    //     print("Exception when calling DefaultApi->createAccount: $error\n");
-    //   }
-    //   throw Failure(message: error);
-    // }
+      if (response.statusCode != 200 || response.data == null) {
+        if (kDebugMode) {
+          print("inside try : code = ${response.statusCode}");
+        }
+        throw Failure(message: response.toString());
+      }
+      return response.data!.isAccountValidate;
+    } on DioException catch (e) {
+      String error = DioExceptions.fromDioError(e).toString();
+      if (kDebugMode) {
+        print("Exception when calling DefaultApi->createAccount: $error\n");
+      }
+      throw Failure(message: error);
+    }
   }
 
   Future<void> resendValidateToken({
@@ -308,17 +308,30 @@ class AccountClient {
   }) async {
     final apiP = ref.read(apiProvider);
 
-    // try {
+    try {
+      final V1SendValidationTokenRequest body = V1SendValidationTokenRequest(
+        (body) => body
+          ..email = email
+          ..password = password,
+      );
 
-    //    Response<V1SendValidationTokenResponse> response = await apiP.accountsAPISendValidationToken(body: body)
+      final response = await apiP.accountsAPISendValidationToken(body: body);
 
-    //  } on DioException catch (e) {
-    //   String error = DioExceptions.fromDioError(e).toString();
-    //   if (kDebugMode) {
-    //     print("Exception when calling DefaultApi->verifyAccount: $error\n");
-    //   }
-    //   throw Failure(message: error);
-    // }
+      if (response.statusCode != 200) {
+        if (kDebugMode) {
+          print(
+            "inside try : code = ${response.statusCode}, error = ${response.toString()}",
+          );
+        }
+        throw Failure(message: response.toString());
+      }
+    } on DioException catch (e) {
+      String error = DioExceptions.fromDioError(e).toString();
+      if (kDebugMode) {
+        print("Exception when calling DefaultApi->verifyAccount: $error\n");
+      }
+      throw Failure(message: error);
+    }
   }
 
   Future<Account?> validateAccount({
@@ -328,29 +341,31 @@ class AccountClient {
   }) async {
     final apiP = ref.read(apiProvider);
 
-    // try {
-    //   AccountsAPIValidateAccountRequest body =
-    //       AccountsAPIValidateAccountRequest(
-    //     (body) => body..validationToken = token,
-    //   );
+    try {
+      V1ValidateAccountRequest body = V1ValidateAccountRequest(
+        (body) => body
+          ..validationToken = token
+          ..email = email
+          ..password = password,
+      );
 
-    //   Response<V1ValidateAccountResponse> response = await apiP
-    //       .accountsAPIValidateAccount(email:email, password: password, body: body);
+      Response<V1ValidateAccountResponse> response =
+          await apiP.accountsAPIValidateAccount(body: body);
 
-    //   if (response.statusCode != 200 || response.data == null) {
-    //     if (kDebugMode) {
-    //       print("inside try : code = ${response.statusCode}");
-    //     }
-    //     throw Failure(message: response.toString());
-    //   }
-    //   return Account.fromApi(response.data!.account);
-    // } on DioException catch (e) {
-    //   String error = DioExceptions.fromDioError(e).toString();
-    //   if (kDebugMode) {
-    //     print("Exception when calling DefaultApi->verifyAccount: $error\n");
-    //   }
-    //   throw Failure(message: error);
-    // }
+      if (response.statusCode != 200 || response.data == null) {
+        if (kDebugMode) {
+          print("inside try : code = ${response.statusCode}");
+        }
+        throw Failure(message: response.toString());
+      }
+      return Account.fromApi(response.data!.account);
+    } on DioException catch (e) {
+      String error = DioExceptions.fromDioError(e).toString();
+      if (kDebugMode) {
+        print("Exception when calling DefaultApi->verifyAccount: $error\n");
+      }
+      throw Failure(message: error);
+    }
   }
 
   Future<Account?> createAccount({
