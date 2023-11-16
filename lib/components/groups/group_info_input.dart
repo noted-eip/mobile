@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
@@ -40,11 +41,12 @@ class _GroupInfosInputState extends ConsumerState<GroupInfosInput> {
             children: [
               TextFormField(
                 controller: widget.titleController,
-                decoration: ThemeHelper()
-                    .textInputDecoration('Titre du groupe', 'Entre un Titre'),
+                decoration: ThemeHelper().textInputDecoration(
+                    'my-groups.create-group-modal.name-label'.tr(),
+                    'my-groups.create-group-modal.name-hint'.tr()),
                 validator: (val) {
                   if (val!.isEmpty) {
-                    return "Entrer un Titre";
+                    return "my-groups.create-group-modal.name-empty".tr();
                   }
                   return null;
                 },
@@ -55,10 +57,13 @@ class _GroupInfosInputState extends ConsumerState<GroupInfosInput> {
                 maxLines: 3,
                 controller: widget.descriptionController,
                 decoration: ThemeHelper().textInputDecoration(
-                    'Description du Groupe', 'Entrer une Description'),
+                  'my-groups.create-group-modal.description-label'.tr(),
+                  'my-groups.create-group-modal.description-hint'.tr(),
+                ),
                 validator: (val) {
                   if (val!.isEmpty) {
-                    return 'Entrer une Description';
+                    return 'my-groups.create-group-modal.description-empty'
+                        .tr();
                   }
                   return null;
                 },

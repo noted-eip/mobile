@@ -50,8 +50,10 @@ class _LatestsGroupsState extends ConsumerState<LatestsGroups> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("home.lastest-groups".tr(),
-                    style: const TextStyle(fontSize: 20)),
+                Text(
+                  "home.lastest-groups".tr(),
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
                 Expanded(
                   child: GridView.builder(
                     gridDelegate:

@@ -51,11 +51,11 @@ class NoteClient {
 
       return response.data!.note;
     } on DioException catch (e) {
-      String error = DioExceptions.fromDioError(e).toString();
+      // String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
-        print("Exception when calling DefaultApi->createNote: $error\n");
+        print("Exception when calling DefaultApi->createNote: $e\n");
       }
-      throw Failure(message: error);
+      throw Failure(message: e.toString());
     }
   }
 

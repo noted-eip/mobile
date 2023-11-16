@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:noted_mobile/utils/color.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 typedef AsyncCallBack = Future<void> Function();
@@ -26,7 +27,7 @@ class LoadingButton extends StatefulWidget {
     this.animateOnTap,
   });
 
-  final AsyncCallBack onPressed;
+  final AsyncCallBack? onPressed;
   final RoundedLoadingButtonController btnController;
   final String? text;
   final bool? animateOnTap;
@@ -48,17 +49,19 @@ class _LoadingButtonState extends State<LoadingButton> {
     return RoundedLoadingButton(
       elevation: widget.elevation ?? 2,
       animateOnTap: widget.animateOnTap ?? true,
-      color: widget.color ?? Colors.grey.shade900,
+      color: widget.color ?? NotedColors.primary,
       valueColor: widget.secondaryColor ?? Colors.white,
       errorColor: Colors.redAccent,
       successColor: Colors.green.shade900,
-      onPressed: () async => await widget.onPressed(),
+      onPressed: widget.onPressed != null
+          ? () async => await widget.onPressed!()
+          : null,
       controller: widget.btnController,
       width: widget.width ?? MediaQuery.of(context).size.width,
       height: 48,
       borderRadius: 16,
       resetAfterDuration: true,
-      resetDuration: Duration(seconds: widget.resetDuration ?? 15),
+      resetDuration: Duration(seconds: widget.resetDuration ?? 3),
       disabledColor: widget.color != null
           ? widget.color!.withOpacity(0.5)
           : Colors.grey.shade400,

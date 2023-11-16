@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:noted_mobile/utils/color.dart';
 import 'package:noted_mobile/utils/constant.dart';
 import 'package:noted_mobile/utils/string_extension.dart';
 import 'package:shimmer/shimmer.dart';
@@ -61,16 +62,16 @@ class GroupCard extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  groupColor!.withOpacity(0.9),
-                  groupColor!.withOpacity(0.6),
+                  NotedColors.primary.withOpacity(0.9),
+                  NotedColors.secondary.withOpacity(0.6),
                 ],
               ),
               LinearGradient(
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
                 colors: [
-                  groupColor!.withOpacity(0.9),
-                  groupColor!.withOpacity(0.6),
+                  NotedColors.primary.withOpacity(0.9),
+                  NotedColors.secondary.withOpacity(0.6),
                 ],
               ),
               0.5,
@@ -82,26 +83,28 @@ class GroupCard extends StatelessWidget {
           height: 200,
           width: 140,
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Icon(
-                groupIcon,
+                groupName == "My Workspace" ? Icons.person : groupIcon,
                 color: Colors.white,
                 size: 50,
               ),
-              const Spacer(),
               SizedBox(
-                height: 42,
+                height: 60,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    AutoSizeText(
+                    Text(
                       groupName!.capitalize(),
                       textAlign: TextAlign.start,
                       softWrap: true,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 2,
-                      style: const TextStyle(fontSize: 18, color: Colors.white),
+                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                            color: Colors.white,
+                          ),
                     ),
                   ],
                 ),

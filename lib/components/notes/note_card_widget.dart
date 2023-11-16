@@ -4,6 +4,7 @@ import 'package:noted_mobile/components/common/custom_slide.dart';
 import 'package:noted_mobile/data/models/account/account.dart';
 import 'package:noted_mobile/data/providers/account_provider.dart';
 import 'package:noted_mobile/utils/constant.dart';
+import 'package:noted_mobile/utils/string_extension.dart';
 import 'package:openapi/openapi.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -31,7 +32,6 @@ class NoteCard extends ConsumerStatefulWidget {
         );
 
   final V1Note? note;
-  // final Note? note;
   final Color? color;
   final IconData? icon;
   final bool? displaySeeMore;
@@ -48,16 +48,18 @@ class _NoteCardState extends ConsumerState<NoteCard> {
       onTap: widget.onTap,
       actions: null,
       titleWidget: Text(
-        widget.note!.title,
+        widget.note!.title.capitalize(),
         softWrap: true,
         overflow: TextOverflow.ellipsis,
-        style: TextStyle(fontSize: 16, color: widget.baseColor ?? Colors.black),
+        style: Theme.of(context).textTheme.titleLarge!.copyWith(
+              color: widget.baseColor ?? Colors.black,
+            ),
       ),
       subtitleWidget: Row(
         children: [
           const Icon(
             Icons.person,
-            color: Colors.grey,
+            color: Colors.white,
             size: 15,
           ),
           const SizedBox(width: 5),
@@ -66,21 +68,24 @@ class _NoteCardState extends ConsumerState<NoteCard> {
               if (note == null) {
                 return Text(
                   'Error',
-                  style: TextStyle(
-                      fontSize: 15, color: widget.baseColor ?? Colors.black),
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        color: widget.baseColor ?? Colors.black,
+                      ),
                 );
               }
               if (note.data.name == "") {
                 return Text(
                   'Unknown',
-                  style: TextStyle(
-                      fontSize: 15, color: widget.baseColor ?? Colors.black),
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        color: widget.baseColor ?? Colors.black,
+                      ),
                 );
               }
               return Text(
-                note.data.name,
-                style: TextStyle(
-                    fontSize: 15, color: widget.baseColor ?? Colors.black),
+                note.data.name.capitalize(),
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                      color: widget.baseColor ?? Colors.black,
+                    ),
               );
             },
             loading: () => Shimmer.fromColors(
@@ -97,8 +102,9 @@ class _NoteCardState extends ConsumerState<NoteCard> {
             ),
             error: (error, stack) => Text(
               'Error',
-              style: TextStyle(
-                  fontSize: 15, color: widget.baseColor ?? Colors.black),
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    color: widget.baseColor ?? Colors.black,
+                  ),
             ),
           ),
         ],
@@ -106,7 +112,7 @@ class _NoteCardState extends ConsumerState<NoteCard> {
       withWidget: true,
       avatarWidget: Container(
         decoration: BoxDecoration(
-          color: widget.color,
+          color: Colors.white.withOpacity(0.2),
           borderRadius: BorderRadius.circular(10),
         ),
         height: 40,
@@ -128,7 +134,6 @@ class _NoteCardState extends ConsumerState<NoteCard> {
       return const CustomSlide.empty();
     }
 
-    // final account = ref.watch(accountProvider(widget.note!.authorId));
     final account = ref.watch(accountProvider(widget.note!.authorAccountId));
 
     return buildCard(account);

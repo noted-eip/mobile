@@ -13,8 +13,10 @@ import 'package:noted_mobile/data/clients/tracker_client.dart';
 import 'package:noted_mobile/data/providers/account_provider.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:noted_mobile/pages/account/helper/account.dart';
+import 'package:noted_mobile/utils/color.dart';
 import 'package:noted_mobile/utils/string_extension.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
+import 'package:noted_mobile/utils/validator.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -46,7 +48,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     {
       'name': 'Google',
       'icon': FontAwesomeIcons.google,
-      'color': Colors.red,
+      'color': Colors.redAccent,
       'controller': RoundedLoadingButtonController(),
       'onPressed': () {},
     },
@@ -178,25 +180,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         btnController: btnController,
         ref: ref,
       );
-      // bool? isValidate =
-      //     await isValidateAccount(email: email, password: password);
-
-      // print(isValidate);
-
-      // if (isValidate == null) {
-      //   btnController.error();
-      //   resetButton(btnController);
-      //   return;
-      // }
-
-      // if (!isValidate && mounted) {
-      //   btnController.reset();
-      //   Navigator.pushNamed(context, '/register-verification',
-      //       arguments: Tuple2(
-      //         email,
-      //         password,
-      //       ));
-      // } else {
     } else {
       btnController.error();
       resetButton(btnController);
@@ -206,7 +189,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: SafeArea(
@@ -217,13 +199,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(100),
+                    borderRadius: BorderRadius.circular(32),
                     border: Border.all(width: 5, color: Colors.white),
                     color: Colors.white,
                     boxShadow: const [
                       BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 20,
+                        color: NotedColors.primary,
+                        blurRadius: 5,
                         offset: Offset(5, 5),
                       ),
                     ],
@@ -238,7 +220,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 const SizedBox(height: 24),
                 Text(
                   'signin.title'.tr(),
-                  style: const TextStyle(color: Colors.grey, fontSize: 24),
+                  style: Theme.of(context).textTheme.headlineSmall,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 32.0),
@@ -257,52 +239,52 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                 color: Colors.grey,
                               ),
                             ),
-                        validator: (val) {
-                          if (val!.isEmpty) {
-                            return "signin.email.validator".tr();
-                          }
-                          // TODO: Uncomment this when email validation is fixed
-                          //  else if (!val.isEmail()) {
-                          //   return "Enter a valid email address";
-                          // }
-                          return null;
-                        },
+                        validator: (val) =>
+                            NotedValidator.validateEmail(val?.trim()),
+                        textInputAction: TextInputAction.next,
+                        keyboardType: TextInputType.emailAddress,
                       ),
                       const SizedBox(height: 30.0),
                       TextFormField(
-                        controller: _passwordController,
-                        obscureText: _obscureText,
-                        decoration: ThemeHelper()
-                            .textInputDecoration(
-                              'signin.password.label'.tr(),
-                              'signin.password.hint'.tr(),
-                            )
-                            .copyWith(
-                              prefixIcon: const Icon(Icons.lock_outline_rounded,
-                                  color: Colors.grey),
-                              suffixIcon: IconButton(
-                                splashColor: Colors.transparent,
-                                highlightColor: Colors.transparent,
-                                icon: Icon(
-                                  _obscureText
-                                      ? Icons.visibility_outlined
-                                      : Icons.visibility_off_outlined,
-                                  color: Colors.grey,
+                          keyboardType: TextInputType.visiblePassword,
+                          controller: _passwordController,
+                          obscureText: _obscureText,
+                          decoration: ThemeHelper()
+                              .textInputDecoration(
+                                'signin.password.label'.tr(),
+                                'signin.password.hint'.tr(),
+                              )
+                              .copyWith(
+                                prefixIcon: const Icon(
+                                    Icons.lock_outline_rounded,
+                                    color: Colors.grey),
+                                suffixIcon: IconButton(
+                                  splashColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  icon: Icon(
+                                    _obscureText
+                                        ? Icons.visibility_outlined
+                                        : Icons.visibility_off_outlined,
+                                    color: Colors.grey,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _obscureText = !_obscureText;
+                                    });
+                                  },
                                 ),
-                                onPressed: () {
-                                  setState(() {
-                                    _obscureText = !_obscureText;
-                                  });
-                                },
                               ),
-                            ),
-                        validator: (val) {
-                          if (val!.isEmpty) {
-                            return 'signin.password.validator'.tr();
-                          }
-                          return null;
-                        },
-                      ),
+                          validator: (val) =>
+                              NotedValidator.validatePassword(val?.trim()),
+                          textInputAction: TextInputAction.done,
+                          onEditingComplete: () async {
+                            FocusScope.of(context).unfocus();
+                            btnController.start();
+                            await handleLogin(
+                              _emailController.text.trim(),
+                              _passwordController.text.trim(),
+                            );
+                          }),
                       const SizedBox(height: 16.0),
                       Container(
                         margin: const EdgeInsets.fromLTRB(10, 0, 10, 20),
@@ -317,9 +299,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           },
                           child: Text(
                             "signin.forgot".tr(),
-                            style: const TextStyle(
-                              color: Colors.grey,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                ),
                           ),
                         ),
                       ),
@@ -335,7 +321,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       const SizedBox(height: 30.0),
                       Text(
                         "signin.other".tr(),
-                        style: const TextStyle(color: Colors.grey),
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
                       ),
                       const SizedBox(height: 24.0),
                       Row(
@@ -344,7 +332,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           ...buildOAuthButtons(),
                         ],
                       ),
-                      const SizedBox(height: 32.0),
                       Container(
                         margin: const EdgeInsets.fromLTRB(10, 20, 10, 20),
                         child: Text.rich(
@@ -361,11 +348,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                         .trackPage(TrackPage.register);
                                     Navigator.pushNamed(context, '/register');
                                   },
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .secondary),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
+                                    ),
                               ),
                             ],
                           ),

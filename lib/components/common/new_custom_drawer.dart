@@ -6,6 +6,7 @@ import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:noted_mobile/pages/groups/groups_list_screen.dart';
 import 'package:noted_mobile/pages/notes/notes_list_screen.dart';
 import 'package:noted_mobile/pages/account/profile_screen.dart';
+import 'package:noted_mobile/utils/color.dart';
 import 'package:noted_mobile/utils/language.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -121,7 +122,16 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
   Widget build(BuildContext context) {
     final drawer = Container(
       width: MediaQuery.of(context).size.width * 0.75,
-      color: Colors.grey[900],
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black54,
+            blurRadius: 20,
+            offset: Offset(5, 5),
+          ),
+        ],
+      ),
       child: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -131,13 +141,13 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(100),
+                    borderRadius: BorderRadius.circular(30),
                     border: Border.all(width: 5, color: Colors.white),
                     color: Colors.white,
                     boxShadow: const [
                       BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 20,
+                        color: NotedColors.primary,
+                        blurRadius: 5,
                         offset: Offset(5, 5),
                       ),
                     ],
@@ -151,9 +161,9 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                 ),
                 const SizedBox(height: 16),
                 const Text(
-                  'Noted',
+                  'NOTED',
                   style: TextStyle(
-                      color: Colors.white,
+                      color: Colors.black,
                       fontSize: 30,
                       fontWeight: FontWeight.bold),
                 ),
@@ -165,8 +175,8 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
               ],
             ),
             ListTile(
-              iconColor: Colors.white,
-              textColor: Colors.white,
+              iconColor: Colors.red,
+              textColor: Colors.red,
               onTap: () {
                 prefs!.remove('token');
                 prefs!.remove('email');
@@ -190,15 +200,31 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
     return drawer;
   }
 
-  Widget _buildMenuItem(MyMenuItem item) => ListTile(
-        selected: widget.currentItem == item,
-        selectedTileColor: Colors.black,
-        textColor: Colors.white,
-        iconColor: Colors.white,
-        onTap: () {
-          widget.onSelected(item);
-        },
-        leading: Icon(item.icon),
-        title: Text(item.title.tr()),
+  Widget _buildMenuItem(MyMenuItem item) => Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          color: widget.currentItem == item
+              ? NotedColors.primary.withOpacity(0.7)
+              : Colors.white,
+        ),
+        child: ListTile(
+          selected: widget.currentItem == item,
+          selectedColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          style: ListTileStyle.drawer,
+          textColor: Colors.black,
+          tileColor: Colors.black,
+          iconColor: Colors.black,
+          onTap: widget.currentItem == item
+              ? null
+              : () {
+                  widget.onSelected(item);
+                },
+          leading: Icon(item.icon),
+          title: Text(item.title.tr()),
+        ),
       );
 }

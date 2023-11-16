@@ -296,7 +296,9 @@ class AccountClient {
     } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
-        print("Exception when calling DefaultApi->createAccount: $error\n");
+        print(e);
+        print(
+            "Exception when calling DefaultApi->isAccountValidated: $error\n");
       }
       throw Failure(message: error);
     }
@@ -328,7 +330,8 @@ class AccountClient {
     } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
-        print("Exception when calling DefaultApi->verifyAccount: $error\n");
+        print(
+            "Exception when calling DefaultApi->resendValidateToken: $error\n");
       }
       throw Failure(message: error);
     }
@@ -340,6 +343,9 @@ class AccountClient {
     required String password,
   }) async {
     final apiP = ref.read(apiProvider);
+    print("token : $token");
+    print("email : $email");
+    print("password : $password");
 
     try {
       V1ValidateAccountRequest body = V1ValidateAccountRequest(
@@ -362,7 +368,7 @@ class AccountClient {
     } on DioException catch (e) {
       String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
-        print("Exception when calling DefaultApi->verifyAccount: $error\n");
+        print("Exception when calling DefaultApi->validateAccount: $error\n");
       }
       throw Failure(message: error);
     }

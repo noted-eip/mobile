@@ -14,7 +14,7 @@ import 'package:tuple/tuple.dart';
 class AccountHelper {
   AccountHelper();
 
-  Future<void> handleResentToken({
+  Future<void> handleSendToken({
     required Tuple2<String, String> emailPassword,
     required WidgetRef ref,
     required BuildContext context,
@@ -24,12 +24,6 @@ class AccountHelper {
             email: emailPassword.item1,
             password: emailPassword.item2,
           );
-      CustomToast.show(
-        message: 'forgot.step2.resend-success'.tr(),
-        type: ToastType.success,
-        context: context,
-        gravity: ToastGravity.BOTTOM,
-      );
     } catch (e) {
       CustomToast.show(
         message: e.toString().capitalize(),
@@ -65,7 +59,7 @@ class AccountHelper {
     if (!isValidate) {
       btnController.reset();
 
-      await handleResentToken(
+      await handleSendToken(
           emailPassword: Tuple2(email, password), ref: ref, context: context);
 
       Navigator.pushNamed(context, '/register-verification',

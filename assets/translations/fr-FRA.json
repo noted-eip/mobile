@@ -83,15 +83,48 @@
         "lastest-notes" : "Dernières notes",
         "see-more": "Voir plus ...",
         "start-w-group": "Commencer avec un groupe",
-        "create-group": "Créer un groupe"
+        "create-group": "Créer un groupe",
+        "no-notes": "Aucune note trouvée !"
     },
     "my-groups": {
+        "error": "Une erreur s'est produite !",
         "title": "Mes Groupes",
-        "search": "Rechercher ..."
+        "search": "Rechercher ...",
+        "empty": "Aucun groupe trouvé !",
+        "create-group-modal": {
+            "title": "Créer un groupe",
+            "name-label": "Nom du groupe",
+            "name-hint": "Entrez le nom du groupe",
+            "name-empty": "Le nom ne peut pas être vide",
+            "description-label": "Description du groupe",
+            "description-hint": "Entrez une description du groupe",
+            "description-empty": "La description ne peut pas être vide",
+            "button1": "Suivant",
+            "invite-title": "Inviter des membres",
+            "invite-label": "Email",
+            "invite-hint": "Entrez l'adresse email du membre",
+            "invite-empty": "L'adresse email ne peut pas être vide",
+            "invite-valid": "Veuillez entrer une adresse email valide",
+            "pending-invites": "Invitations en attente",
+            "no-pending-invites": "Aucune invitation trouvée !",
+            "send-invites": "Envoyer l'invitation",
+            "button2": "Créer"
+        }
     },
     "my-notes": {
         "title": "Mes Notes",
-        "search": "Rechercher ..."
+        "search": "Rechercher ...",
+        "empty": "Aucune note trouvée !",
+        "create-note-modal": {
+            "title": "Créer une note",
+            "name-label": "Nom de la note",
+            "name-hint": "Entrez le nom de la note",
+            "name-empty": "Le nom ne peut pas être vide",
+            "group-label": "Groupe de la note",
+            "group-empty": "Veuillez sélectionner un groupe",
+            "button": "Créer"
+        }
+
     },
     "profil": {
         "title": "Mon Profil",
@@ -169,5 +202,16 @@
             "cancel": "Annuler"
         }
     },
-    "close": "Fermer"
+    "close": "Fermer",
+    "validator": {
+        "name-empty" : "Veuillez entrer un nom",
+        "name-length" : "Le nom doit contenir entre 4 et 20 caractères",
+        "email-empty" : "Veuillez entrer une adresse email",
+        "email-valid" : "Veuillez entrer une adresse email valide",
+        "password-empty" : "Veuillez entrer un mot de passe",
+        "password-length" : "Le mot de passe doit contenir entre 4 et 20 caractères",
+        "password-no-match" : "Les mots de passe ne correspondent pas", 
+        "code-empty" : "Veuillez entrer un code",
+        "code-length" : "Le code doit contenir 4 caractères"
+    }
 }

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -122,7 +123,10 @@ class _InviteFieldState extends ConsumerState<InviteField> {
       autofocus: true,
       controller: widget.controller,
       decoration: ThemeHelper()
-          .textInputDecoration('Email', 'Entrer un Email')
+          .textInputDecoration(
+            'my-groups.create-group-modal.invite-label'.tr(),
+            'my-groups.create-group-modal.invite-hint'.tr(),
+          )
           .copyWith(
             suffixIcon: suffixIcon,
           ),
@@ -131,7 +135,7 @@ class _InviteFieldState extends ConsumerState<InviteField> {
             .hasMatch(widget.controller.text);
 
         if (widget.controller.text.isEmpty || !isEmailValidReg) {
-          return "Cette adresse email n'est pas valide";
+          return "my-groups.create-group-modal.invite-valid".tr();
         }
         checkEmail();
 
@@ -214,8 +218,8 @@ class _InviteMemberState extends ConsumerState<InviteMemberWidget> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const Text(
-          "Inviter un membre",
+        Text(
+          "my-groups.create-group-modal.invite-title".tr(),
           style: TextStyle(
               color: Colors.black, fontSize: 24, fontWeight: FontWeight.bold),
         ),

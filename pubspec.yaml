@@ -70,6 +70,8 @@ dependencies:
   easy_localization: ^3.0.3
   easy_localization_loader: ^1.0.1+1
   firebase_performance: ^0.9.3+4
+  lottie: ^2.7.0
+  google_fonts: ^4.0.4
 
 dev_dependencies:
   flutter_test:
@@ -107,6 +109,7 @@ flutter:
     - assets/translations/fr-FRA.json
     - assets/translations/en-EN.json
     - assets/translations/de-DE.json
+    - assets/animations/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

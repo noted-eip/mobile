@@ -2,7 +2,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:easy_localization_loader/easy_localization_loader.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-// import 'package:firebase_performance/firebase_performance.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,6 +24,7 @@ import 'package:noted_mobile/pages/notes/note_detail_screen.dart';
 import 'package:noted_mobile/pages/notifications/notification_page.dart';
 import 'package:noted_mobile/pages/home/splash_screen.dart';
 import 'package:noted_mobile/utils/language.dart';
+import 'package:noted_mobile/utils/noted_theme.dart';
 
 //TODO: use material 3 and apply al need changes
 
@@ -78,9 +78,9 @@ class MyApp extends StatelessWidget {
         useMaterial3: false,
         primaryColor: _primaryColor,
         scaffoldBackgroundColor: Colors.white,
-        colorScheme: ColorScheme.fromSwatch()
-            .copyWith(secondary: _accentColor)
-            .copyWith(primary: _primaryColor),
+        colorScheme: notedColorScheme,
+        textTheme: notedTextTheme,
+        appBarTheme: notedAppBarTheme,
       ),
       initialRoute: '/splash',
       routes: {

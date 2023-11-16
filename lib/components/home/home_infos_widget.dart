@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
+import 'package:noted_mobile/utils/string_extension.dart';
 
 class HomeInfos extends ConsumerWidget {
   const HomeInfos({super.key});
@@ -24,7 +25,9 @@ class HomeInfos extends ConsumerWidget {
                     text: '\n',
                   ),
                   TextSpan(
-                      text: user.name == '' ? 'Name !\n' : '${user.name} !\n',
+                      text: user.name == ''
+                          ? 'Name !\n'
+                          : '${user.name.capitalize()} !\n',
                       style: const TextStyle(fontWeight: FontWeight.bold)),
                   TextSpan(
                     text: 'home.start'.tr(),

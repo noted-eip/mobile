@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lottie/lottie.dart';
 import 'package:noted_mobile/components/notes/create_note.dart';
 import 'package:noted_mobile/components/notes/note_card_widget.dart';
 import 'package:noted_mobile/data/clients/tracker_client.dart';
@@ -167,11 +168,18 @@ class _LatestsFilesListState extends ConsumerState<LatestsFilesList> {
                             itemExtent: bodyHeight,
                             delegate: SliverChildBuilderDelegate(
                               (BuildContext context, int index) {
-                                return const Material(
+                                return Material(
                                   color: Colors.transparent,
-                                  child: Center(
-                                    child: Text("No notes found",
-                                        style: TextStyle(fontSize: 18)),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Lottie.asset(
+                                        'assets/animations/empty-box.json',
+                                        height: 250,
+                                      ),
+                                      Text("my-notes.empty".tr(),
+                                          style: const TextStyle(fontSize: 18)),
+                                    ],
                                   ),
                                 );
                               },

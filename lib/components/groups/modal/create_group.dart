@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,7 +35,7 @@ class _CreateGroupModalState extends ConsumerState<CreateGroupModal> {
   String groupId = "";
   PageController pageController = PageController(initialPage: 0);
   int pageIndex = 0;
-  String buttonText = "Suivant";
+  String buttonText = "my-groups.create-group-modal.button1".tr();
 
   Future<void> createGroup(UserNotifier user) async {
     if (pageIndex == 0) {
@@ -44,6 +45,7 @@ class _CreateGroupModalState extends ConsumerState<CreateGroupModal> {
               groupName: _titleController.text,
               groupDescription: _descriptionController.text);
           if (group != null) {
+            btnController.reset();
             setState(() {
               groupId = group.data.id;
               pages.add(
@@ -54,9 +56,8 @@ class _CreateGroupModalState extends ConsumerState<CreateGroupModal> {
                 ),
               );
             });
-            btnController.success();
+
             Future.delayed(const Duration(seconds: 1), () {
-              btnController.reset();
               pageController.nextPage(
                   duration: const Duration(milliseconds: 300),
                   curve: Curves.easeIn);
@@ -104,7 +105,7 @@ class _CreateGroupModalState extends ConsumerState<CreateGroupModal> {
             formKey: _formKey,
             descriptionController: _descriptionController,
             titleController: _titleController,
-            title: "Créer un Groupe",
+            title: "my-groups.create-group-modal.title".tr(),
           ),
         );
       });
@@ -129,9 +130,9 @@ class _CreateGroupModalState extends ConsumerState<CreateGroupModal> {
                 setState(() {
                   pageIndex = value;
                   if (pageIndex == 1) {
-                    buttonText = "Terminer";
+                    buttonText = "my-groups.create-group-modal.button2".tr();
                   } else {
-                    buttonText = "Suivant";
+                    buttonText = "my-groups.create-group-modal.button1".tr();
                   }
                 });
               },
@@ -143,6 +144,7 @@ class _CreateGroupModalState extends ConsumerState<CreateGroupModal> {
             btnController: btnController,
             onPressed: () async => createGroup(user),
             text: buttonText,
+            resetDuration: 1,
           ),
         ],
       ),

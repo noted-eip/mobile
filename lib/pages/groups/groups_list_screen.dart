@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lottie/lottie.dart';
 import 'package:noted_mobile/components/groups/modal/create_group.dart';
 import 'package:noted_mobile/components/groups/card/group_card.dart';
 import 'package:noted_mobile/data/clients/tracker_client.dart';
@@ -161,8 +162,8 @@ class _GroupsListPageState extends ConsumerState<GroupsListPage> {
                   groups.when(
                     data: (data) {
                       if (data == null || data.isEmpty) {
-                        final media = MediaQuery.of(context);
-                        final bodyHeight = media.size.height -
+                        var media = MediaQuery.of(context);
+                        var bodyHeight = media.size.height -
                             media.padding.top -
                             16 -
                             media.viewPadding.top -
@@ -176,13 +177,25 @@ class _GroupsListPageState extends ConsumerState<GroupsListPage> {
                             itemExtent: bodyHeight,
                             delegate: SliverChildBuilderDelegate(
                               (BuildContext context, int index) {
-                                return const Material(
-                                  color: Colors.transparent,
-                                  child: Center(
-                                    child: Text("No groups found",
-                                        style: TextStyle(fontSize: 18)),
-                                  ),
+                                return Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Lottie.asset(
+                                      'assets/animations/empty-box.json',
+                                      height: 250,
+                                    ),
+                                    Text("my-groups.empty".tr(),
+                                        style: const TextStyle(fontSize: 18)),
+                                  ],
                                 );
+
+                                // return Material(
+                                //   color: Colors.transparent,
+                                //   child: Center(
+                                // child: Text("my-groups.empty".tr(),
+                                // style: const TextStyle(fontSize: 18)),
+                                // ),
+                                // );
                               },
                               childCount: 1,
                             ),
@@ -245,16 +258,27 @@ class _GroupsListPageState extends ConsumerState<GroupsListPage> {
                       ),
                     ),
                     error: (error, stack) => SliverSafeArea(
-                      sliver: SliverGrid(
+                      sliver: SliverList(
                         delegate: SliverChildBuilderDelegate(
                           (context, index) {
-                            return const GroupCard.empty();
+                            return Container(
+                              color: Colors.green,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  LottieBuilder.asset(
+                                    'assets/animations/error.json',
+                                    width: 200,
+                                    height: 200,
+                                  ),
+                                  Text(
+                                    "my-groups.error".tr(),
+                                  ),
+                                ],
+                              ),
+                            );
                           },
-                          childCount: 6,
-                        ),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
+                          childCount: 1,
                         ),
                       ),
                     ),

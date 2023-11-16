@@ -10,14 +10,6 @@ import 'package:noted_mobile/data/providers/note_provider.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:noted_mobile/pages/notifications/notification_page.dart';
 
-class Product {
-  final String name;
-  final String category;
-  final double price;
-
-  Product({required this.name, required this.category, required this.price});
-}
-
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
@@ -37,25 +29,19 @@ class _HomePageState extends ConsumerState<HomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: kToolbarHeight,
-        title: const Text('NOTED', style: TextStyle(color: Colors.black)),
-        backgroundColor: Colors.white,
-        leading: Container(
-          padding: const EdgeInsets.only(left: 4),
-          child: IconButton(
-            icon: const Icon(
-              Icons.menu,
-              color: Colors.black,
-              size: 32,
-            ),
-            onPressed: () {
-              Scaffold.of(context).openDrawer();
-            },
-            tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-          ),
+        title: const Text('NOTED'),
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () => Scaffold.of(context).openDrawer(),
         ),
-        actions: const [
-          NotifButton(),
+        actions: [
+          IconButton(
+            onPressed: (() {
+              ref.read(trackerProvider).trackPage(TrackPage.notification);
+              Scaffold.of(context).openEndDrawer();
+            }),
+            icon: const Icon(Icons.send, color: Colors.black),
+          ),
         ],
         elevation: 0,
       ),
@@ -88,25 +74,25 @@ class _HomePageState extends ConsumerState<HomePage> {
   }
 }
 
-class NotifButton extends ConsumerStatefulWidget {
-  const NotifButton({super.key});
+// class NotifButton extends ConsumerStatefulWidget {
+//   const NotifButton({super.key});
 
-  @override
-  ConsumerState<NotifButton> createState() => _NotifButtonState();
-}
+//   @override
+//   ConsumerState<NotifButton> createState() => _NotifButtonState();
+// }
 
-class _NotifButtonState extends ConsumerState<NotifButton> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.only(right: 4),
-      child: IconButton(
-        onPressed: (() {
-          ref.read(trackerProvider).trackPage(TrackPage.notification);
-          Scaffold.of(context).openEndDrawer();
-        }),
-        icon: const Icon(Icons.send, color: Colors.black),
-      ),
-    );
-  }
-}
+// class _NotifButtonState extends ConsumerState<NotifButton> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       padding: const EdgeInsets.only(right: 4),
+//       child: IconButton(
+//         onPressed: (() {
+//           ref.read(trackerProvider).trackPage(TrackPage.notification);
+//           Scaffold.of(context).openEndDrawer();
+//         }),
+//         icon: const Icon(Icons.send, color: Colors.black),
+//       ),
+//     );
+//   }
+// }

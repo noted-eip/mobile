@@ -10,6 +10,7 @@ import 'package:noted_mobile/data/clients/tracker_client.dart';
 import 'package:noted_mobile/data/providers/account_provider.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
+import 'package:noted_mobile/utils/validator.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 class ForgotPasswordPage extends ConsumerStatefulWidget {
@@ -22,45 +23,50 @@ class ForgotPasswordPage extends ConsumerStatefulWidget {
 
 class ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
   final _formKey = GlobalKey<FormState>();
+  final RoundedLoadingButtonController btnController =
+      RoundedLoadingButtonController();
+  final TextEditingController email = TextEditingController();
 
-  resetPassword(String email) async {
-    try {
-      final accountId = await ref
-          .read(accountClientProvider)
-          .forgetAccountPassword(email: email);
+  Future<void> resetPassword(
+      String email, RoundedLoadingButtonController btnController) async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        final accountId = await ref
+            .read(accountClientProvider)
+            .forgetAccountPassword(email: email);
 
-      if (accountId != null && mounted) {
-        ref
-            .read(trackerProvider)
-            .trackPage(TrackPage.forgotPasswordVerification);
+        if (accountId != null && mounted) {
+          ref
+              .read(trackerProvider)
+              .trackPage(TrackPage.forgotPasswordVerification);
 
-        Navigator.pushReplacementNamed(
-          context,
-          '/forgot-password-verification',
-          arguments: accountId,
-        );
-      }
-    } on DioException catch (e) {
-      if (e.response != null) {
-        final error = e.response!.data['error'];
-        if (mounted) {
-          CustomToast.show(
-            message: error.toString(),
-            type: ToastType.error,
-            context: context,
-            gravity: ToastGravity.BOTTOM,
+          Navigator.pushReplacementNamed(
+            context,
+            '/forgot-password-verification',
+            arguments: accountId,
           );
         }
+      } on DioException catch (e) {
+        if (e.response != null) {
+          final error = e.response!.data['error'];
+          if (mounted) {
+            CustomToast.show(
+              message: error.toString(),
+              type: ToastType.error,
+              context: context,
+              gravity: ToastGravity.BOTTOM,
+            );
+          }
+        }
+        rethrow;
       }
-      rethrow;
+    } else {
+      btnController.error();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final RoundedLoadingButtonController btnController =
-        RoundedLoadingButtonController();
-    final TextEditingController email = TextEditingController();
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
@@ -75,7 +81,7 @@ class ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(100),
+                      borderRadius: BorderRadius.circular(32),
                       border: Border.all(width: 5, color: Colors.white),
                       color: Colors.white,
                       boxShadow: const [
@@ -142,15 +148,16 @@ class ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                                     color: Colors.grey,
                                   ),
                                 ),
-                            validator: (val) {
-                              if (val!.isEmpty) {
-                                return "forgot.step1.email.validator".tr();
-                              }
-                              // TODO: Add email validation
-                              // else if (!val.isEmail()) {
-                              //   return "Enter a valid email address";
-                              // }
-                              return null;
+                            validator: (val) => NotedValidator.validateEmail(
+                              val?.trim(),
+                            ),
+                            textInputAction: TextInputAction.done,
+                            keyboardType: TextInputType.emailAddress,
+                            onEditingComplete: () async {
+                              FocusScope.of(context).unfocus();
+                              btnController.start();
+                              await resetPassword(
+                                  email.text.trim(), btnController);
                             },
                           ),
                         ),
@@ -158,12 +165,8 @@ class ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                         LoadingButton(
                           btnController: btnController,
                           onPressed: () async {
-                            if (_formKey.currentState!.validate()) {
-                              await resetPassword(email.text);
-                            } else {
-                              btnController.error();
-                              resetButton(btnController);
-                            }
+                            await resetPassword(
+                                email.text.trim(), btnController);
                           },
                           text: 'forgot.step1.button'.tr(),
                         ),

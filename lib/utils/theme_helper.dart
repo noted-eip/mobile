@@ -17,10 +17,10 @@ class ThemeHelper {
           borderSide: BorderSide(color: Colors.grey.shade400)),
       errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16.0),
-          borderSide: const BorderSide(color: Colors.red, width: 2.0)),
+          borderSide: const BorderSide(color: Colors.red)),
       focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16.0),
-          borderSide: const BorderSide(color: Colors.red, width: 2.0)),
+          borderSide: const BorderSide(color: Colors.red)),
     );
   }
 

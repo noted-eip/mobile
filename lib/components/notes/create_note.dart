@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -43,6 +44,7 @@ class _CreateNoteModalState extends ConsumerState<CreateNoteModal> {
               groupId: groupId,
               title: _titleController.text,
             );
+
         if (note != null) {
           btnController.success();
           Future.delayed(const Duration(seconds: 1), () {
@@ -57,10 +59,12 @@ class _CreateNoteModalState extends ConsumerState<CreateNoteModal> {
             // ref.invalidate(la);
             ref.invalidate(notesProvider);
           });
+        } else {
+          print("note is null");
         }
       } catch (e) {
         if (kDebugMode) {
-          print("Failed to create Group, Api response :${e.toString()}");
+          print("Failed to create Note, Api response :${e.toString()}");
         }
         if (mounted) {
           CustomToast.show(
@@ -141,7 +145,7 @@ class _CreateNoteModalState extends ConsumerState<CreateNoteModal> {
             formKey: _formKey,
             descriptionController: _descriptionController,
             titleController: _titleController,
-            title: "Create Note",
+            title: "my-notes.create-note-modal.title".tr(),
             onGroupSelected: (data) {
               setState(() {
                 groupId = data;
@@ -180,7 +184,7 @@ class _CreateNoteModalState extends ConsumerState<CreateNoteModal> {
           LoadingButton(
             btnController: btnController,
             onPressed: () async => createNote(user),
-            text: "Let's Go !",
+            text: "my-notes.create-note-modal.button".tr(),
           ),
         ],
       ),

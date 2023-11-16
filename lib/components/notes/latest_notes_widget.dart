@@ -18,7 +18,10 @@ class _LatestFilesState extends ConsumerState<LatestFiles> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("home.lastest-notes".tr(), style: const TextStyle(fontSize: 20)),
+          Text(
+            "home.lastest-notes".tr(),
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
           const SizedBox(height: 16),
           const Expanded(
               child: Padding(

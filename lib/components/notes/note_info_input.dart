@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -50,11 +51,12 @@ class _NoteInfosInputState extends ConsumerState<NoteInfosInput> {
             children: [
               TextFormField(
                 controller: widget.titleController,
-                decoration: ThemeHelper()
-                    .textInputDecoration('Note Title', 'Enter a Title'),
+                decoration: ThemeHelper().textInputDecoration(
+                    'my-notes.create-note-modal.name-label'.tr(),
+                    'my-notes.create-note-modal.name-hint'.tr()),
                 validator: (val) {
                   if (val!.isEmpty) {
-                    return "Please enter a Title";
+                    return "my-notes.create-note-modal.name-empty".tr();
                   }
                   return null;
                 },
@@ -66,16 +68,18 @@ class _NoteInfosInputState extends ConsumerState<NoteInfosInput> {
                 maxLines: 1,
                 controller: widget.descriptionController,
                 decoration: ThemeHelper().textInputDecoration(
-                    'Group', 'Choose a group for your note'),
+                    'my-notes.create-note-modal.group-label'.tr(),
+                    'Choose a group for your note'),
                 validator: (val) {
                   if (val!.isEmpty) {
-                    return 'Please enter a Description';
+                    return 'my-notes.create-note-modal.group-empty'.tr();
                   }
                   return null;
                 },
                 onTap: () {
                   if (groups.hasValue && groups.value != null) {
                     if (widget.descriptionController.text.isEmpty) {
+                      //TODO: check si les groupes sont vides
                       widget.descriptionController.text =
                           groups.value!.elementAt(0).data.name;
                       widget

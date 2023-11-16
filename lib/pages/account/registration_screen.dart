@@ -12,9 +12,11 @@ import 'package:noted_mobile/data/clients/tracker_client.dart';
 import 'package:noted_mobile/data/providers/account_provider.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:noted_mobile/pages/account/helper/account.dart';
+import 'package:noted_mobile/utils/color.dart';
 import 'package:noted_mobile/utils/string_extension.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:noted_mobile/utils/validator.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 class RegistrationPage extends ConsumerStatefulWidget {
@@ -40,7 +42,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
     {
       'name': 'Google',
       'icon': FontAwesomeIcons.google,
-      'color': Colors.red,
+      'color': Colors.redAccent,
       'controller': RoundedLoadingButtonController(),
       'onPressed': () {},
     },
@@ -170,13 +172,13 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                           Container(
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(100),
+                              borderRadius: BorderRadius.circular(32),
                               border: Border.all(width: 5, color: Colors.white),
                               color: Colors.white,
                               boxShadow: const [
                                 BoxShadow(
-                                  color: Colors.black12,
-                                  blurRadius: 20,
+                                  color: NotedColors.primary,
+                                  blurRadius: 5,
                                   offset: Offset(5, 5),
                                 ),
                               ],
@@ -212,12 +214,9 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                                       color: Colors.grey,
                                     ),
                                   ),
-                              validator: (val) {
-                                if ((val!.isEmpty)) {
-                                  return "signup.name.validator".tr();
-                                }
-                                return null;
-                              },
+                              validator: (val) =>
+                                  NotedValidator.validateName(val?.trim()),
+                              textInputAction: TextInputAction.next,
                             ),
                           ),
                           const SizedBox(height: 20.0),
@@ -237,18 +236,10 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                                       color: Colors.grey,
                                     ),
                                   ),
-                              validator: (val) {
-                                if (val!.isEmpty) {
-                                  return "signup.email.validator".tr();
-                                }
-                                //TODO: fix email validation
-                                // else if (!val.isEmail()) {
-                                //   print(!val.isEmail());
-                                //   print("not an email");
-                                //   return "Enter a valid email address";
-                                // }
-                                return null;
-                              },
+                              validator: (val) =>
+                                  NotedValidator.validateEmail(val?.trim()),
+                              textInputAction: TextInputAction.next,
+                              keyboardType: TextInputType.emailAddress,
                             ),
                           ),
                           const SizedBox(height: 20.0),
@@ -283,21 +274,26 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                                       },
                                     ),
                                   ),
-                              validator: (val) {
-                                if (val!.isEmpty) {
-                                  return "signup.password.validator".tr();
-                                }
-                                return null;
+                              validator: (val) =>
+                                  NotedValidator.validatePassword(val?.trim()),
+                              onEditingComplete: () async {
+                                FocusScope.of(context).unfocus();
+                                btnController.start();
+                                await createAccount(
+                                    _nameController.text.trim(),
+                                    _emailController.text.trim(),
+                                    _passwordController.text.trim(),
+                                    btnController);
                               },
+                              textInputAction: TextInputAction.done,
                             ),
                           ),
-                          const SizedBox(height: 16.0),
-                          const SizedBox(height: 20.0),
+                          const SizedBox(height: 36.0),
                           LoadingButton(
                             onPressed: () async => createAccount(
-                                _nameController.text,
-                                _emailController.text,
-                                _passwordController.text,
+                                _nameController.text.trim(),
+                                _emailController.text.trim(),
+                                _passwordController.text.trim(),
                                 btnController),
                             btnController: btnController,
                             text: 'signup.button'.tr(),

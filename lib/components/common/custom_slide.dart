@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:noted_mobile/utils/color.dart';
 import 'package:noted_mobile/utils/constant.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -172,27 +173,19 @@ class CustomSlide extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 gradient: Gradient.lerp(
                   LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+                    begin: Alignment.topRight,
+                    end: Alignment.bottomLeft,
                     colors: [
-                      color != null
-                          ? color!.withOpacity(0.9)
-                          : kPrimaryColor.withOpacity(0.9),
-                      color != null
-                          ? color!.withOpacity(0.6)
-                          : kPrimaryColor.withOpacity(0.6),
+                      NotedColors.secondary.withOpacity(0.9),
+                      NotedColors.secondary.withOpacity(0.6),
                     ],
                   ),
                   LinearGradient(
                     begin: Alignment.topRight,
                     end: Alignment.bottomLeft,
                     colors: [
-                      color != null
-                          ? color!.withOpacity(0.9)
-                          : kPrimaryColor.withOpacity(0.9),
-                      color != null
-                          ? color!.withOpacity(0.6)
-                          : kPrimaryColor.withOpacity(0.6),
+                      NotedColors.secondary.withOpacity(0.9),
+                      NotedColors.secondary.withOpacity(0.6),
                     ],
                   ),
                   0.5,

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/components/notes/note_card_widget.dart';
@@ -39,7 +40,7 @@ class _NotesListState extends ConsumerState<NotesList> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (widget.title != null)
+          if (widget.title != null) ...[
             Shimmer.fromColors(
               baseColor: Colors.grey.shade800,
               highlightColor: Colors.grey.shade700,
@@ -52,10 +53,10 @@ class _NotesListState extends ConsumerState<NotesList> {
                 ),
               ),
             ),
-          if (widget.title != null)
             const SizedBox(
               height: 16,
             ),
+          ],
           if (isRefresh)
             Expanded(
               child: RefreshIndicator(
@@ -68,8 +69,9 @@ class _NotesListState extends ConsumerState<NotesList> {
                   itemCount: 3,
                   itemBuilder: (context, index) {
                     return const Padding(
-                        padding: EdgeInsets.only(bottom: 16),
-                        child: NoteCard.empty());
+                      padding: EdgeInsets.only(bottom: 16),
+                      child: NoteCard.empty(),
+                    );
                   },
                 ),
               ),
@@ -324,7 +326,7 @@ class _NotesListState extends ConsumerState<NotesList> {
             Expanded(
               child: Center(
                 child: Text(
-                  'You don\'t have any notes yet',
+                  "home.no-notes".tr(),
                   style: TextStyle(
                     color: Colors.grey.shade700,
                     fontSize: 16,
