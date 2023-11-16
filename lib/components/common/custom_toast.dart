@@ -73,7 +73,7 @@ class CustomToast {
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16.0),
-            color: Colors.yellowAccent,
+            color: Colors.orangeAccent,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,

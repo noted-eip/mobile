@@ -63,6 +63,7 @@ class _CreateNoteModalState extends ConsumerState<CreateNoteModal> {
           print("note is null");
         }
       } catch (e) {
+        print("catch failed to create note");
         if (kDebugMode) {
           print("Failed to create Note, Api response :${e.toString()}");
         }

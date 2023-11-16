@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:noted_mobile/utils/color.dart';
-import 'package:noted_mobile/utils/constant.dart';
 import 'package:shimmer/shimmer.dart';
 
 class ActionSlidable {

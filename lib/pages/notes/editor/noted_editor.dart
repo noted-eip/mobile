@@ -6,7 +6,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:noted_mobile/components/common/custom_modal.dart';
+import 'package:noted_mobile/components/common/custom_toast.dart';
 import 'package:noted_mobile/components/common/loading_button.dart';
 import 'package:noted_mobile/data/providers/note_provider.dart';
 import 'package:noted_mobile/pages/notes/editor/_toolbar.dart';
@@ -64,24 +66,67 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
     }
   }
 
+  bool isUpdateInProgress = false;
+
   void updateNote() {
     _resetTimer();
+    print("reset timer");
+    print("call update note");
+
+    setState(() {
+      isUpdateInProgress = true;
+    });
 
     //
 
-    _timer = Timer(const Duration(seconds: 5), () {
-      print("update note");
+    _timer = Timer(const Duration(seconds: 5), () async {
+      print("try update note");
 
       V1Note updatedNote = getNodeFromDoc(_doc, widget.note);
 
       print(updatedNote.blocks!.length);
 
-      ref.read(noteClientProvider).updateNote(
-            noteId: widget.infos.item1,
-            groupId: widget.infos.item2,
-            note: updatedNote,
-          );
-      ref.invalidate(noteProvider(widget.infos));
+      try {
+        V1Note? updatedNoteResponse =
+            await ref.read(noteClientProvider).updateNote(
+                  noteId: widget.infos.item1,
+                  groupId: widget.infos.item2,
+                  note: updatedNote,
+                );
+
+        if (updatedNoteResponse == null) {
+          print("note is null");
+          return;
+        }
+
+        setState(() {
+          isUpdateInProgress = false;
+        });
+
+        // setState(() {
+        //   message = "Note mise à jour";
+        //   type = ToastType.success;
+        // });
+        print("note updated");
+
+        ref.invalidate(noteProvider(widget.infos));
+      } catch (e) {
+        print("catch failed to update note");
+        setState(() {
+          isUpdateInProgress = false;
+        });
+        if (kDebugMode) {
+          print("Failed to update Note, Api response :${e.toString()}");
+        }
+        // if (mounted) {
+        //   CustomToast.show(
+        //     message: e.toString().capitalize(),
+        //     type: ToastType.error,
+        //     context: context,
+        //     gravity: ToastGravity.BOTTOM,
+        //   );
+        // }
+      }
     });
   }
 
@@ -168,280 +213,307 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
     final AsyncValue<String?> summary =
         ref.watch(noteSummaryProvider(widget.infos));
 
-    return Scaffold(
-      floatingActionButton: _buildNoteTools(),
-      body: Stack(
-        children: [
-          Column(
-            children: [
-              SizedBox(
-                height: kToolbarHeight,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    IconButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      icon: const Icon(Icons.arrow_back),
-                    ),
-                    // const Spacer(),
-                    Expanded(
-                      flex: 6,
-                      child: Text(
-                        widget.note.title.capitalize(),
-                        style: Theme.of(context).textTheme.titleLarge,
+    return PopScope(
+      canPop: !isUpdateInProgress,
+      onPopInvoked: (bool isPop) {
+        if (isUpdateInProgress) {
+          CustomToast.show(
+            message: "Mise à jour en cours",
+            type: ToastType.warning,
+            context: context,
+            gravity: ToastGravity.BOTTOM,
+          );
+          return;
+        }
+      },
+      child: Scaffold(
+        floatingActionButton: _buildNoteTools(),
+        body: Stack(
+          children: [
+            Column(
+              children: [
+                SizedBox(
+                  height: kToolbarHeight,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          if (isUpdateInProgress) {
+                            CustomToast.show(
+                              message: "Mise à jour en cours",
+                              type: ToastType.warning,
+                              context: context,
+                              gravity: ToastGravity.BOTTOM,
+                            );
+                            return;
+                          }
+
+                          Navigator.of(context).pop();
+                        },
+                        icon: const Icon(Icons.arrow_back),
                       ),
-                    ),
-                    // const Spacer(),
-                    // const Expanded(
-                    //   flex: 6,
-                    //   child: LinearProgressIndicator(
-                    //     value: 0.5,
-                    //   ),
-                    // ),
-                    // const Spacer(),
-                    PopupMenuButton(
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(16),
-                          ),
+                      // const Spacer(),
+                      Expanded(
+                        flex: 6,
+                        child: Text(
+                          widget.note.title.capitalize(),
+                          style: Theme.of(context).textTheme.titleLarge,
                         ),
-                        itemBuilder: (context) => [
-                              const PopupMenuItem(
-                                  child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.quiz,
-                                    color: Colors.grey,
-                                    size: 30,
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  Text(
-                                    "Quiz",
-                                    style: TextStyle(
-                                      color: Colors.grey,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              )),
-                              PopupMenuItem(
-                                child: Text("Quizz"),
-                                onTap: () {
-                                  print("quizz");
-                                },
-                              ),
-                              PopupMenuItem(
-                                  child: _timer != null && _timer!.isActive
-                                      ? LinearProgressIndicator()
-                                      : Text("d")),
-                              PopupMenuItem(
-                                  child: LoadingButton(
-                                onPressed: () async {},
-                                btnController: RoundedLoadingButtonController(),
-                                width: 100,
-                                resetDuration: 2,
-                                child: Text("d"),
-                              )),
-                              const PopupMenuItem(child: Text("Quizz")),
-                              const PopupMenuItem(child: Text("Quizz")),
-                            ]),
-                    quizz.when(
-                      data: (quiz) {
-                        if (quiz == null) {
-                          return const SizedBox();
-                        }
-                        return Material(
-                          color: Colors.transparent,
-                          child: PopupMenuButton(
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(16),
-                              ),
-                            ),
-                            itemBuilder: ((context) {
-                              return [
-                                PopupMenuItem(
-                                  child: TextButton(
-                                    onPressed: () async {
-                                      Navigator.pop(context);
-
-                                      return showModalBottomSheet(
-                                        backgroundColor: Colors.transparent,
-                                        context: context,
-                                        isScrollControlled: true,
-                                        builder: (context) {
-                                          return CustomModal(
-                                            height: 0.9,
-                                            onClose: (context) {
-                                              print("close");
-                                              ref.invalidate(
-                                                  quizzProvider(widget.infos));
-                                              Navigator.pop(context);
-                                            },
-                                            child: QuizzPage(
-                                              quiz: quiz,
-                                              infos: widget.infos,
-                                            ),
-                                          );
-                                        },
-                                      );
-                                    },
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.quiz,
-                                          color: Colors.grey.shade900,
-                                          size: 30,
-                                        ),
-                                        const SizedBox(
-                                          width: 10,
-                                        ),
-                                        Text(
-                                          "Quiz",
-                                          style: TextStyle(
-                                            color: Colors.grey.shade900,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                PopupMenuItem(
-                                  child: TextButton(
-                                    onPressed: () async {
-                                      Navigator.of(context).pop();
-
-                                      if (!widgetsList.hasValue) {
-                                        return;
-                                      }
-
-                                      return showModalBottomSheet(
-                                        backgroundColor: Colors.transparent,
-                                        context: context,
-                                        isScrollControlled: true,
-                                        builder: (context) {
-                                          return CustomModal(
-                                            height: 1,
-                                            onClose: (context) {
-                                              Navigator.pop(context);
-                                            },
-                                            child: RecommendationPage(
-                                              infos: widget.infos,
-                                              widgetList: widgetsList.value!,
-                                            ),
-                                          );
-                                        },
-                                      );
-                                    },
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.recommend,
-                                          color: Colors.grey.shade900,
-                                          size: 30,
-                                        ),
-                                        const SizedBox(
-                                          width: 10,
-                                        ),
-                                        Text(
-                                          "Recommandation",
-                                          style: TextStyle(
-                                            color: Colors.grey.shade900,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                PopupMenuItem(
-                                  child: TextButton(
-                                    onPressed: () async {
-                                      Navigator.of(context).pop();
-
-                                      if (!summary.hasValue) {
-                                        return;
-                                      }
-
-                                      return showModalBottomSheet(
-                                        backgroundColor: Colors.transparent,
-                                        context: context,
-                                        isScrollControlled: true,
-                                        builder: (context) {
-                                          return CustomModal(
-                                            height: 1,
-                                            onClose: (context) {
-                                              Navigator.pop(context);
-                                            },
-                                            child: SummaryScreen(
-                                              infos: widget.infos,
-                                              summary: summary.value ?? "",
-                                            ),
-                                          );
-                                        },
-                                      );
-                                    },
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.summarize,
-                                          color: Colors.grey.shade900,
-                                          size: 30,
-                                        ),
-                                        const SizedBox(
-                                          width: 10,
-                                        ),
-                                        Text(
-                                          "Résumé",
-                                          style: TextStyle(
-                                            color: Colors.grey.shade900,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ];
-                            }),
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16),
-                              child: Icon(
-                                Icons.more_vert,
-                                color: Colors.grey.shade900,
-                                size: 32,
-                              ),
+                      ),
+                      // const Spacer(),
+                      // const Expanded(
+                      //   flex: 6,
+                      //   child: LinearProgressIndicator(
+                      //     value: 0.5,
+                      //   ),
+                      // ),
+                      // const Spacer(),
+                      PopupMenuButton(
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(16),
                             ),
                           ),
-                        );
-                      },
-                      error: (err, stack) => const SizedBox(),
-                      loading: () => const SizedBox(
-                        height: 36,
-                        child: Padding(
-                            padding: EdgeInsets.only(right: 16),
-                            child: CircularProgressIndicator()),
+                          itemBuilder: (context) => [
+                                const PopupMenuItem(
+                                    child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.quiz,
+                                      color: Colors.grey,
+                                      size: 30,
+                                    ),
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+                                    Text(
+                                      "Quiz",
+                                      style: TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                )),
+                                PopupMenuItem(
+                                  child: const Text("Quizz"),
+                                  onTap: () {
+                                    print("quizz");
+                                  },
+                                ),
+                                PopupMenuItem(
+                                    child: _timer != null && _timer!.isActive
+                                        ? const LinearProgressIndicator()
+                                        : const Text("d")),
+                                PopupMenuItem(
+                                    child: LoadingButton(
+                                  onPressed: () async {},
+                                  btnController:
+                                      RoundedLoadingButtonController(),
+                                  width: 100,
+                                  resetDuration: 2,
+                                  child: const Text("d"),
+                                )),
+                                const PopupMenuItem(child: Text("Quizz")),
+                                const PopupMenuItem(child: Text("Quizz")),
+                              ]),
+                      quizz.when(
+                        data: (quiz) {
+                          if (quiz == null) {
+                            return const SizedBox();
+                          }
+                          return Material(
+                            color: Colors.transparent,
+                            child: PopupMenuButton(
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(16),
+                                ),
+                              ),
+                              itemBuilder: ((context) {
+                                return [
+                                  PopupMenuItem(
+                                    child: TextButton(
+                                      onPressed: () async {
+                                        Navigator.pop(context);
+
+                                        return showModalBottomSheet(
+                                          backgroundColor: Colors.transparent,
+                                          context: context,
+                                          isScrollControlled: true,
+                                          builder: (context) {
+                                            return CustomModal(
+                                              height: 0.9,
+                                              onClose: (context) {
+                                                print("close");
+                                                ref.invalidate(quizzProvider(
+                                                    widget.infos));
+                                                Navigator.pop(context);
+                                              },
+                                              child: QuizzPage(
+                                                quiz: quiz,
+                                                infos: widget.infos,
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      },
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.quiz,
+                                            color: Colors.grey.shade900,
+                                            size: 30,
+                                          ),
+                                          const SizedBox(
+                                            width: 10,
+                                          ),
+                                          Text(
+                                            "Quiz",
+                                            style: TextStyle(
+                                              color: Colors.grey.shade900,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  PopupMenuItem(
+                                    child: TextButton(
+                                      onPressed: () async {
+                                        Navigator.of(context).pop();
+
+                                        if (!widgetsList.hasValue) {
+                                          return;
+                                        }
+
+                                        return showModalBottomSheet(
+                                          backgroundColor: Colors.transparent,
+                                          context: context,
+                                          isScrollControlled: true,
+                                          builder: (context) {
+                                            return CustomModal(
+                                              height: 1,
+                                              onClose: (context) {
+                                                Navigator.pop(context);
+                                              },
+                                              child: RecommendationPage(
+                                                infos: widget.infos,
+                                                widgetList: widgetsList.value!,
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      },
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.recommend,
+                                            color: Colors.grey.shade900,
+                                            size: 30,
+                                          ),
+                                          const SizedBox(
+                                            width: 10,
+                                          ),
+                                          Text(
+                                            "Recommandation",
+                                            style: TextStyle(
+                                              color: Colors.grey.shade900,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  PopupMenuItem(
+                                    child: TextButton(
+                                      onPressed: () async {
+                                        Navigator.of(context).pop();
+
+                                        if (!summary.hasValue) {
+                                          return;
+                                        }
+
+                                        return showModalBottomSheet(
+                                          backgroundColor: Colors.transparent,
+                                          context: context,
+                                          isScrollControlled: true,
+                                          builder: (context) {
+                                            return CustomModal(
+                                              height: 1,
+                                              onClose: (context) {
+                                                Navigator.pop(context);
+                                              },
+                                              child: SummaryScreen(
+                                                infos: widget.infos,
+                                                summary: summary.value ?? "",
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      },
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.summarize,
+                                            color: Colors.grey.shade900,
+                                            size: 30,
+                                          ),
+                                          const SizedBox(
+                                            width: 10,
+                                          ),
+                                          Text(
+                                            "Résumé",
+                                            style: TextStyle(
+                                              color: Colors.grey.shade900,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ];
+                              }),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
+                                child: Icon(
+                                  Icons.more_vert,
+                                  color: Colors.grey.shade900,
+                                  size: 32,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        error: (err, stack) => const SizedBox(),
+                        loading: () => const SizedBox(
+                          height: 36,
+                          child: Padding(
+                              padding: EdgeInsets.only(right: 16),
+                              child: CircularProgressIndicator()),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              Expanded(
-                child: _buildEditor(context),
-              ),
-              if (_isMobile) _buildMountedToolbar(),
-            ],
-          ),
-          Align(alignment: Alignment.topCenter, child: _buildCornerFabs()),
-        ],
+                Expanded(
+                  child: _buildEditor(context),
+                ),
+                if (_isMobile) _buildMountedToolbar(),
+              ],
+            ),
+            Align(alignment: Alignment.topCenter, child: _buildCornerFabs()),
+          ],
+        ),
       ),
     );
   }

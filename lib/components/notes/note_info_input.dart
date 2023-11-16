@@ -63,7 +63,9 @@ class _NoteInfosInputState extends ConsumerState<NoteInfosInput> {
               ),
               const SizedBox(height: 30.0),
               TextFormField(
-                // enabled: false,
+                enabled: groups.hasValue &&
+                    groups.value != null &&
+                    groups.value!.isNotEmpty,
                 minLines: 1,
                 maxLines: 1,
                 controller: widget.descriptionController,
@@ -77,9 +79,12 @@ class _NoteInfosInputState extends ConsumerState<NoteInfosInput> {
                   return null;
                 },
                 onTap: () {
-                  if (groups.hasValue && groups.value != null) {
+                  if (groups.hasValue &&
+                      groups.value != null &&
+                      groups.value!.isNotEmpty) {
                     if (widget.descriptionController.text.isEmpty) {
                       //TODO: check si les groupes sont vides
+
                       widget.descriptionController.text =
                           groups.value!.elementAt(0).data.name;
                       widget

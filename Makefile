@@ -3,6 +3,9 @@
 update-submodules:
 	git submodule update --init --remote
 
+solve-submodules:
+	git submodule update --recursive
+
 firebase:
 	flutterfire configure
 

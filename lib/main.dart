@@ -62,7 +62,6 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   final Color _primaryColor = Colors.grey;
-  final Color _accentColor = Colors.black;
 
   const MyApp({Key? key}) : super(key: key);
 
