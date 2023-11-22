@@ -268,12 +268,16 @@ class AccountClient {
       });
 
       return true;
-    } on DioException catch (e) {
-      String error = DioExceptions.fromDioError(e).toString();
-      if (kDebugMode) {
-        print("Exception when calling DefaultApi->login: $error\n");
-      }
-      throw Failure(message: error);
+    } catch (e) {
+      print("ERROR LOGIN ");
+      print("catch error : $e");
+      rethrow;
+
+      // String error = DioExceptions.fromDioError(e).toString();
+      // if (kDebugMode) {
+      //   print("Exception when calling DefaultApi->login: $error\n");
+      // }
+      // throw Failure(message: error);
     }
   }
 
@@ -294,12 +298,40 @@ class AccountClient {
       }
       return response.data!.isAccountValidate;
     } on DioException catch (e) {
-      String error = DioExceptions.fromDioError(e).toString();
-      if (kDebugMode) {
-        print(e);
-        print(
-            "Exception when calling DefaultApi->isAccountValidated: $error\n");
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx and is also not 304.
+      //TODO: handle error here and in other catch and edit String error = DioExceptions.fromDioError(e).toString();
+      //TO
+
+      //e.message
+      //e.response
+      //e.response?.data['error']
+      //e.response?.statusCode
+
+      print("------------------------------");
+      print("----");
+      print("e.error");
+      print(e.error);
+      print("----");
+      print("e.message");
+      print(e.message);
+      print("----");
+      print("e.response");
+      print(e.response);
+      print("----");
+      print("e.type");
+      print(e.type);
+      print("------------------------------");
+      if (e.response != null) {
+        print(e.response?.data['error']);
+        print(e.response?.statusCode);
+      } else {
+        // Something happened in setting up or sending the request that triggered an Error
+        print(e.requestOptions);
+        print(e.message);
       }
+      String error = DioExceptions.fromDioError(e).toString();
+
       throw Failure(message: error);
     }
   }

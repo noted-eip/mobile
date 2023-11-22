@@ -5,8 +5,10 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:noted_mobile/components/common/custom_alerte.dart';
 import 'package:noted_mobile/components/common/custom_modal.dart';
 import 'package:noted_mobile/components/common/custom_toast.dart';
 import 'package:noted_mobile/components/common/loading_button.dart';
@@ -16,11 +18,15 @@ import 'package:noted_mobile/pages/notes/editor/note_utility.dart';
 import 'package:noted_mobile/pages/notes/note_summary_screen.dart';
 import 'package:noted_mobile/pages/quizz/quizz_screen.dart';
 import 'package:noted_mobile/pages/recommendation/recommendation_screen.dart';
+import 'package:noted_mobile/utils/color.dart';
 import 'package:noted_mobile/utils/string_extension.dart';
 import 'package:openapi/openapi.dart';
+import 'package:provider/provider.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:super_editor/super_editor.dart';
 import 'package:tuple/tuple.dart';
+
+enum SampleItem { itemOne, itemTwo, itemThree }
 
 class NotedEditor extends ConsumerStatefulWidget {
   const NotedEditor({
@@ -205,13 +211,54 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
 
   void _selectAll() => _docOps.selectAll();
 
+  bool isLoading = false;
+  bool isLoadingQuizz = false;
+  String? selectedAction;
+  SampleItem? selectedMenu;
+  MenuController menuController = MenuController();
+  bool allowToggle = true;
+
+  Future<void> fetchData() async {
+    // Ici, vous pouvez placer votre appel API
+    print("fetch data");
+    setState(() {
+      isLoading = true;
+    });
+
+    await Future.delayed(const Duration(seconds: 2));
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  Future<void> deleteNoteDialog(WidgetRef ref) async {
+    return await showDialog(
+      context: context,
+      builder: ((context) {
+        return CustomAlertDialog(
+          title: "Supprimer la note",
+          content: "Voulez-vous vraiment supprimer cette note ?",
+          onConfirm: () async {
+            await ref.read(noteClientProvider).deleteNote(
+                  noteId: widget.infos.item1,
+                  groupId: widget.infos.item2,
+                );
+          },
+        );
+      }),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final AsyncValue<V1Quiz?> quizz = ref.watch(quizzProvider(widget.infos));
     final AsyncValue<List<V1Widget>?> widgetsList =
         ref.watch(recommendationListProvider(widget.infos));
     final AsyncValue<String?> summary =
         ref.watch(noteSummaryProvider(widget.infos));
+
+    final AsyncValue<List<V1Quiz>?> quizzList =
+        ref.watch(quizzListProvider(widget.infos));
 
     return PopScope(
       canPop: !isUpdateInProgress,
@@ -227,7 +274,10 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
         }
       },
       child: Scaffold(
-        floatingActionButton: _buildNoteTools(),
+        floatingActionButtonLocation: ExpandableFab.location,
+        floatingActionButton:
+            _buildNoteTools(ref, summary, quizzList, widgetsList),
+        floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
         body: Stack(
           children: [
             Column(
@@ -253,7 +303,6 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
                         },
                         icon: const Icon(Icons.arrow_back),
                       ),
-                      // const Spacer(),
                       Expanded(
                         flex: 6,
                         child: Text(
@@ -261,247 +310,296 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                       ),
-                      // const Spacer(),
-                      // const Expanded(
-                      //   flex: 6,
-                      //   child: LinearProgressIndicator(
-                      //     value: 0.5,
+                      PopupMenuButton(
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(16),
+                          ),
+                        ),
+                        itemBuilder: (context) => [
+                          PopupMenuItem(
+                            child: const ListTile(
+                              leading: Icon(Icons.delete),
+                              title: Text("Supprimer"),
+                            ),
+                            onTap: () async {
+                              await deleteNoteDialog(ref);
+                              if (mounted) {
+                                ref.invalidate(
+                                    groupNotesProvider(widget.infos.item2));
+                                Navigator.of(context).pop();
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                      // MenuAnchor(
+                      //   controller: menuController,
+                      //   style: MenuStyle(
+                      //     padding: const MaterialStatePropertyAll<EdgeInsets>(
+                      //       EdgeInsets.all(16),
+                      //     ),
+                      //     shadowColor: MaterialStatePropertyAll<Color>(
+                      //       Colors.grey.shade900,
+                      //     ),
+                      //     side: const MaterialStatePropertyAll<BorderSide>(
+                      //       BorderSide(
+                      //         color: Colors.grey,
+                      //         width: 0.5,
+                      //       ),
+                      //     ),
+                      //     backgroundColor:
+                      //         const MaterialStatePropertyAll<Color>(
+                      //       Colors.white,
+                      //     ),
+                      //     elevation: const MaterialStatePropertyAll<double>(4),
+                      //     shape: MaterialStatePropertyAll<OutlinedBorder>(
+                      //       RoundedRectangleBorder(
+                      //         borderRadius: BorderRadius.circular(16),
+                      //       ),
+                      //     ),
+                      //   ),
+                      //   onClose: () {
+                      //     print("onClose---------------------");
+                      //     print("is open: ${menuController.isOpen}");
+                      //     print("is loading: $isLoading");
+
+                      //     if (menuController.isOpen && !isLoading) {
+                      //       print("is open and not loading");
+                      //       menuController.close();
+                      //     } else if (menuController.isOpen && isLoading) {
+                      //       menuController.close();
+                      //       print("is open and loading");
+                      //     } else {
+                      //       print("is not open and loading");
+                      //       menuController.open();
+                      //     }
+                      //   },
+                      //   onOpen: () {
+                      //     print("open");
+                      //   },
+                      //   builder: (
+                      //     BuildContext context,
+                      //     MenuController controller,
+                      //     Widget? child,
+                      //   ) {
+                      //     return IconButton(
+                      //       onPressed: () {
+                      //         // if (controller.isOpen && !isLoading) {
+                      //         //   controller.close();
+                      //         // } else {
+                      //         //   controller.open();
+                      //         // }
+                      //         if (controller.isOpen) {
+                      //           controller.close();
+                      //         } else {
+                      //           controller.open();
+                      //         }
+                      //       },
+                      //       icon: const Icon(Icons.more_horiz),
+                      //       tooltip: 'Show menu',
+                      //     );
+                      //   },
+                      //   menuChildren: List<MenuItemButton>.generate(
+                      //     3,
+                      //     (int index) => MenuItemButton(
+                      //       onPressed: () {
+                      //         print("onPressed");
+                      //         // menuController.open();
+                      //         fetchData();
+                      //       },
+                      //       trailingIcon: SizedBox(
+                      //         width: 20,
+                      //         height: 20,
+                      //         child: isLoading
+                      //             ? const CircularProgressIndicator(
+                      //                 strokeWidth: 2,
+                      //               )
+                      //             : null,
+                      //       ),
+                      //       child: Text('Item ${index + 1}'),
+                      //     ),
                       //   ),
                       // ),
-                      // const Spacer(),
-                      PopupMenuButton(
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(16),
-                            ),
-                          ),
-                          itemBuilder: (context) => [
-                                const PopupMenuItem(
-                                    child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.quiz,
-                                      color: Colors.grey,
-                                      size: 30,
-                                    ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                    Text(
-                                      "Quiz",
-                                      style: TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                )),
-                                PopupMenuItem(
-                                  child: const Text("Quizz"),
-                                  onTap: () {
-                                    print("quizz");
-                                  },
-                                ),
-                                PopupMenuItem(
-                                    child: _timer != null && _timer!.isActive
-                                        ? const LinearProgressIndicator()
-                                        : const Text("d")),
-                                PopupMenuItem(
-                                    child: LoadingButton(
-                                  onPressed: () async {},
-                                  btnController:
-                                      RoundedLoadingButtonController(),
-                                  width: 100,
-                                  resetDuration: 2,
-                                  child: const Text("d"),
-                                )),
-                                const PopupMenuItem(child: Text("Quizz")),
-                                const PopupMenuItem(child: Text("Quizz")),
-                              ]),
-                      quizz.when(
-                        data: (quiz) {
-                          if (quiz == null) {
-                            return const SizedBox();
-                          }
-                          return Material(
-                            color: Colors.transparent,
-                            child: PopupMenuButton(
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(16),
-                                ),
-                              ),
-                              itemBuilder: ((context) {
-                                return [
-                                  PopupMenuItem(
-                                    child: TextButton(
-                                      onPressed: () async {
-                                        Navigator.pop(context);
+                      // quizz.when(
+                      //   data: (quiz) {
+                      //     if (quiz == null) {
+                      //       return const SizedBox();
+                      //     }
+                      //     return Material(
+                      //       color: Colors.transparent,
+                      //       child: PopupMenuButton(
+                      //         shape: const RoundedRectangleBorder(
+                      //           borderRadius: BorderRadius.all(
+                      //             Radius.circular(16),
+                      //           ),
+                      //         ),
+                      //         itemBuilder: ((context) {
+                      //           return [
+                      //             PopupMenuItem(
+                      //               child: TextButton(
+                      //                 onPressed: () async {
+                      //                   Navigator.pop(context);
+                      //                   return showModalBottomSheet(
+                      //                     backgroundColor: Colors.transparent,
+                      //                     context: context,
+                      //                     isScrollControlled: true,
+                      //                     builder: (context) {
+                      //                       return CustomModal(
+                      //                         height: 0.9,
+                      //                         onClose: (context) {
+                      //                           print("close");
+                      //                           ref.invalidate(quizzProvider(
+                      //                               widget.infos));
+                      //                           Navigator.pop(context);
+                      //                         },
+                      //                         child: QuizzPage(
+                      //                           quiz: quiz,
+                      //                           infos: widget.infos,
+                      //                         ),
+                      //                       );
+                      //                     },
+                      //                   );
+                      //                 },
+                      //                 child: Row(
+                      //                   children: [
+                      //                     Icon(
+                      //                       Icons.quiz,
+                      //                       color: Colors.grey.shade900,
+                      //                       size: 30,
+                      //                     ),
+                      //                     const SizedBox(
+                      //                       width: 10,
+                      //                     ),
+                      //                     Text(
+                      //                       "Quiz",
+                      //                       style: TextStyle(
+                      //                         color: Colors.grey.shade900,
+                      //                         fontSize: 14,
+                      //                         fontWeight: FontWeight.bold,
+                      //                       ),
+                      //                     ),
+                      //                   ],
+                      //                 ),
+                      //               ),
+                      //             ),
+                      //             PopupMenuItem(
+                      //               child: TextButton(
+                      //                 onPressed: () async {
+                      //                   Navigator.of(context).pop();
+                      //                   if (!widgetsList.hasValue) {
+                      //                     return;
+                      //                   }
 
-                                        return showModalBottomSheet(
-                                          backgroundColor: Colors.transparent,
-                                          context: context,
-                                          isScrollControlled: true,
-                                          builder: (context) {
-                                            return CustomModal(
-                                              height: 0.9,
-                                              onClose: (context) {
-                                                print("close");
-                                                ref.invalidate(quizzProvider(
-                                                    widget.infos));
-                                                Navigator.pop(context);
-                                              },
-                                              child: QuizzPage(
-                                                quiz: quiz,
-                                                infos: widget.infos,
-                                              ),
-                                            );
-                                          },
-                                        );
-                                      },
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.quiz,
-                                            color: Colors.grey.shade900,
-                                            size: 30,
-                                          ),
-                                          const SizedBox(
-                                            width: 10,
-                                          ),
-                                          Text(
-                                            "Quiz",
-                                            style: TextStyle(
-                                              color: Colors.grey.shade900,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  PopupMenuItem(
-                                    child: TextButton(
-                                      onPressed: () async {
-                                        Navigator.of(context).pop();
-
-                                        if (!widgetsList.hasValue) {
-                                          return;
-                                        }
-
-                                        return showModalBottomSheet(
-                                          backgroundColor: Colors.transparent,
-                                          context: context,
-                                          isScrollControlled: true,
-                                          builder: (context) {
-                                            return CustomModal(
-                                              height: 1,
-                                              onClose: (context) {
-                                                Navigator.pop(context);
-                                              },
-                                              child: RecommendationPage(
-                                                infos: widget.infos,
-                                                widgetList: widgetsList.value!,
-                                              ),
-                                            );
-                                          },
-                                        );
-                                      },
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.recommend,
-                                            color: Colors.grey.shade900,
-                                            size: 30,
-                                          ),
-                                          const SizedBox(
-                                            width: 10,
-                                          ),
-                                          Text(
-                                            "Recommandation",
-                                            style: TextStyle(
-                                              color: Colors.grey.shade900,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  PopupMenuItem(
-                                    child: TextButton(
-                                      onPressed: () async {
-                                        Navigator.of(context).pop();
-
-                                        if (!summary.hasValue) {
-                                          return;
-                                        }
-
-                                        return showModalBottomSheet(
-                                          backgroundColor: Colors.transparent,
-                                          context: context,
-                                          isScrollControlled: true,
-                                          builder: (context) {
-                                            return CustomModal(
-                                              height: 1,
-                                              onClose: (context) {
-                                                Navigator.pop(context);
-                                              },
-                                              child: SummaryScreen(
-                                                infos: widget.infos,
-                                                summary: summary.value ?? "",
-                                              ),
-                                            );
-                                          },
-                                        );
-                                      },
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.summarize,
-                                            color: Colors.grey.shade900,
-                                            size: 30,
-                                          ),
-                                          const SizedBox(
-                                            width: 10,
-                                          ),
-                                          Text(
-                                            "Résumé",
-                                            style: TextStyle(
-                                              color: Colors.grey.shade900,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ];
-                              }),
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 16),
-                                child: Icon(
-                                  Icons.more_vert,
-                                  color: Colors.grey.shade900,
-                                  size: 32,
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                        error: (err, stack) => const SizedBox(),
-                        loading: () => const SizedBox(
-                          height: 36,
-                          child: Padding(
-                              padding: EdgeInsets.only(right: 16),
-                              child: CircularProgressIndicator()),
-                        ),
-                      ),
+                      //                   return showModalBottomSheet(
+                      //                     backgroundColor: Colors.transparent,
+                      //                     context: context,
+                      //                     isScrollControlled: true,
+                      //                     builder: (context) {
+                      //                       return CustomModal(
+                      //                         height: 1,
+                      //                         onClose: (context) {
+                      //                           Navigator.pop(context);
+                      //                         },
+                      //                         child: RecommendationPage(
+                      //                           infos: widget.infos,
+                      //                           widgetList: widgetsList.value!,
+                      //                         ),
+                      //                       );
+                      //                     },
+                      //                   );
+                      //                 },
+                      //                 child: Row(
+                      //                   children: [
+                      //                     Icon(
+                      //                       Icons.recommend,
+                      //                       color: Colors.grey.shade900,
+                      //                       size: 30,
+                      //                     ),
+                      //                     const SizedBox(
+                      //                       width: 10,
+                      //                     ),
+                      //                     Text(
+                      //                       "Recommandation",
+                      //                       style: TextStyle(
+                      //                         color: Colors.grey.shade900,
+                      //                         fontSize: 14,
+                      //                         fontWeight: FontWeight.bold,
+                      //                       ),
+                      //                     ),
+                      //                   ],
+                      //                 ),
+                      //               ),
+                      //             ),
+                      //             PopupMenuItem(
+                      //               child: TextButton(
+                      //                 onPressed: () async {
+                      //                   Navigator.of(context).pop();
+                      //                   if (!summary.hasValue) {
+                      //                     return;
+                      //                   }
+                      //                   return showModalBottomSheet(
+                      //                     backgroundColor: Colors.transparent,
+                      //                     context: context,
+                      //                     isScrollControlled: true,
+                      //                     builder: (context) {
+                      //                       return CustomModal(
+                      //                         height: 1,
+                      //                         onClose: (context) {
+                      //                           Navigator.pop(context);
+                      //                         },
+                      //                         child: SummaryScreen(
+                      //                           infos: widget.infos,
+                      //                           summary: summary.value ?? "",
+                      //                         ),
+                      //                       );
+                      //                     },
+                      //                   );
+                      //                 },
+                      //                 child: Row(
+                      //                   children: [
+                      //                     Icon(
+                      //                       Icons.summarize,
+                      //                       color: Colors.grey.shade900,
+                      //                       size: 30,
+                      //                     ),
+                      //                     const SizedBox(
+                      //                       width: 10,
+                      //                     ),
+                      //                     Text(
+                      //                       "Résumé",
+                      //                       style: TextStyle(
+                      //                         color: Colors.grey.shade900,
+                      //                         fontSize: 14,
+                      //                         fontWeight: FontWeight.bold,
+                      //                       ),
+                      //                     ),
+                      //                   ],
+                      //                 ),
+                      //               ),
+                      //             ),
+                      //           ];
+                      //         }),
+                      //         child: Padding(
+                      //           padding:
+                      //               const EdgeInsets.symmetric(horizontal: 16),
+                      //           child: Icon(
+                      //             Icons.more_vert,
+                      //             color: Colors.grey.shade900,
+                      //             size: 32,
+                      //           ),
+                      //         ),
+                      //       ),
+                      //     );
+                      //   },
+                      //   error: (err, stack) => const SizedBox(),
+                      //   loading: () => const SizedBox(
+                      //     height: 36,
+                      //     child: Padding(
+                      //         padding: EdgeInsets.only(right: 16),
+                      //         child: CircularProgressIndicator()),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),
@@ -511,70 +609,167 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
                 if (_isMobile) _buildMountedToolbar(),
               ],
             ),
-            Align(alignment: Alignment.topCenter, child: _buildCornerFabs()),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildCornerFabs() {
-    return Padding(
-      padding: const EdgeInsets.only(right: 16, bottom: 16 + 40),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          _buildNoteTools(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNoteTools() {
+  Widget _buildNoteTools(
+    WidgetRef ref,
+    AsyncValue<String?> summary,
+    AsyncValue<List<V1Quiz>?> quizzList,
+    AsyncValue<List<V1Widget>?> widgetsList,
+  ) {
     return ExpandableFab(
+      distance: 150,
+      type: ExpandableFabType.fan,
+      pos: ExpandableFabPos.right,
       openButtonBuilder: RotateFloatingActionButtonBuilder(
-        child: const Icon(Icons.account_box),
+        child: const Icon(Icons.bolt),
         fabSize: ExpandableFabSize.regular,
-        foregroundColor: Colors.amber,
-        backgroundColor: Colors.green,
-        shape: const CircleBorder(),
+        backgroundColor: NotedColors.primary,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
       ),
       closeButtonBuilder: DefaultFloatingActionButtonBuilder(
         child: const Icon(Icons.close),
-        fabSize: ExpandableFabSize.small,
-        foregroundColor: Colors.deepOrangeAccent,
-        backgroundColor: Colors.lightGreen,
-        shape: const CircleBorder(),
+        fabSize: ExpandableFabSize.regular,
+        backgroundColor: NotedColors.primary,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
       ),
       children: [
         FloatingActionButton(
           heroTag: "quiz",
-          backgroundColor: _brightness.value == Brightness.light
-              ? _darkBackground
-              : _lightBackground,
-          foregroundColor: _brightness.value == Brightness.light
-              ? _lightBackground
-              : _darkBackground,
           elevation: 5,
-          onPressed: () {
-            printDocument(_doc);
+          backgroundColor: NotedColors.secondary,
+          foregroundColor: Colors.white,
+          onPressed: () async {
+            if (quizzList.hasError) {
+              print("error quizz list");
+              return;
+            }
+            if (quizzList.isLoading) {
+              print("loading quizz list");
+              return;
+            }
+
+            if (quizzList.value == null) {
+              print("quizz list is null");
+              return;
+            }
+
+            if (quizzList.value!.isEmpty) {
+              bool validNote = canGenerateQuizz(widget.note);
+
+              if (!validNote) {
+                CustomToast.show(
+                  message:
+                      "La note doit contenir au moins 100 mots pour générer un quizz",
+                  type: ToastType.warning,
+                  context: context,
+                  gravity: ToastGravity.TOP,
+                );
+
+                return;
+              }
+
+              setState(() {
+                isLoadingQuizz = true;
+              });
+              bool isQuizzGenerated = await creatQuiz(
+                ref,
+                widget.infos,
+                widget.note,
+              );
+              if (mounted) {
+                if (isQuizzGenerated) {
+                  ref.invalidate(quizzListProvider(widget.infos));
+                  CustomToast.show(
+                    message: "Quizz généré",
+                    type: ToastType.success,
+                    context: context,
+                    gravity: ToastGravity.TOP,
+                  );
+                } else {
+                  CustomToast.show(
+                    message: "Erreur lors de la génération du quizz",
+                    type: ToastType.error,
+                    context: context,
+                    gravity: ToastGravity.TOP,
+                  );
+                }
+              }
+              setState(() {
+                isLoadingQuizz = false;
+              });
+
+              print("quizz list is empty");
+              return;
+            }
+
+            V1Quiz quiz = quizzList.value!.first;
+
+            return showModalBottomSheet(
+              backgroundColor: Colors.transparent,
+              context: context,
+              isScrollControlled: true,
+              builder: (context) {
+                return CustomModal(
+                  height: 0.9,
+                  onClose: (context) {
+                    print("close");
+                    ref.invalidate(quizzListProvider(widget.infos));
+                    Navigator.pop(context);
+                  },
+                  child: QuizzPage(
+                    quiz: quiz,
+                    infos: widget.infos,
+                  ),
+                );
+              },
+            );
           },
-          child: const Icon(
-            Icons.quiz,
-          ),
+          child: isLoadingQuizz
+              ? const CircularProgressIndicator(
+                  color: Colors.white,
+                )
+              : const Icon(
+                  Icons.quiz,
+                ),
         ),
         FloatingActionButton(
           heroTag: "recommendation",
-          backgroundColor: _brightness.value == Brightness.light
-              ? _darkBackground
-              : _lightBackground,
-          foregroundColor: _brightness.value == Brightness.light
-              ? _lightBackground
-              : _darkBackground,
+          backgroundColor: NotedColors.secondary,
+          foregroundColor: Colors.white,
           elevation: 5,
-          onPressed: () {
-            printDocument(_doc);
+          onPressed: () async {
+            if (!widgetsList.hasValue) {
+              return;
+            }
+
+            return showModalBottomSheet(
+              backgroundColor: Colors.transparent,
+              context: context,
+              isScrollControlled: true,
+              builder: (context) {
+                return CustomModal(
+                  height: 1,
+                  onClose: (context) {
+                    Navigator.pop(context);
+                  },
+                  child: RecommendationPage(
+                    infos: widget.infos,
+                    widgetList: widgetsList.value!,
+                  ),
+                );
+              },
+            );
           },
           child: const Icon(
             Icons.recommend,
@@ -582,18 +777,36 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
         ),
         FloatingActionButton(
           heroTag: "summary",
-          backgroundColor: _brightness.value == Brightness.light
-              ? _darkBackground
-              : _lightBackground,
-          foregroundColor: _brightness.value == Brightness.light
-              ? _lightBackground
-              : _darkBackground,
+          backgroundColor: NotedColors.secondary,
+          foregroundColor: Colors.white,
           elevation: 5,
-          onPressed: () {
-            printDocument(_doc);
+          onPressed: () async {
+            // Navigator.of(context).pop();
+
+            if (!summary.hasValue) {
+              return;
+            }
+
+            return showModalBottomSheet(
+              backgroundColor: Colors.transparent,
+              context: context,
+              isScrollControlled: true,
+              builder: (context) {
+                return CustomModal(
+                  height: 1,
+                  onClose: (context) {
+                    Navigator.pop(context);
+                  },
+                  child: SummaryScreen(
+                    infos: widget.infos,
+                    summary: summary.value ?? "",
+                  ),
+                );
+              },
+            );
           },
           child: const Icon(
-            Icons.summarize_outlined,
+            Icons.summarize,
           ),
         ),
       ],
@@ -660,15 +873,48 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
           commonOps: _docOps,
           brightness: _brightness.value,
         );
-
-        // return KeyboardEditingToolbar(
-        //   document: _doc,
-        //   composer: _composer,
-        //   commonOps: _docOps,
-        //   brightness: _brightness.value,
-        // );
       },
     );
+  }
+
+  Future<bool> creatQuiz(
+      WidgetRef ref, Tuple2<String, String> infos, V1Note note) async {
+    try {
+      await ref.read(noteClientProvider).quizzGenerator(
+            noteId: widget.infos.item1,
+            groupId: widget.infos.item2,
+          );
+      print("quizz generated");
+      return true;
+    } catch (e) {
+      print("catch failed to generate quizz");
+      return false;
+    }
+  }
+
+  bool canGenerateQuizz(V1Note note) {
+    // si le nombre de mots dans tous les blocs est inférieur à 100, on ne peut pas générer de quizz
+
+    int nbWords = 0;
+
+    for (var block in note.blocks!) {
+      if (block.type == V1BlockType.PARAGRAPH) {
+        nbWords += block.paragraph!.split(" ").length;
+      } else if (block.type == V1BlockType.hEADING1 ||
+          block.type == V1BlockType.hEADING2 ||
+          block.type == V1BlockType.hEADING3) {
+        nbWords += block.heading!.split(" ").length;
+      } else if (block.type == V1BlockType.BULLET_POINT) {
+        nbWords += block.bulletPoint!.split(" ").length;
+      } else if (block.type == V1BlockType.NUMBER_POINT) {
+        nbWords += block.numberPoint!.split(" ").length;
+      }
+    }
+
+    if (nbWords < 100) {
+      return false;
+    }
+    return true;
   }
 }
 

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:noted_mobile/data/providers/note_provider.dart';
 import 'package:noted_mobile/utils/constant.dart';
 import 'package:openapi/openapi.dart';
 import 'package:tuple/tuple.dart';
@@ -132,7 +131,7 @@ class _QuizzPageState extends ConsumerState<QuizzPage> {
               const Spacer(),
               ElevatedButton(
                 onPressed: () {
-                  ref.invalidate(quizzProvider(widget.infos));
+                  // ref.invalidate(quizzListProvider(widget.infos));
 
                   Navigator.pop(context);
                 },

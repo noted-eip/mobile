@@ -114,6 +114,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
             context: context,
             btnController: btnController,
             ref: ref,
+            isRegister: true,
           );
 
           // Navigator.pushNamed(context, '/registration-verification',

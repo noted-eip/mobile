@@ -192,6 +192,15 @@ class MyToolBar extends StatelessWidget {
                 : const Color(0xFF222222),
             child: Row(
               children: [
+                IconButton(
+                  onPressed: _closeKeyboard,
+                  icon: const Icon(Icons.keyboard_hide),
+                ),
+                Container(
+                  width: 1,
+                  height: 32,
+                  color: const Color(0xFFCCCCCC),
+                ),
                 Expanded(
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
@@ -308,15 +317,7 @@ class MyToolBar extends StatelessWidget {
                         }),
                   ),
                 ),
-                Container(
-                  width: 1,
-                  height: 32,
-                  color: const Color(0xFFCCCCCC),
-                ),
-                IconButton(
-                  onPressed: _closeKeyboard,
-                  icon: const Icon(Icons.keyboard_hide),
-                ),
+                const SizedBox(width: 80),
               ],
             ),
           ),

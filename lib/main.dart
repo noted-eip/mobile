@@ -74,7 +74,7 @@ class MyApp extends StatelessWidget {
       locale: context.locale,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        useMaterial3: false,
+        useMaterial3: true,
         primaryColor: _primaryColor,
         scaffoldBackgroundColor: Colors.white,
         colorScheme: notedColorScheme,

@@ -18,25 +18,102 @@ class NoteClient {
   ProviderRef<NoteClient> ref;
   NoteClient({required this.ref});
 
+  // Future<V1Note?> createNote({
+  //   required String groupId,
+  //   required String title,
+  // }) async {
+  //   final userNotifier = ref.read(userProvider);
+
+  //   try {
+  //     final response = await Dio(
+  //       BaseOptions(
+  //         baseUrl: kBaseUrl,
+  //         receiveTimeout: const Duration(seconds: 20),
+  //       ),
+  //     ).post(
+  //       "https://noted-rojasdiego.koyeb.app/groups/$groupId/notes",
+  //       data: {"group_id": groupId, "title": title},
+  //       options: Options(
+  //         headers: {"Authorization": "Bearer ${userNotifier.token}"},
+  //       ),
+  //     );
+
+  //     if (response.statusCode != 200 || response.data == null) {
+  //       if (kDebugMode) {
+  //         print(
+  //           "inside try : code = ${response.statusCode}, error = ${response.toString()}",
+  //         );
+  //       }
+  //       return null;
+  //     }
+
+  //     String jsonNoteId = response.data!["note"]["id"];
+  //     String jsonGroupId = response.data!["note"]["group_id"];
+  //     String jsonAuthorAccountId = response.data!["note"]["author_account_id"];
+  //     String jsonTitle = response.data!["note"]["title"];
+  //     List<Map<String, dynamic>> jsonBlocks =
+  //         List.from(response.data!["note"]["blocks"]);
+  //     int jsonCreatedAtSeconds =
+  //         response.data!["note"]["created_at"]["seconds"];
+  //     int jsonCreatedAtNanos = response.data!["note"]["created_at"]["nanos"];
+  //     String jsonLang = response.data!["note"]["lang"];
+
+  //     BuiltList<V1Block>? blocksList = BuiltList<V1Block>(
+  //       jsonBlocks.map((jsonBlock) {
+  //         // Conversion de chaque élément JSON en V1Block
+  //         V1BlockBuilder blockBuilder = V1BlockBuilder();
+
+  //         V1BlockType? blockType =
+  //             V1BlockType.values.elementAt(jsonBlock["type"]);
+
+  //         blockBuilder.id = jsonBlock["id"];
+  //         blockBuilder.type = blockType;
+  //         return blockBuilder.build();
+  //       }),
+  //     );
+
+  //     // Conversion de la réponse JSON en V1Note
+  //     // TODO: vérifier si le bloc est bien converti
+
+  //     V1Note note = V1Note(((body) => body
+  //       ..lang = jsonLang
+  //       ..groupId = jsonGroupId
+  //       ..title = jsonTitle
+  //       ..blocks = blocksList.toBuilder()
+  //       ..createdAt = DateTime.fromMillisecondsSinceEpoch(
+  //         jsonCreatedAtSeconds * 1000 + jsonCreatedAtNanos ~/ 1000000,
+  //         isUtc: true,
+  //       )
+  //       ..id = jsonNoteId
+  //       ..authorAccountId = jsonAuthorAccountId));
+
+  //     return note;
+  //   } on DioException catch (e) {
+  //     // String error = DioExceptions.fromDioError(e).toString();
+  //     if (kDebugMode) {
+  //       print("Exception when calling DefaultApi->createNote: $e\n");
+  //     }
+  //     throw Failure(message: e.toString());
+  //   }
+  // }
+
   Future<V1Note?> createNote({
     required String groupId,
     required String title,
+    required String lang,
   }) async {
     final userNotifier = ref.read(userProvider);
 
     try {
-      final response = await Dio(
-        BaseOptions(
-          baseUrl: kBaseUrl,
-          receiveTimeout: const Duration(seconds: 20),
-        ),
-      ).post(
-        "https://noted-rojasdiego.koyeb.app/groups/$groupId/notes",
-        data: {"group_id": groupId, "title": title},
-        options: Options(
-          headers: {"Authorization": "Bearer ${userNotifier.token}"},
-        ),
-      );
+      final Response<V1CreateNoteResponse> response =
+          await ref.read(apiProvider).notesAPICreateNote(
+              groupId: groupId,
+              body: NotesAPICreateNoteRequest(
+                ((body) => body
+                  ..title = title
+                  ..lang = lang),
+              ),
+              headers: {"Authorization": "Bearer ${userNotifier.token}"});
 
       if (response.statusCode != 200 || response.data == null) {
         if (kDebugMode) {
@@ -45,49 +122,11 @@ class NoteClient {
           );
         }
         return null;
+
+        // throw Failure(message: response.toString());
       }
 
-      String jsonNoteId = response.data!["note"]["id"];
-      String jsonGroupId = response.data!["note"]["group_id"];
-      String jsonAuthorAccountId = response.data!["note"]["author_account_id"];
-      String jsonTitle = response.data!["note"]["title"];
-      List<Map<String, dynamic>> jsonBlocks =
-          List.from(response.data!["note"]["blocks"]);
-      int jsonCreatedAtSeconds =
-          response.data!["note"]["created_at"]["seconds"];
-      int jsonCreatedAtNanos = response.data!["note"]["created_at"]["nanos"];
-      String jsonLang = response.data!["note"]["lang"];
-
-      BuiltList<V1Block>? blocksList = BuiltList<V1Block>(
-        jsonBlocks.map((jsonBlock) {
-          // Conversion de chaque élément JSON en V1Block
-          V1BlockBuilder blockBuilder = V1BlockBuilder();
-
-          V1BlockType? blockType =
-              V1BlockType.values.elementAt(jsonBlock["type"]);
-
-          blockBuilder.id = jsonBlock["id"];
-          blockBuilder.type = blockType;
-          return blockBuilder.build();
-        }),
-      );
-
-      // Conversion de la réponse JSON en V1Note
-      // TODO: vérifier si le bloc est bien converti
-
-      V1Note note = V1Note(((body) => body
-        ..lang = jsonLang
-        ..groupId = jsonGroupId
-        ..title = jsonTitle
-        ..blocks = blocksList.toBuilder()
-        ..createdAt = DateTime.fromMillisecondsSinceEpoch(
-          jsonCreatedAtSeconds * 1000 + jsonCreatedAtNanos ~/ 1000000,
-          isUtc: true,
-        )
-        ..id = jsonNoteId
-        ..authorAccountId = jsonAuthorAccountId));
-
-      return note;
+      return response.data!.note;
     } on DioException catch (e) {
       // String error = DioExceptions.fromDioError(e).toString();
       if (kDebugMode) {
@@ -97,43 +136,37 @@ class NoteClient {
     }
   }
 
-  // Future<V1Note?> createNote({
-  //   required String groupId,
-  //   required String title,
-  // }) async {
-  //   final userNotifier = ref.read(userProvider);
+  // delete Note
 
-  //   try {
-  //     final Response<V1CreateNoteResponse> response =
-  //         await ref.read(apiProvider).notesAPICreateNote(
-  //             groupId: groupId,
-  //             body: NotesAPICreateNoteRequest(
-  //               ((body) => body
-  //                 ..title = title
-  //                 ..lang = "fr"),
-  //             ),
-  //             headers: {"Authorization": "Bearer ${userNotifier.token}"});
+  Future<void> deleteNote({
+    required String groupId,
+    required String noteId,
+  }) async {
+    final userNotifier = ref.read(userProvider);
 
-  //     if (response.statusCode != 200 || response.data == null) {
-  //       if (kDebugMode) {
-  //         print(
-  //           "inside try : code = ${response.statusCode}, error = ${response.toString()}",
-  //         );
-  //       }
-  //       return null;
+    try {
+      final response = await ref.read(apiProvider).notesAPIDeleteNote(
+          groupId: groupId,
+          noteId: noteId,
+          headers: {"Authorization": "Bearer ${userNotifier.token}"});
 
-  //       // throw Failure(message: response.toString());
-  //     }
+      if (response.statusCode != 200 || response.data == null) {
+        if (kDebugMode) {
+          print(
+            "inside try : code = ${response.statusCode}, error = ${response.toString()}",
+          );
+        }
 
-  //     return response.data!.note;
-  //   } on DioException catch (e) {
-  //     // String error = DioExceptions.fromDioError(e).toString();
-  //     if (kDebugMode) {
-  //       print("Exception when calling DefaultApi->createNote: $e\n");
-  //     }
-  //     throw Failure(message: e.toString());
-  //   }
-  // }
+        throw Failure(message: response.toString());
+      }
+    } on DioException catch (e) {
+      // String error = DioExceptions.fromDioError(e).toString();
+      if (kDebugMode) {
+        print("Exception when calling DefaultApi->deleteNote: $e\n");
+      }
+      throw Failure(message: e.toString());
+    }
+  }
 
   Future<V1Note?> updateNote({
     required String groupId,
@@ -333,6 +366,41 @@ class NoteClient {
       if (kDebugMode) {
         print(
             "Exception when calling DefaultApi->recommendationGenerator : $error\n");
+      }
+      // throw Failure(message: error);
+    }
+    return null;
+  }
+
+  // listNoteQuizzes
+
+  Future<List<V1Quiz>?> listNoteQuizzes({
+    required String groupId,
+    required String noteId,
+  }) async {
+    final userNotifier = ref.read(userProvider);
+    try {
+      final response = await ref.read(apiProvider).notesAPIListQuizs(
+          groupId: groupId,
+          noteId: noteId,
+          headers: {"Authorization": "Bearer ${userNotifier.token}"});
+
+      if (response.statusCode != 200 || response.data == null) {
+        if (kDebugMode) {
+          print(
+            "inside try : code = ${response.statusCode}, error = ${response.toString()}",
+          );
+        }
+        return null;
+
+        // throw Failure(message: response.toString());
+      }
+
+      return response.data!.quizs!.toList();
+    } on DioException catch (e) {
+      String error = DioExceptions.fromDioError(e).toString();
+      if (kDebugMode) {
+        print("Exception when calling DefaultApi->listNoteQuizzes : $error\n");
       }
       // throw Failure(message: error);
     }

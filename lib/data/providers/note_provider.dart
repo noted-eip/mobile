@@ -73,15 +73,19 @@ final noteProvider =
   return note;
 });
 
-final quizzProvider = FutureProvider.autoDispose
-    .family<V1Quiz?, Tuple2<String, String>>((ref, infos) async {
-  final quizz = await ref.watch(noteClientProvider).quizzGenerator(
+final quizzListProvider = FutureProvider.autoDispose
+    .family<List<V1Quiz>?, Tuple2<String, String>>((ref, infos) async {
+  final quizzList = await ref.watch(noteClientProvider).listNoteQuizzes(
         noteId: infos.item1,
         groupId: infos.item2,
       );
 
-  return quizz;
+  return quizzList;
 });
+
+// final quizzProvider = StateNotifierProvider((ref) =>
+
+// );
 
 final recommendationListProvider = FutureProvider.autoDispose
     .family<List<V1Widget>?, Tuple2<String, String>>((ref, infos) async {

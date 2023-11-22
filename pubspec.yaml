@@ -72,6 +72,7 @@ dependencies:
   firebase_performance: ^0.9.3+4
   lottie: ^2.7.0
   google_fonts: ^4.0.4
+  flutter_keyboard_visibility: ^5.4.1
 
 dev_dependencies:
   flutter_test:

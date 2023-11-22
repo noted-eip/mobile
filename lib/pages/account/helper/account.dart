@@ -17,12 +17,15 @@ class AccountHelper {
     required Tuple2<String, String> emailPassword,
     required WidgetRef ref,
     required BuildContext context,
+    required bool isRegister,
   }) async {
     try {
-      await ref.read(accountClientProvider).resendValidateToken(
-            email: emailPassword.item1,
-            password: emailPassword.item2,
-          );
+      if (!isRegister) {
+        await ref.read(accountClientProvider).resendValidateToken(
+              email: emailPassword.item1,
+              password: emailPassword.item2,
+            );
+      }
     } catch (e) {
       CustomToast.show(
         message: e.toString().capitalize(),
@@ -39,6 +42,7 @@ class AccountHelper {
     required BuildContext context,
     required RoundedLoadingButtonController btnController,
     required WidgetRef ref,
+    required bool isRegister,
   }) async {
     bool? isValidate = await isValidateAccount(
       email: email,
@@ -59,7 +63,10 @@ class AccountHelper {
       btnController.reset();
 
       await handleSendToken(
-          emailPassword: Tuple2(email, password), ref: ref, context: context);
+          emailPassword: Tuple2(email, password),
+          ref: ref,
+          context: context,
+          isRegister: isRegister);
 
       Navigator.pushNamed(context, '/register-verification',
           arguments: Tuple2(

@@ -24,6 +24,10 @@ class DioExceptions implements Exception {
       case DioExceptionType.sendTimeout:
         message = "Send timeout in connection with API server";
         break;
+      case DioExceptionType.badResponse:
+        message = _handleError(
+            dioException.response!.statusCode!, dioException.response?.data);
+        break;
       default:
         message = "Something went wrong";
         break;
@@ -31,16 +35,18 @@ class DioExceptions implements Exception {
   }
 
   String _handleError(int statusCode, dynamic error) {
-    switch (statusCode) {
-      case 400:
-        return error["error"];
-      case 404:
-        return 'Bad request';
-      case 500:
-        return 'Internal server error';
-      default:
-        return 'Oops something went wrong';
-    }
+    //TODO: add more error handling
+    // switch (statusCode) {
+    //   case 400:
+    //     return error["error"];
+    //   case 404:
+    //     return 'Bad request';
+    //   case 500:
+    //     return 'Internal server error';
+    //   default:
+    //     return 'Oops something went wrong';
+    // }
+    return error["error"];
   }
 
   @override

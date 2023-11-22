@@ -15,6 +15,7 @@ class NoteInfosInput extends ConsumerStatefulWidget {
       required this.titleController,
       required this.title,
       required this.onGroupSelected,
+      required this.onLanguageSelected,
       super.key});
 
   final String title;
@@ -23,6 +24,7 @@ class NoteInfosInput extends ConsumerStatefulWidget {
   final TextEditingController titleController;
   final TextEditingController descriptionController;
   final StringCallBack onGroupSelected;
+  final StringCallBack onLanguageSelected;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _NoteInfosInputState();
@@ -30,6 +32,12 @@ class NoteInfosInput extends ConsumerStatefulWidget {
 
 class _NoteInfosInputState extends ConsumerState<NoteInfosInput> {
   int selectedGroupIndex = 0;
+  int selectedLangIndex = 0;
+  final TextEditingController _langController = TextEditingController();
+
+  final List<String> langList = ["fr", "en"];
+
+  final List<String> langListLabel = ["Français", "Anglais"];
 
   @override
   Widget build(BuildContext context) {
@@ -147,6 +155,76 @@ class _NoteInfosInputState extends ConsumerState<NoteInfosInput> {
                       },
                     );
                   }
+                },
+              ),
+              const SizedBox(height: 30.0),
+              TextFormField(
+                enabled: true,
+                minLines: 1,
+                maxLines: 1,
+                controller: _langController,
+                decoration: ThemeHelper().textInputDecoration(
+                    'Langue', 'Choisissez une langue pour votre note'),
+                validator: (val) {
+                  if (val!.isEmpty) {
+                    return 'Vous devez choisir une langue';
+                  }
+                  return null;
+                },
+                onTap: () {
+                  widget.onLanguageSelected(langList[selectedLangIndex]);
+                  _langController.text = langListLabel[selectedLangIndex];
+                  showCupertinoModalPopup(
+                    context: context,
+                    builder: (context) {
+                      return Container(
+                        height: 216,
+                        padding: const EdgeInsets.only(top: 6.0),
+                        // The Bottom margin is provided to align the popup above the system navigation bar.
+                        margin: EdgeInsets.only(
+                          bottom: MediaQuery.of(context).viewInsets.bottom,
+                        ),
+                        // Provide a background color for the popup.
+                        color: CupertinoColors.systemBackground
+                            .resolveFrom(context),
+                        // Use a SafeArea widget to avoid system overlaps.
+                        child: SafeArea(
+                          top: false,
+                          child: CupertinoPicker(
+                            magnification: 1.22,
+                            squeeze: 1.2,
+                            useMagnifier: true,
+                            itemExtent: 32.0,
+                            // This sets the initial item.
+                            scrollController: FixedExtentScrollController(
+                              initialItem: selectedLangIndex,
+                            ),
+                            // This is called when selected item is changed.
+                            onSelectedItemChanged: (int selectedItem) {
+                              setState(() {
+                                selectedLangIndex = selectedItem;
+                              });
+
+                              widget.onLanguageSelected(
+                                  langList[selectedLangIndex]);
+
+                              _langController.text =
+                                  langListLabel[selectedLangIndex];
+                            },
+                            children: List<Widget>.from(
+                              langList.map(
+                                (lang) {
+                                  return Center(
+                                    child: Text(lang),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
                 },
               ),
             ],

@@ -179,6 +179,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         context: context,
         btnController: btnController,
         ref: ref,
+        isRegister: false,
       );
     } else {
       btnController.error();

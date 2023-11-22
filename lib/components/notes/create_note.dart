@@ -36,13 +36,15 @@ class _CreateNoteModalState extends ConsumerState<CreateNoteModal> {
   PageController pageController = PageController(initialPage: 0);
   int pageIndex = 0;
   String buttonText = "Suivant";
+  String selectedLang = "fr";
 
-  Future<void> createNote(UserNotifier user) async {
+  Future<void> createNote(UserNotifier user, String? lang) async {
     if (_formKey.currentState!.validate()) {
       try {
         V1Note? note = await ref.read(noteClientProvider).createNote(
               groupId: groupId,
               title: _titleController.text,
+              lang: lang ?? "fr",
             );
 
         if (note != null) {
@@ -89,54 +91,6 @@ class _CreateNoteModalState extends ConsumerState<CreateNoteModal> {
     }
   }
 
-  // Future<void> createNote(UserNotifier user) async {
-  //   if (_formKey.currentState!.validate()) {
-  //     try {
-  //       Note? note = await ref.read(noteClientProvider).createNote(
-  //             groupId: groupId,
-  //             title: _titleController.text,
-  //           );
-  //       if (note != null) {
-  //         btnController.success();
-  //         Future.delayed(const Duration(seconds: 1), () {
-  //           btnController.reset();
-  //           Navigator.pop(context);
-  //           Navigator.pushNamed(context, "/note-detail",
-  //               arguments: Tuple2(note.id, note.groupId));
-
-  //           _descriptionController.clear();
-  //           _titleController.clear();
-
-  //           // ref.invalidate(la);
-  //           ref.invalidate(notesProvider);
-  //         });
-  //       }
-  //     } catch (e) {
-  //       if (kDebugMode) {
-  //         print("Failed to create Group, Api response :${e.toString()}");
-  //       }
-  //       if (mounted) {
-  //         CustomToast.show(
-  //           message: e.toString().capitalize(),
-  //           type: ToastType.error,
-  //           context: context,
-  //           gravity: ToastGravity.BOTTOM,
-  //         );
-  //       }
-
-  //       btnController.error();
-  //       Future.delayed(const Duration(seconds: 1), () {
-  //         btnController.reset();
-  //       });
-  //     }
-  //   } else {
-  //     btnController.error();
-  //     Future.delayed(const Duration(seconds: 1), () {
-  //       btnController.reset();
-  //     });
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     if (pages.isEmpty) {
@@ -146,6 +100,11 @@ class _CreateNoteModalState extends ConsumerState<CreateNoteModal> {
             formKey: _formKey,
             descriptionController: _descriptionController,
             titleController: _titleController,
+            onLanguageSelected: (lang) {
+              setState(() {
+                selectedLang = lang;
+              });
+            },
             title: "my-notes.create-note-modal.title".tr(),
             onGroupSelected: (data) {
               setState(() {
@@ -184,7 +143,7 @@ class _CreateNoteModalState extends ConsumerState<CreateNoteModal> {
           ),
           LoadingButton(
             btnController: btnController,
-            onPressed: () async => createNote(user),
+            onPressed: () async => createNote(user, selectedLang),
             text: "my-notes.create-note-modal.button".tr(),
           ),
         ],
