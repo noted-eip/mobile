@@ -26,8 +26,6 @@ import 'package:noted_mobile/pages/home/splash_screen.dart';
 import 'package:noted_mobile/utils/language.dart';
 import 'package:noted_mobile/utils/noted_theme.dart';
 
-//TODO: use material 3 and apply al need changes
-
 void main() async {
   init();
   singleton.get<APIHelper>().initApiClient();
@@ -80,6 +78,15 @@ class MyApp extends StatelessWidget {
         colorScheme: notedColorScheme,
         textTheme: notedTextTheme,
         appBarTheme: notedAppBarTheme,
+        iconButtonTheme: IconButtonThemeData(
+          style: ButtonStyle(
+            shape: MaterialStateProperty.all<OutlinedBorder>(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          ),
+        ),
       ),
       initialRoute: '/splash',
       routes: {

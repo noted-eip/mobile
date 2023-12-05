@@ -3,7 +3,31 @@ import 'package:noted_mobile/data/clients/note_client.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:openapi/openapi.dart';
 import 'package:tuple/tuple.dart';
-// TODO: add cache timeout
+
+final noteIdProvider = StateProvider<String>((ref) => '');
+final groupIdProvider = StateProvider<String>((ref) => '');
+
+final blocksWithCommentsProvider = FutureProvider.autoDispose
+    .family<List<V1Block>?, Tuple2<String, String>>((ref, infos) async {
+  final blocks = await ref.watch(noteClientProvider).listBlockWithComments(
+        groupId: infos.item1,
+        noteId: infos.item2,
+      );
+
+  return blocks;
+});
+
+final noteComments = FutureProvider.autoDispose
+    .family<List<BlockComment>?, Tuple3<String, String, String>>(
+        (ref, infos) async {
+  final comments = await ref.watch(noteClientProvider).listComments(
+        groupId: infos.item1,
+        noteId: infos.item2,
+        blockId: infos.item3,
+      );
+
+  return comments;
+});
 
 final searchNoteProvider = StateProvider((ref) => '');
 
@@ -16,8 +40,6 @@ final notesProvider = FutureProvider<List<V1Note>?>((ref) async {
 
   final search = ref.watch(searchNoteProvider);
 
-  // cacheTimeout(ref, 'fetchGroups');
-
   if (search == "") {
     return notelist;
   } else {
@@ -26,7 +48,6 @@ final notesProvider = FutureProvider<List<V1Note>?>((ref) async {
             (note) => note.title.toLowerCase().contains(search.toLowerCase()))
         .toList();
   }
-  // return notelist;
 });
 
 final groupNotesProvider =
@@ -38,28 +59,6 @@ final groupNotesProvider =
 
   return notelist;
 });
-
-// final groupNotesProvider =
-//     FutureProvider.family<List<Note>?, String>((ref, groupId) async {
-//   final account = ref.watch(userProvider);
-//   final notelist = await ref
-//       .watch(noteClientProvider)
-//       .listGroupNotes(groupId, account.token);
-
-//   return notelist;
-// });
-
-// final noteProvider =
-//     FutureProvider.family<Note?, Tuple2<String, String>>((ref, infos) async {
-//   final account = ref.watch(userProvider);
-//   final note = await ref.watch(noteClientProvider).getNote(
-//         infos.item1,
-//         infos.item2,
-//         account.token,
-//       );
-
-//   return note;
-// });
 
 final noteProvider =
     FutureProvider.family<V1Note?, Tuple2<String, String>>((ref, infos) async {
@@ -81,29 +80,4 @@ final quizzListProvider = FutureProvider.autoDispose
       );
 
   return quizzList;
-});
-
-// final quizzProvider = StateNotifierProvider((ref) =>
-
-// );
-
-final recommendationListProvider = FutureProvider.autoDispose
-    .family<List<V1Widget>?, Tuple2<String, String>>((ref, infos) async {
-  final recommendationList =
-      await ref.watch(noteClientProvider).recommendationGenerator(
-            noteId: infos.item1,
-            groupId: infos.item2,
-          );
-
-  return recommendationList;
-});
-
-final noteSummaryProvider =
-    FutureProvider.family<String?, Tuple2<String, String>>((ref, infos) async {
-  final noteAnalysis = await ref.watch(noteClientProvider).summaryGenerator(
-        noteId: infos.item1,
-        groupId: infos.item2,
-      );
-
-  return noteAnalysis;
 });

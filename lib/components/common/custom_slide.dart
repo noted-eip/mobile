@@ -84,6 +84,17 @@ class CustomSlide extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.grey.shade900,
           borderRadius: BorderRadius.circular(16),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 10.0,
+              spreadRadius: 1.0,
+              offset: Offset(
+                0.0,
+                10.0,
+              ),
+            )
+          ],
         ),
         child: ListTile(
           leading: Shimmer.fromColors(
@@ -147,54 +158,77 @@ class CustomSlide extends StatelessWidget {
     }
 
     Widget buildCard() {
-      return Slidable(
-        key: const ValueKey(0),
-        endActionPane: actions != null && actions!.isNotEmpty
-            ? ActionPane(
-                closeThreshold: 0.5,
-                motion: const DrawerMotion(),
-                dragDismissible: false,
-                children: [
-                  ...actions!.map(_buildAction).toList(),
-                ],
-              )
-            : null,
-        child: GestureDetector(
-          onTap: onTap,
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              color: Colors.white,
-            ),
+      return Container(
+        decoration: const BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 10.0,
+              spreadRadius: 1.0,
+              offset: Offset(
+                0.0,
+                10.0,
+              ),
+            )
+          ],
+        ),
+        child: Slidable(
+          key: const ValueKey(0),
+          endActionPane: actions != null && actions!.isNotEmpty
+              ? ActionPane(
+                  closeThreshold: 0.5,
+                  motion: const DrawerMotion(),
+                  dragDismissible: false,
+                  children: [
+                    ...actions!.map(_buildAction).toList(),
+                  ],
+                )
+              : null,
+          child: GestureDetector(
+            onTap: onTap,
             child: Container(
-              height: 70,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
-                gradient: Gradient.lerp(
-                  LinearGradient(
-                    begin: Alignment.topRight,
-                    end: Alignment.bottomLeft,
-                    colors: [
-                      NotedColors.secondary.withOpacity(0.9),
-                      NotedColors.secondary.withOpacity(0.6),
-                    ],
-                  ),
-                  LinearGradient(
-                    begin: Alignment.topRight,
-                    end: Alignment.bottomLeft,
-                    colors: [
-                      NotedColors.secondary.withOpacity(0.9),
-                      NotedColors.secondary.withOpacity(0.6),
-                    ],
-                  ),
-                  0.5,
-                ),
+                color: Colors.white,
               ),
-              child: Center(
-                child: ListTile(
-                  leading: buildAvatar(),
-                  title: buildTitle(),
-                  subtitle: buildSubtitle(),
+              child: Container(
+                height: 70,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  gradient: Gradient.lerp(
+                    LinearGradient(
+                      begin: Alignment.topRight,
+                      end: Alignment.bottomLeft,
+                      colors: [
+                        if (color != null) color!.withOpacity(0.9),
+                        if (color != null) color!.withOpacity(0.6),
+                        if (color == null)
+                          NotedColors.secondary.withOpacity(0.9),
+                        if (color == null)
+                          NotedColors.secondary.withOpacity(0.6),
+                      ],
+                    ),
+                    LinearGradient(
+                      begin: Alignment.topRight,
+                      end: Alignment.bottomLeft,
+                      colors: [
+                        if (color != null) color!.withOpacity(0.9),
+                        if (color != null) color!.withOpacity(0.6),
+                        if (color == null)
+                          NotedColors.secondary.withOpacity(0.9),
+                        if (color == null)
+                          NotedColors.secondary.withOpacity(0.6),
+                      ],
+                    ),
+                    0.5,
+                  ),
+                ),
+                child: Center(
+                  child: ListTile(
+                    leading: buildAvatar(),
+                    title: buildTitle(),
+                    subtitle: buildSubtitle(),
+                  ),
                 ),
               ),
             ),

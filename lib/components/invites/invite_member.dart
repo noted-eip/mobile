@@ -220,7 +220,7 @@ class _InviteMemberState extends ConsumerState<InviteMemberWidget> {
       children: [
         Text(
           "my-groups.create-group-modal.invite-title".tr(),
-          style: TextStyle(
+          style: const TextStyle(
               color: Colors.black, fontSize: 24, fontWeight: FontWeight.bold),
         ),
         const SizedBox(

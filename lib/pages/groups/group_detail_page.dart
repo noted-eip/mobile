@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -16,17 +17,12 @@ import 'package:noted_mobile/data/models/group/group.dart';
 import 'package:noted_mobile/data/providers/group_provider.dart';
 import 'package:noted_mobile/data/providers/invite_provider.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
-import 'package:noted_mobile/pages/groups/group_activity_card.dart';
+import 'package:noted_mobile/pages/groups/group_activities.dart';
 import 'package:noted_mobile/utils/string_extension.dart';
-import 'package:openapi/openapi.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
-//TODO: ajouter un scroll sur la page entière et faire disparaitre le header
-//avec l'effet d'apple en gardant le nom du fichier dans l'app bar
-// Voir pour refaire le design de la page
-//TODO: add NestedScrollView
-
-//TODO: add workspace gestion
+//TODO: gérer les empty states sur les notes, les membres et les activités
+//TODO: gérer les errors states sur les notes, les membres et les activités
 
 class GroupDetailPage extends ConsumerStatefulWidget {
   const GroupDetailPage({super.key, this.groupId});
@@ -71,11 +67,7 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
           );
       if (mounted) {
         if (isLeave) {
-          // TODO: check if is needed
-          // Navigator.pop(context);
-          // Navigator.pop(context);
           Navigator.pop(context, true);
-          // ref.invalidate(groupProvider(groupId));
         } else {
           ref.invalidate(groupProvider(groupId));
         }
@@ -192,286 +184,249 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
         ),
         primaryColor: Colors.white,
         secondaryColor: Colors.grey.shade900,
-        body: groupFromApi.when(
-          data: ((data) {
-            if (data != null) {
-              bool isWorkspace = data.data.workspaceAccountId != null;
-              if (kDebugMode) {
-                print(isWorkspace);
-                print(data.data.workspaceAccountId);
-                print(data.data.id);
-              }
-              return SingleChildScrollView(
-                child: SizedBox(
-                  height: MediaQuery.of(context).size.height,
-                  child: Column(
-                    children: [
-                      GroupInfos(group: data),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Expanded(
-                        child: DefaultTabController(
-                          length:
-                              // sisWorkspace ? 1 :
-                              3,
-                          child: Column(
-                            children: [
-                              TabBar(
-                                indicatorColor: Colors.grey.shade900,
-                                tabs: const [
-                                  Tab(
-                                    text: "Notes",
+        body: SafeArea(
+          top: false,
+          child: Column(
+            children: [
+              Expanded(
+                child: groupFromApi.when(
+                  data: ((data) {
+                    if (data != null) {
+                      bool isWorkspace = data.data.workspaceAccountId != null &&
+                          data.data.workspaceAccountId!.isNotEmpty;
+
+                      return Column(
+                        children: [
+                          GroupInfos(group: data),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          Expanded(
+                            child: DefaultTabController(
+                              length: isWorkspace ? 2 : 3,
+                              child: Column(
+                                children: [
+                                  TabBar(
+                                    indicatorColor: Colors.grey.shade900,
+                                    tabs: [
+                                      const Tab(
+                                        text: "Notes",
+                                      ),
+                                      if (!isWorkspace)
+                                        const Tab(
+                                          text: "Membres",
+                                        ),
+                                      const Tab(
+                                        text: "Activitées",
+                                      ),
+                                    ],
                                   ),
-                                  // if (!isWorkspace)
-                                  Tab(
-                                    text: "Membres",
+                                  const SizedBox(
+                                    height: 16,
                                   ),
-                                  Tab(
-                                    text: "Activitées",
+                                  Expanded(
+                                    child: TabBarView(
+                                      dragStartBehavior: DragStartBehavior.down,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 16),
+                                          child: NotesList(
+                                            title: null,
+                                            isRefresh: true,
+                                            groupId: data.data.id,
+                                          ),
+                                        ),
+                                        if (!isWorkspace)
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 16.0),
+                                            child: Column(
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.end,
+                                                  mainAxisSize:
+                                                      MainAxisSize.max,
+                                                  children: [
+                                                    IconButton(
+                                                      onPressed: () async {
+                                                        ref.invalidate(
+                                                            groupInvitesProvider(
+                                                                groupId));
+
+                                                        await showModalBottomSheet(
+                                                          backgroundColor:
+                                                              Colors
+                                                                  .transparent,
+                                                          context: context,
+                                                          isScrollControlled:
+                                                              true,
+                                                          builder: (context) {
+                                                            return CustomModal(
+                                                              child: ListInvitesWidget(
+                                                                  groupId:
+                                                                      groupId),
+                                                              onClose:
+                                                                  (context2) {
+                                                                Navigator.pop(
+                                                                    context2,
+                                                                    false);
+                                                              },
+                                                            );
+                                                          },
+                                                        );
+                                                      },
+                                                      icon: const Icon(
+                                                        Icons.inbox,
+                                                        color: Colors.black,
+                                                      ),
+                                                    ),
+                                                    IconButton(
+                                                      onPressed: () async {
+                                                        await inviteMemberModal(
+                                                          user.token,
+                                                          groupId,
+                                                        );
+                                                      },
+                                                      icon: const Icon(
+                                                        Icons.add,
+                                                        color: Colors.black,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Expanded(
+                                                  child: GroupMembersList(
+                                                    members: data.data.members,
+                                                    isPadding: false,
+                                                    deleteGroupMember:
+                                                        (accountId) {
+                                                      deleteGroupMemberDialog(
+                                                        user.token,
+                                                        accountId,
+                                                        groupId,
+                                                        ref,
+                                                      );
+                                                    },
+                                                    leaveGroup: (accountId) {
+                                                      leaveGroupDialog(
+                                                        user.token,
+                                                        accountId,
+                                                        groupId,
+                                                        ref,
+                                                      );
+                                                    },
+                                                    groupId: groupId,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 16.0),
+                                          child:
+                                              GroupActivities(groupId: groupId),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ],
                               ),
-                              const SizedBox(
-                                height: 16,
-                              ),
-                              Expanded(
-                                child: TabBarView(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 16),
-                                      child: NotesList(
-                                        title: null,
-                                        isRefresh: true,
-                                        groupId: data.data.id,
-                                      ),
+                            ),
+                          ),
+                        ],
+                      );
+                    } else {
+                      return const Center(
+                        child: Text("No data"),
+                      );
+                    }
+                  }),
+                  error: ((error, stackTrace) => Text(error.toString())),
+                  loading: () {
+                    return Column(
+                      children: [
+                        const GroupInfos.empty(),
+                        Expanded(
+                          child: DefaultTabController(
+                            length: 3,
+                            child: Column(
+                              children: [
+                                TabBar(
+                                  indicatorColor: Colors.grey.shade900,
+                                  tabs: const [
+                                    Tab(
+                                      text: "Notes",
                                     ),
-                                    // if (!isWorkspace)
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 16.0),
-                                      child: Column(
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.end,
-                                            mainAxisSize: MainAxisSize.max,
-                                            children: [
-                                              IconButton(
-                                                onPressed: () async {
-                                                  ref.invalidate(
-                                                      groupInvitesProvider(
-                                                          groupId));
-
-                                                  await showModalBottomSheet(
-                                                    backgroundColor:
-                                                        Colors.transparent,
-                                                    context: context,
-                                                    isScrollControlled: true,
-                                                    builder: (context) {
-                                                      return CustomModal(
-                                                        child:
-                                                            ListInvitesWidget(
-                                                                groupId:
-                                                                    groupId),
-                                                        onClose: (context2) {
-                                                          Navigator.pop(
-                                                              context2, false);
-                                                        },
-                                                      );
-                                                    },
-                                                  );
-                                                },
-                                                icon: const Icon(
-                                                  Icons.inbox,
-                                                  color: Colors.black,
-                                                ),
-                                              ),
-                                              IconButton(
-                                                onPressed: () async {
-                                                  await inviteMemberModal(
-                                                    user.token,
-                                                    groupId,
-                                                  );
-                                                },
-                                                icon: const Icon(
-                                                  Icons.add,
-                                                  color: Colors.black,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          Expanded(
-                                            child: GroupMembersList(
-                                              members: data.data.members,
-                                              isPadding: false,
-                                              deleteGroupMember: (accountId) {
-                                                deleteGroupMemberDialog(
-                                                  user.token,
-                                                  accountId,
-                                                  groupId,
-                                                  ref,
-                                                );
-                                              },
-                                              leaveGroup: (accountId) {
-                                                leaveGroupDialog(
-                                                  user.token,
-                                                  accountId,
-                                                  groupId,
-                                                  ref,
-                                                );
-                                              },
-                                              groupId: groupId,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+                                    Tab(
+                                      text: "Membres",
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 16.0),
-                                      child: GroupActivities(groupId: groupId),
+                                    Tab(
+                                      text: "Activitées",
                                     ),
                                   ],
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            } else {
-              return const Center(
-                child: Text("No data"),
-              );
-            }
-          }),
-          error: ((error, stackTrace) => Text(error.toString())),
-          loading: () {
-            return Column(
-              children: [
-                const GroupInfos.empty(),
-                Expanded(
-                  child: DefaultTabController(
-                    length: 3,
-                    child: Column(
-                      children: [
-                        TabBar(
-                          indicatorColor: Colors.grey.shade900,
-                          tabs: const [
-                            Tab(
-                              text: "Notes",
-                            ),
-                            Tab(
-                              text: "Membres",
-                            ),
-                            Tab(
-                              text: "Activitées",
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                        Expanded(
-                          child: TabBarView(
-                            children: [
-                              const Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 16),
-                                child: NotesList(
-                                  title: Text(
-                                    "",
-                                    style: TextStyle(
-                                        fontSize: 20, color: Colors.black),
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                Expanded(
+                                  child: TabBarView(
+                                    children: [
+                                      const Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 16),
+                                        child: NotesList(
+                                          title: Text(
+                                            "",
+                                            style: TextStyle(
+                                                fontSize: 20,
+                                                color: Colors.black),
+                                          ),
+                                          isRefresh: true,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16.0),
+                                        child: GroupMembersList(
+                                          members: null,
+                                          isPadding: false,
+                                          deleteGroupMember: (accountId) {},
+                                          leaveGroup: (accountId) {},
+                                          groupId: groupId,
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 16.0),
+                                          child: GroupMembersList(
+                                            members: null,
+                                            isPadding: false,
+                                            deleteGroupMember: (accountId) {},
+                                            leaveGroup: (accountId) {},
+                                            groupId: groupId,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  isRefresh: true,
                                 ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0),
-                                child: GroupMembersList(
-                                  members: null,
-                                  isPadding: false,
-                                  deleteGroupMember: (accountId) {},
-                                  leaveGroup: (accountId) {},
-                                  groupId: groupId,
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0),
-                                child: GroupMembersList(
-                                  members: null,
-                                  isPadding: false,
-                                  deleteGroupMember: (accountId) {},
-                                  leaveGroup: (accountId) {},
-                                  groupId: groupId,
-                                ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ],
-                    ),
-                  ),
+                    );
+                  },
                 ),
-              ],
-            );
-          },
+              ),
+            ],
+          ),
         ),
       ),
     );
-  }
-}
-
-class GroupActivities extends ConsumerStatefulWidget {
-  const GroupActivities({required this.groupId, super.key});
-
-  final String groupId;
-
-  @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _GroupActivitiesState();
-}
-
-class _GroupActivitiesState extends ConsumerState<GroupActivities> {
-  @override
-  Widget build(BuildContext context) {
-    final AsyncValue<List<V1GroupActivity>?> activites =
-        ref.watch(groupActivitiesProvider(widget.groupId));
-
-    return activites.when(
-        data: ((data) {
-          if (data == null) {
-            return const Center(
-              child: Text("No data"),
-            );
-          }
-
-          if (data.isEmpty) {
-            return const Center(
-              child: Text("No data"),
-            );
-          }
-
-          return ListView.builder(
-            itemCount: data.length,
-            itemBuilder: (context, index) {
-              return GroupActivityCard(
-                  groupActivity: data[index], groupId: widget.groupId);
-            },
-          );
-        }),
-        error: ((error, stackTrace) => Text(error.toString())),
-        loading: () {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        });
   }
 }

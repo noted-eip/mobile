@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:noted_mobile/components/common/custom_slide.dart';
 import 'package:noted_mobile/data/models/account/account.dart';
 import 'package:noted_mobile/data/providers/account_provider.dart';
+import 'package:noted_mobile/data/providers/note_provider.dart';
 import 'package:openapi/openapi.dart';
-
-//TODO: Add a way to get the note from the group activity
+import 'package:tuple/tuple.dart';
 
 enum GroupActivityType {
   addNote,
@@ -85,37 +86,31 @@ class _GroupActivityCardState extends ConsumerState<GroupActivityCard> {
 
   @override
   Widget build(BuildContext context) {
-    // final noteId = extractNoteId(widget.groupActivity.event) ?? "";
-    final userId = extractUserId(widget.groupActivity.event) ?? "";
+    final noteId = extractNoteId(widget.groupActivity.event);
+    final userId = extractUserId(widget.groupActivity.event);
 
     final GroupActivityType type = getGroupActivityType(widget.groupActivity);
+    if (userId == null || noteId == null) {
+      return _buildListTile(null, null, type);
+    }
 
-    // Tuple2<String, String> infos = Tuple2(
-    //   noteId,
-    //   widget.groupId,
-    // );
+    Tuple2<String, String> infos = Tuple2(
+      noteId,
+      widget.groupId,
+    );
 
-    // final note = ref.watch(noteProvider(infos));
-    final user = ref.watch(accountProvider(userId));
+    AsyncValue<V1Note?> note = ref.watch(noteProvider(infos));
+    AsyncValue<Account?> user = ref.watch(accountProvider(userId));
 
     return user.when(
       data: (user) {
-        if (user == null) {
-          return _buildListTile(null, null, type);
-        }
-
-        // note.when(
-        //   data: (note) {
-        //     if (note == null) {
-        //       return _buildListTile(user, null, type);
-        //     }
-        //     return _buildListTile(user, note, type);
-        //   },
-        //   loading: () => const CircularProgressIndicator(),
-        //   error: (error, stack) => const Text("Erreur"),
-        // );
-
-        return _buildListTile(user, null, type);
+        return note.when(
+          data: (note) {
+            return _buildListTile(user, note, type);
+          },
+          loading: () => _buildListTile(user, null, type),
+          error: (error, stack) => _buildListTile(user, null, type),
+        );
       },
       loading: () => const CircularProgressIndicator(),
       error: (error, stack) => const Text("Erreur"),
@@ -150,79 +145,40 @@ class _GroupActivityCardState extends ConsumerState<GroupActivityCard> {
       title = "Erreur";
     }
 
-    return ListTile(
-      contentPadding: const EdgeInsets.all(8.0),
-      leading: Icon(
-        getIcon(type),
-        color: Colors.deepPurpleAccent,
-      ),
-      title: Text(
-        title,
-        maxLines: 2,
-        style: const TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 16.0,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: CustomSlide(
+        color: Colors.purple.shade900,
+        onTap: () {
+          if (type == GroupActivityType.addNote && note != null) {
+            Navigator.pushNamed(context, "/note-detail",
+                arguments: Tuple2(note.id, note.groupId));
+          }
+        },
+        actions: null,
+        titleWidget: Text(
+          title,
+          maxLines: 2,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16.0,
+            color: Colors.white,
+          ),
         ),
-      ),
-      subtitle: Text(
-        getDateToString(widget.groupActivity.createdAt),
-        style: const TextStyle(
-          fontStyle: FontStyle.italic,
-          fontSize: 14.0,
+        withWidget: true,
+        avatarWidget: Container(
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          height: 40,
+          width: 40,
+          child: Icon(
+            getIcon(type),
+            color: Colors.white,
+          ),
         ),
       ),
     );
   }
-
-  // _buildListTile(Account? user, Note? note, GroupActivityType type) {
-  //   String title = "";
-
-  //   if (type == GroupActivityType.addNote) {
-  //     if (user != null && note != null) {
-  //       title =
-  //           "${user.data.name}${getTitleFromEvent(widget.groupActivity.event)}${note.title}.";
-  //     } else if (user != null && note == null) {
-  //       title =
-  //           "${user.data.name}${getTitleFromEvent(widget.groupActivity.event)} ...";
-  //     } else if (user == null && note != null) {
-  //       title =
-  //           "...${getTitleFromEvent(widget.groupActivity.event)}${note.title}.";
-  //     } else {
-  //       title = "...${getTitleFromEvent(widget.groupActivity.event)}...";
-  //     }
-  //   } else if (type == GroupActivityType.addMember ||
-  //       type == GroupActivityType.removeMember) {
-  //     if (user != null) {
-  //       title =
-  //           "${user.data.name}${getTitleFromEvent(widget.groupActivity.event)}";
-  //     } else {
-  //       title = "...${getTitleFromEvent(widget.groupActivity.event)}";
-  //     }
-  //   } else {
-  //     title = "Erreur";
-  //   }
-
-  //   return ListTile(
-  //     contentPadding: const EdgeInsets.all(8.0),
-  //     leading: Icon(
-  //       getIcon(type),
-  //       color: Colors.deepPurpleAccent,
-  //     ),
-  //     title: Text(
-  //       title,
-  //       maxLines: 2,
-  //       style: const TextStyle(
-  //         fontWeight: FontWeight.bold,
-  //         fontSize: 16.0,
-  //       ),
-  //     ),
-  //     subtitle: Text(
-  //       getDateToString(widget.groupActivity.createdAt),
-  //       style: const TextStyle(
-  //         fontStyle: FontStyle.italic,
-  //         fontSize: 14.0,
-  //       ),
-  //     ),
-  //   );
-  // }
 }

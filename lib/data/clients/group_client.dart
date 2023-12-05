@@ -1,3 +1,4 @@
+import 'package:built_collection/built_collection.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,19 +8,18 @@ import 'package:noted_mobile/data/providers/utils/api_provider.dart';
 import 'package:noted_mobile/data/services/api_execption.dart';
 import 'package:noted_mobile/data/services/failure.dart';
 import 'package:openapi/openapi.dart';
-//TODO: revoir la gestion d'erreur
 
 class GroupClient {
   ProviderRef<GroupClient> ref;
   GroupClient({required this.ref});
 
+  // Group CRUD
+
   Future<Group?> createGroup({
     required String groupName,
     required String groupDescription,
   }) async {
-    final userNotifier = ref.read(userProvider);
-    final apiP = ref.read(apiProvider);
-    final body = V1CreateGroupRequest(
+    final V1CreateGroupRequest body = V1CreateGroupRequest(
       (body) => body
         ..name = groupName
         ..description = groupDescription,
@@ -27,25 +27,18 @@ class GroupClient {
 
     try {
       final Response<V1CreateGroupResponse> response =
-          await apiP.groupsAPICreateGroup(
+          await ref.read(apiProvider).groupsAPICreateGroup(
         body: body,
-        headers: {"Authorization": "Bearer ${userNotifier.token}"},
+        headers: {"Authorization": "Bearer ${ref.read(userProvider).token}"},
       );
 
       if (response.statusCode != 200 || response.data == null) {
-        if (kDebugMode) {
-          print(
-            "inside try : code = ${response.statusCode}, error = ${response.toString()}",
-          );
-        }
-        throw Failure(message: response.toString());
+        throw Failure(message: response.statusMessage ?? 'Error');
       }
 
-      final V1Group apiGroup = response.data!.group;
-
-      return Group.fromApi(apiGroup);
+      return Group.fromApi(response.data!.group);
     } on DioException catch (e) {
-      String error = DioExceptions.fromDioError(e).toString();
+      String error = NotedException.fromDioException(e).toString();
       if (kDebugMode) {
         print("Exception when calling DefaultApi->createGroup: $error\n");
       }
@@ -58,10 +51,7 @@ class GroupClient {
     required String groupDescription,
     required String groupId,
   }) async {
-    final apiP = ref.read(apiProvider);
-    final userNotifier = ref.read(userProvider);
-
-    final body = GroupsAPIUpdateGroupRequest(
+    final GroupsAPIUpdateGroupRequest body = GroupsAPIUpdateGroupRequest(
       (body) => body
         ..name = groupName
         ..description = groupDescription,
@@ -69,26 +59,19 @@ class GroupClient {
 
     try {
       final Response<V1UpdateGroupResponse> response =
-          await apiP.groupsAPIUpdateGroup(
+          await ref.read(apiProvider).groupsAPIUpdateGroup(
         groupId: groupId,
         body: body,
-        headers: {"Authorization": "Bearer ${userNotifier.token}"},
+        headers: {"Authorization": "Bearer ${ref.read(userProvider).token}"},
       );
 
       if (response.statusCode != 200 || response.data == null) {
-        if (kDebugMode) {
-          print(
-            "inside try : code = ${response.statusCode}, error = ${response.toString()}",
-          );
-        }
-        throw Failure(message: response.toString());
+        throw Failure(message: response.statusMessage ?? 'Error');
       }
 
-      final V1Group apiGroup = response.data!.group;
-
-      return Group.fromApi(apiGroup);
+      return Group.fromApi(response.data!.group);
     } on DioException catch (e) {
-      String error = DioExceptions.fromDioError(e).toString();
+      String error = NotedException.fromDioException(e).toString();
       if (kDebugMode) {
         print("Exception when calling DefaultApi->updateGroup: $error\n");
       }
@@ -97,27 +80,18 @@ class GroupClient {
   }
 
   Future<void> deleteGroup({required String groupId}) async {
-    final apiP = ref.read(apiProvider);
-    final userNotifier = ref.read(userProvider);
-
     try {
-      final response = await apiP.groupsAPIDeleteGroup(
+      final Response<Object> response =
+          await ref.read(apiProvider).groupsAPIDeleteGroup(
         groupId: groupId,
-        headers: {"Authorization": "Bearer ${userNotifier.token}"},
+        headers: {"Authorization": "Bearer ${ref.read(userProvider).token}"},
       );
 
       if (response.statusCode != 200) {
-        if (kDebugMode) {
-          print(
-            "inside try : code = ${response.statusCode}, error = ${response.toString()}",
-          );
-        }
-        throw Failure(message: response.toString());
+        throw Failure(message: response.statusMessage ?? 'Error');
       }
-
-      return;
     } on DioException catch (e) {
-      String error = DioExceptions.fromDioError(e).toString();
+      String error = NotedException.fromDioException(e).toString();
       if (kDebugMode) {
         print("Exception when calling DefaultApi->deleteGroup: $error\n");
       }
@@ -130,27 +104,20 @@ class GroupClient {
     int? offset,
     int? limit,
   }) async {
-    final apiP = ref.read(apiProvider);
-    final userNotifier = ref.read(userProvider);
-
     // // TODO: implement optional parameters for offset and limit
 
     try {
-      Response<V1ListGroupsResponse> response = await apiP.groupsAPIListGroups(
+      Response<V1ListGroupsResponse> response =
+          await ref.read(apiProvider).groupsAPIListGroups(
         accountId: accountId,
-        headers: {"Authorization": "Bearer ${userNotifier.token}"},
+        headers: {"Authorization": "Bearer ${ref.read(userProvider).token}"},
       );
 
       if (response.statusCode != 200 || response.data == null) {
-        if (kDebugMode) {
-          print(
-            "inside try : code = ${response.statusCode}, error = ${response.toString()}",
-          );
-        }
-        throw Failure(message: response.toString());
+        throw Failure(message: response.statusMessage ?? 'Error');
       }
 
-      final apiGroups = response.data!.groups;
+      final BuiltList<V1Group>? apiGroups = response.data!.groups;
 
       if (apiGroups == null) {
         return [];
@@ -158,7 +125,7 @@ class GroupClient {
 
       return apiGroups.map((e) => Group.fromApi(e)).toList();
     } on DioException catch (e) {
-      String error = DioExceptions.fromDioError(e).toString();
+      String error = NotedException.fromDioException(e).toString();
       if (kDebugMode) {
         print("Exception when calling DefaultApi->listGroups: $error\n");
       }
@@ -167,27 +134,20 @@ class GroupClient {
   }
 
   Future<Group?> getGroup({required String groupId}) async {
-    final apiP = ref.read(apiProvider);
-    final userNotifier = ref.read(userProvider);
-
     try {
-      final response = await apiP.groupsAPIGetGroup(
+      final Response<V1GetGroupResponse> response =
+          await ref.read(apiProvider).groupsAPIGetGroup(
         groupId: groupId,
-        headers: {"Authorization": "Bearer ${userNotifier.token}"},
+        headers: {"Authorization": "Bearer ${ref.read(userProvider).token}"},
       );
 
       if (response.statusCode != 200 || response.data == null) {
-        if (kDebugMode) {
-          print(
-            "inside try : code = ${response.statusCode}, error = ${response.toString()}",
-          );
-        }
-        throw Failure(message: response.toString());
+        throw Failure(message: response.statusMessage ?? 'Error');
       }
 
       return Group.fromApi(response.data!.group);
     } on DioException catch (e) {
-      String error = DioExceptions.fromDioError(e).toString();
+      String error = NotedException.fromDioException(e).toString();
       if (kDebugMode) {
         print("Exception when calling DefaultApi->getGroup: $error\n");
       }
@@ -195,70 +155,58 @@ class GroupClient {
     }
   }
 
+  // Group Members
+
+// TODO : add required parameters
   Future<V1GroupMember?> getGroupMember(
       String groupId, String memberId, String token) async {
-    final apiP = ref.read(apiProvider);
-    final userNotifier = ref.read(userProvider);
-
     try {
-      Response<V1GetMemberResponse> response = await apiP.groupsAPIGetMember(
+      Response<V1GetMemberResponse> response =
+          await ref.read(apiProvider).groupsAPIGetMember(
         groupId: groupId,
         accountId: memberId,
-        headers: {"Authorization": "Bearer ${userNotifier.token}"},
+        headers: {"Authorization": "Bearer ${ref.read(userProvider).token}"},
       );
 
       if (response.statusCode != 200 || response.data == null) {
-        if (kDebugMode) {
-          print(
-            "inside try : code = ${response.statusCode}, error = ${response.toString()}",
-          );
-        }
-        throw Failure(message: response.toString());
+        throw Failure(message: response.statusMessage ?? 'Error');
       }
       return response.data!.member;
     } on DioException catch (e) {
-      String error = DioExceptions.fromDioError(e).toString();
+      String error = NotedException.fromDioException(e).toString();
       if (kDebugMode) {
         print("Exception when calling DefaultApi->getGroupMember: $error\n");
       }
-      // throw Failure(message: error);
+      throw Failure(message: error);
     }
-    return null;
   }
 
+// TODO : add required parameters
   Future<V1GroupMember?> updateGroupMember(
       String groupId, String memberId, bool isAdmin, String token) async {
-    final apiP = ref.read(apiProvider);
-    final userNotifier = ref.read(userProvider);
-
     V1GroupMember? member = await getGroupMember(groupId, memberId, token);
 
     if (member == null) {
-      throw Failure(message: "Membre non trouvé");
+      throw Failure(message: "Membre non trouvé"); // TODO: add traduction
     }
 
     V1GroupMember updatedMember = member.rebuild((p0) => p0..isAdmin = isAdmin);
 
     try {
       Response<V1UpdateMemberResponse> response =
-          await apiP.groupsAPIUpdateMember(
+          await ref.read(apiProvider).groupsAPIUpdateMember(
         groupId: groupId,
         accountId: memberId,
         member: updatedMember,
-        headers: {"Authorization": "Bearer ${userNotifier.token}"},
+        headers: {"Authorization": "Bearer ${ref.read(userProvider).token}"},
       );
 
       if (response.statusCode != 200 || response.data == null) {
-        if (kDebugMode) {
-          print(
-            "inside try : code = ${response.statusCode}, error = ${response.toString()}",
-          );
-        }
-        throw Failure(message: response.toString());
+        throw Failure(message: response.statusMessage ?? 'Error');
       }
       return response.data!.member;
     } on DioException catch (e) {
-      String error = DioExceptions.fromDioError(e).toString();
+      String error = NotedException.fromDioException(e).toString();
       if (kDebugMode) {
         print("Exception when calling DefaultApi->updateGroupMember: $error\n");
       }
@@ -266,26 +214,24 @@ class GroupClient {
     }
   }
 
+// TODO : add required parameters
   Future<void> deleteGroupMember(
       String groupId, String memberId, String token) async {
-    final userNotifier = ref.read(userProvider.notifier);
     try {
-      final response = await ref.read(apiProvider).groupsAPIRemoveMember(
+      final Response<Object> response =
+          await ref.read(apiProvider).groupsAPIRemoveMember(
         groupId: groupId,
         accountId: memberId,
-        headers: {"Authorization": "Bearer ${userNotifier.token}"},
+        headers: {
+          "Authorization": "Bearer ${ref.read(userProvider.notifier).token}"
+        },
       );
 
       if (response.statusCode != 200 || response.data == null) {
-        if (kDebugMode) {
-          print(
-            "inside try : code = ${response.statusCode}, error = ${response.toString()}",
-          );
-        }
-        throw Failure(message: response.toString());
+        throw Failure(message: response.statusMessage ?? 'Error');
       }
     } on DioException catch (e) {
-      String error = DioExceptions.fromDioError(e).toString();
+      String error = NotedException.fromDioException(e).toString();
       if (kDebugMode) {
         print("Exception when calling DefaultApi->deleteGroupMember: $error\n");
       }
@@ -293,35 +239,27 @@ class GroupClient {
     }
   }
 
+  // Group Activities
+
   Future<List<V1GroupActivity>?> getGroupsActivities({
     required String groupId,
   }) async {
-    // ref.read(apiProvider).groupsAPIListActivities(groupId: groupId);
-    final userNotifier = ref.read(userProvider.notifier);
-
     try {
-      final response = await ref.read(apiProvider).groupsAPIListActivities(
+      final Response<V1ListActivitiesResponse> response =
+          await ref.read(apiProvider).groupsAPIListActivities(
         groupId: groupId,
-        headers: {"Authorization": "Bearer ${userNotifier.token}"},
+        headers: {
+          "Authorization": "Bearer ${ref.read(userProvider.notifier).token}"
+        },
       );
 
       if (response.statusCode != 200 || response.data == null) {
-        if (kDebugMode) {
-          print(
-            "inside try : code = ${response.statusCode}, error = ${response.toString()}",
-          );
-        }
-
-        throw Failure(message: response.toString());
-      }
-
-      if (response.data == null) {
-        return null;
+        throw Failure(message: response.statusMessage ?? 'Error');
       }
 
       return response.data!.activities.toList();
     } on DioException catch (e) {
-      String error = DioExceptions.fromDioError(e).toString();
+      String error = NotedException.fromDioException(e).toString();
       if (kDebugMode) {
         print(
             "Exception when calling DefaultApi->getGroupsActivities: $error\n");

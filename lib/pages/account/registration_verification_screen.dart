@@ -218,7 +218,6 @@ class _RegistrationVerificationPageState
                                       if (isResend) {
                                         return;
                                       }
-//TODO: uncomment this when backend is ready
                                       await handleResentToken(
                                         emailPassword: emailPassword,
                                       );

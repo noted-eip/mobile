@@ -3,7 +3,6 @@ import 'package:noted_mobile/data/clients/group_client.dart';
 import 'package:noted_mobile/data/models/group/group.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:openapi/openapi.dart';
-// TODO: add cache timeout
 
 final groupClientProvider =
     Provider<GroupClient>((ref) => GroupClient(ref: ref));
@@ -14,8 +13,6 @@ final groupsProvider = FutureProvider<List<Group>?>((ref) async {
   final grouplist = await ref
       .watch(groupClientProvider)
       .listGroups(accountId: account.id, offset: 0, limit: 20);
-
-  // cacheTimeout(ref, 'fetchGroups');
 
   if (search == "") {
     return grouplist;
@@ -35,7 +32,6 @@ final latestGroupsProvider = FutureProvider<List<Group>?>((ref) async {
       .watch(groupClientProvider)
       .listGroups(accountId: account.id, offset: 0, limit: 2);
 
-  // cacheTimeout(ref, 'fetchLatestGroups');
   return grouplist;
 });
 
@@ -43,7 +39,6 @@ final groupProvider =
     FutureProvider.family<Group?, String>((ref, groupId) async {
   final group = await ref.watch(groupClientProvider).getGroup(groupId: groupId);
 
-  // cacheTimeout(ref, 'fetchGroup $groupId');
   return group;
 });
 
@@ -56,7 +51,6 @@ final groupMemberProvider =
       .watch(groupClientProvider)
       .getGroupMember(groupId, user.id, account.token);
 
-  // cacheTimeout(ref, 'fetchGroupMember $groupId');
   return groupMember;
 });
 
@@ -66,6 +60,5 @@ final groupActivitiesProvider =
       .watch(groupClientProvider)
       .getGroupsActivities(groupId: groupId);
 
-  // cacheTimeout(ref, 'fetchGroupActivities $groupId');
   return activities;
 });

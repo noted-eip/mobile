@@ -143,7 +143,7 @@ class _LatestsFilesListState extends ConsumerState<LatestsFilesList> {
                   ),
                   SliverPersistentHeader(
                     pinned: true,
-                    delegate: OurDelegate(
+                    delegate: CustomDelegate(
                       closedHeight: 16,
                       openHeight: 16,
                       toolBarHeight: kToolbarHeight,

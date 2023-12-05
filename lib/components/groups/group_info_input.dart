@@ -24,6 +24,31 @@ class GroupInfosInput extends ConsumerStatefulWidget {
 
 class _GroupInfosInputState extends ConsumerState<GroupInfosInput> {
   @override
+  void initState() {
+    super.initState();
+    widget.titleController.addListener(titleListener);
+    widget.descriptionController.addListener(descriptionListener);
+  }
+
+  void descriptionListener() {
+    if (widget.descriptionController.text.length > 256) {
+      widget.descriptionController.text =
+          widget.descriptionController.text.substring(0, 256);
+      widget.descriptionController.selection = TextSelection.fromPosition(
+          TextPosition(offset: widget.descriptionController.text.length));
+    }
+  }
+
+  void titleListener() {
+    if (widget.titleController.text.length > 32) {
+      widget.titleController.text =
+          widget.titleController.text.substring(0, 32);
+      widget.titleController.selection = TextSelection.fromPosition(
+          TextPosition(offset: widget.titleController.text.length));
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: [

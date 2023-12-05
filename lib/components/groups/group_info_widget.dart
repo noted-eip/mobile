@@ -117,13 +117,12 @@ class GroupInfos extends StatelessWidget {
     }
 
     return Container(
-      height: 220,
       decoration: const BoxDecoration(
-        color: Colors.white,
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(16),
           bottomRight: Radius.circular(16),
         ),
+        color: Colors.white,
         boxShadow: [
           BoxShadow(
             color: Colors.black12,
@@ -136,7 +135,7 @@ class GroupInfos extends StatelessWidget {
           )
         ],
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -144,6 +143,11 @@ class GroupInfos extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              Text("Description",
+                  style: TextStyle(
+                      color: Colors.grey.shade900,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold)),
               Row(
                 children: [
                   const Icon(
@@ -167,11 +171,9 @@ class GroupInfos extends StatelessWidget {
               ),
             ],
           ),
-          Text("Description",
-              style: TextStyle(
-                  color: Colors.grey.shade900,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold)),
+          const SizedBox(
+            height: 16,
+          ),
           Text(
             group!.data.description,
             style: TextStyle(

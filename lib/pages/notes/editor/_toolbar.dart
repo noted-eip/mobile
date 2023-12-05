@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' hide ListenableBuilder;
+import 'package:noted_mobile/pages/notes/editor/_custom_component.dart';
 import 'package:super_editor/super_editor.dart';
 
 /// Toolbar that provides document editing capabilities, like converting
@@ -13,6 +14,7 @@ class MyToolBar extends StatelessWidget {
     required this.document,
     required this.composer,
     required this.commonOps,
+    required this.docEditor,
     this.brightness,
   }) : super(key: key);
 
@@ -20,6 +22,7 @@ class MyToolBar extends StatelessWidget {
   final DocumentComposer composer;
   final CommonEditorOperations commonOps;
   final Brightness? brightness;
+  final DocumentEditor docEditor;
 
   bool get _isBoldActive => _doesSelectionHaveAttributions({boldAttribution});
   void _toggleBold() => _toggleAttributions({boldAttribution});
@@ -60,6 +63,31 @@ class MyToolBar extends StatelessWidget {
     selection.isCollapsed
         ? commonOps.toggleComposerAttributions(attributions)
         : commonOps.toggleAttributionsOnSelection(attributions);
+  }
+
+  void _convertToTaskList() {
+    final selectedNode =
+        document.getNodeById(composer.selection!.extent.nodeId)! as TextNode;
+
+    docEditor.executeCommand(
+      ConvertParagraphToCustomParagraphCommand(
+        nodeId: selectedNode.id,
+        isCompleted: true,
+      ),
+    );
+
+// basic task list
+    // docEditor.executeCommand(
+    //   ConvertParagraphToTaskCommand(
+    //     nodeId: selectedNode.id,
+    //     isCompleted: true,
+    //   ),
+    // );
+
+    // ConvertParagraphToTaskCommand(
+    //   nodeId: selectedNode.id,
+    //   isCompleted: false,
+    // );
   }
 
   void _convertToHeader1() {
@@ -185,11 +213,19 @@ class MyToolBar extends StatelessWidget {
         ),
         child: Material(
           child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 8),
             width: double.infinity,
             height: 48,
-            color: brightness == Brightness.light
-                ? const Color(0xFFDDDDDD)
-                : const Color(0xFF222222),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(8)),
+              border: Border(
+                top: BorderSide(color: Color(0xFFCCCCCC)),
+                bottom: BorderSide(color: Color(0xFFCCCCCC)),
+                left: BorderSide(color: Color(0xFFCCCCCC)),
+                right: BorderSide(color: Color(0xFFCCCCCC)),
+              ),
+            ),
             child: Row(
               children: [
                 IconButton(
@@ -250,6 +286,10 @@ class MyToolBar extends StatelessWidget {
                                 color: _isStrikethroughActive
                                     ? Theme.of(context).primaryColor
                                     : null,
+                              ),
+                              IconButton(
+                                onPressed: _convertToTaskList,
+                                icon: const Icon(Icons.task),
                               ),
                               IconButton(
                                 onPressed: _convertToHeader1,
@@ -317,7 +357,12 @@ class MyToolBar extends StatelessWidget {
                         }),
                   ),
                 ),
-                const SizedBox(width: 80),
+                Container(
+                  width: 1,
+                  height: 32,
+                  color: const Color(0xFFCCCCCC),
+                ),
+                const SizedBox(width: 70),
               ],
             ),
           ),

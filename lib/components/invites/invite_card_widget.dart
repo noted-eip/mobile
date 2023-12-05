@@ -170,17 +170,7 @@ class _InviteCardState extends ConsumerState<InviteCard> {
               style: TextStyle(color: Colors.white),
             );
           });
-          // setState(() {
-          //   groupAlive = false;
-          //   titleWidget = const Text(
-          //     "Invalid Invite !",
-          //     style: TextStyle(color: Colors.white),
-          //   );
-          //   account.whenData((value) => subtitleWidget = Text(
-          //         "Ask the ${value?.data.name} for a knew invite !",
-          //         style: const TextStyle(color: Colors.white),
-          //       ));
-          // });
+
           return null;
         }
         setState(() {
@@ -306,8 +296,6 @@ class _InviteCardState extends ConsumerState<InviteCard> {
                           groupId: widget.invite.group_id)
                       .then((value) => invalidateInvites(widget.isSentInvite))),
             ]
-          //  null
-
           : [
               ActionSlidable(
                 Icons.check,

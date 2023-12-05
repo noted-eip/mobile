@@ -5,14 +5,14 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
-import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:noted_mobile/components/common/custom_alerte.dart';
 import 'package:noted_mobile/components/common/custom_modal.dart';
 import 'package:noted_mobile/components/common/custom_toast.dart';
-import 'package:noted_mobile/components/common/loading_button.dart';
 import 'package:noted_mobile/data/providers/note_provider.dart';
+import 'package:noted_mobile/pages/notes/comment_list.dart';
+import 'package:noted_mobile/pages/notes/editor/_custom_component.dart';
 import 'package:noted_mobile/pages/notes/editor/_toolbar.dart';
 import 'package:noted_mobile/pages/notes/editor/note_utility.dart';
 import 'package:noted_mobile/pages/notes/note_summary_screen.dart';
@@ -21,8 +21,6 @@ import 'package:noted_mobile/pages/recommendation/recommendation_screen.dart';
 import 'package:noted_mobile/utils/color.dart';
 import 'package:noted_mobile/utils/string_extension.dart';
 import 'package:openapi/openapi.dart';
-import 'package:provider/provider.dart';
-import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:super_editor/super_editor.dart';
 import 'package:tuple/tuple.dart';
 
@@ -33,11 +31,12 @@ class NotedEditor extends ConsumerStatefulWidget {
     Key? key,
     required this.note,
     required this.infos,
+    this.needInternet = true,
   }) : super(key: key);
 
-  // final Note note;
   final V1Note note;
   final Tuple2<String, String> infos;
+  final bool? needInternet;
 
   @override
   ConsumerState<NotedEditor> createState() => _NotedEditorState();
@@ -55,8 +54,6 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
 
   late FocusNode _editorFocusNode;
 
-  final _darkBackground = const Color(0xFF222222);
-  final _lightBackground = Colors.white;
   final _brightness = ValueNotifier<Brightness>(Brightness.light);
 
   OverlayEntry? _textFormatBarOverlayEntry;
@@ -75,6 +72,13 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
   bool isUpdateInProgress = false;
 
   void updateNote() {
+    print("note before update");
+    print("length: ${widget.note.blocks?.length}");
+
+    widget.note.blocks?.forEach((p0) {
+      print(p0.id);
+      print("p0.thread?.length ${p0.thread?.length}");
+    });
     _resetTimer();
     print("reset timer");
     print("call update note");
@@ -83,14 +87,16 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
       isUpdateInProgress = true;
     });
 
-    //
-
     _timer = Timer(const Duration(seconds: 5), () async {
       print("try update note");
 
       V1Note updatedNote = getNodeFromDoc(_doc, widget.note);
 
-      print(updatedNote.blocks!.length);
+      print("note after update");
+      print("length: ${updatedNote.blocks?.length}");
+      updatedNote.blocks?.forEach((p0) {
+        print(p0.id);
+      });
 
       try {
         V1Note? updatedNoteResponse =
@@ -105,15 +111,48 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
           return;
         }
 
+        // print(updatedNote.toString());
+
         setState(() {
           isUpdateInProgress = false;
         });
 
-        // setState(() {
-        //   message = "Note mise à jour";
-        //   type = ToastType.success;
-        // });
         print("note updated");
+
+        print("length: ${updatedNoteResponse.blocks?.length}");
+
+        for (var element in _doc.nodes) {
+          print("element: ${element.id}");
+        }
+
+        for (var i = 0; i < _doc.nodes.length; i++) {
+          DocumentNode oldNode = _doc.nodes[i];
+
+          if (oldNode.id == updatedNoteResponse.blocks![i].id) {
+            continue;
+          }
+
+          DocumentNode newNode =
+              getNodeFromBlock(updatedNoteResponse.blocks![i]);
+
+          _doc.replaceNode(
+            oldNode: oldNode,
+            newNode: newNode,
+          );
+
+          if (_composer.selection!.extent.nodeId == oldNode.id) {
+            _composer.selection = DocumentSelection.collapsed(
+              position: DocumentPosition(
+                nodeId: newNode.id,
+                nodePosition: _composer.selection!.extent.nodePosition,
+              ),
+            );
+          }
+        }
+
+        updatedNoteResponse.blocks?.forEach((p0) {
+          print(p0.id);
+        });
 
         ref.invalidate(noteProvider(widget.infos));
       } catch (e) {
@@ -124,14 +163,6 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
         if (kDebugMode) {
           print("Failed to update Note, Api response :${e.toString()}");
         }
-        // if (mounted) {
-        //   CustomToast.show(
-        //     message: e.toString().capitalize(),
-        //     type: ToastType.error,
-        //     context: context,
-        //     gravity: ToastGravity.BOTTOM,
-        //   );
-        // }
       }
     });
   }
@@ -153,6 +184,11 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
           _docLayoutKey.currentState as DocumentLayout,
     );
     _editorFocusNode = FocusNode();
+
+    Future.delayed(Duration.zero, () {
+      ref.read(noteIdProvider.notifier).update((state) => widget.infos.item1);
+      ref.read(groupIdProvider.notifier).update((state) => widget.infos.item2);
+    });
   }
 
   @override
@@ -213,24 +249,12 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
 
   bool isLoading = false;
   bool isLoadingQuizz = false;
+  bool isLoadingRecommendation = false;
+  bool isLoadingSummary = false;
   String? selectedAction;
   SampleItem? selectedMenu;
   MenuController menuController = MenuController();
   bool allowToggle = true;
-
-  Future<void> fetchData() async {
-    // Ici, vous pouvez placer votre appel API
-    print("fetch data");
-    setState(() {
-      isLoading = true;
-    });
-
-    await Future.delayed(const Duration(seconds: 2));
-
-    setState(() {
-      isLoading = false;
-    });
-  }
 
   Future<void> deleteNoteDialog(WidgetRef ref) async {
     return await showDialog(
@@ -252,13 +276,12 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
 
   @override
   Widget build(BuildContext context) {
-    final AsyncValue<List<V1Widget>?> widgetsList =
-        ref.watch(recommendationListProvider(widget.infos));
-    final AsyncValue<String?> summary =
-        ref.watch(noteSummaryProvider(widget.infos));
+    AsyncValue<List<V1Quiz>?>? quizzList;
 
-    final AsyncValue<List<V1Quiz>?> quizzList =
-        ref.watch(quizzListProvider(widget.infos));
+    if (!widget.needInternet!) {
+    } else {
+      quizzList = ref.watch(quizzListProvider(widget.infos));
+    }
 
     return PopScope(
       canPop: !isUpdateInProgress,
@@ -276,7 +299,7 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
       child: Scaffold(
         floatingActionButtonLocation: ExpandableFab.location,
         floatingActionButton:
-            _buildNoteTools(ref, summary, quizzList, widgetsList),
+            !widget.needInternet! ? null : _buildNoteTools(ref, quizzList!),
         floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
         body: Stack(
           children: [
@@ -310,6 +333,7 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                       ),
+                      const SizedBox(width: 4),
                       PopupMenuButton(
                         shape: const RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(
@@ -327,279 +351,29 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
                               if (mounted) {
                                 ref.invalidate(
                                     groupNotesProvider(widget.infos.item2));
+                                ref.invalidate(notesProvider);
+
                                 Navigator.of(context).pop();
                               }
                             },
                           ),
+                          PopupMenuItem(
+                            child: const ListTile(
+                              leading: Icon(Icons.comment),
+                              title: Text("Commentaires"),
+                            ),
+                            onTap: () async {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return const CommentList();
+                                  },
+                                ),
+                              );
+                            },
+                          ),
                         ],
                       ),
-                      // MenuAnchor(
-                      //   controller: menuController,
-                      //   style: MenuStyle(
-                      //     padding: const MaterialStatePropertyAll<EdgeInsets>(
-                      //       EdgeInsets.all(16),
-                      //     ),
-                      //     shadowColor: MaterialStatePropertyAll<Color>(
-                      //       Colors.grey.shade900,
-                      //     ),
-                      //     side: const MaterialStatePropertyAll<BorderSide>(
-                      //       BorderSide(
-                      //         color: Colors.grey,
-                      //         width: 0.5,
-                      //       ),
-                      //     ),
-                      //     backgroundColor:
-                      //         const MaterialStatePropertyAll<Color>(
-                      //       Colors.white,
-                      //     ),
-                      //     elevation: const MaterialStatePropertyAll<double>(4),
-                      //     shape: MaterialStatePropertyAll<OutlinedBorder>(
-                      //       RoundedRectangleBorder(
-                      //         borderRadius: BorderRadius.circular(16),
-                      //       ),
-                      //     ),
-                      //   ),
-                      //   onClose: () {
-                      //     print("onClose---------------------");
-                      //     print("is open: ${menuController.isOpen}");
-                      //     print("is loading: $isLoading");
-
-                      //     if (menuController.isOpen && !isLoading) {
-                      //       print("is open and not loading");
-                      //       menuController.close();
-                      //     } else if (menuController.isOpen && isLoading) {
-                      //       menuController.close();
-                      //       print("is open and loading");
-                      //     } else {
-                      //       print("is not open and loading");
-                      //       menuController.open();
-                      //     }
-                      //   },
-                      //   onOpen: () {
-                      //     print("open");
-                      //   },
-                      //   builder: (
-                      //     BuildContext context,
-                      //     MenuController controller,
-                      //     Widget? child,
-                      //   ) {
-                      //     return IconButton(
-                      //       onPressed: () {
-                      //         // if (controller.isOpen && !isLoading) {
-                      //         //   controller.close();
-                      //         // } else {
-                      //         //   controller.open();
-                      //         // }
-                      //         if (controller.isOpen) {
-                      //           controller.close();
-                      //         } else {
-                      //           controller.open();
-                      //         }
-                      //       },
-                      //       icon: const Icon(Icons.more_horiz),
-                      //       tooltip: 'Show menu',
-                      //     );
-                      //   },
-                      //   menuChildren: List<MenuItemButton>.generate(
-                      //     3,
-                      //     (int index) => MenuItemButton(
-                      //       onPressed: () {
-                      //         print("onPressed");
-                      //         // menuController.open();
-                      //         fetchData();
-                      //       },
-                      //       trailingIcon: SizedBox(
-                      //         width: 20,
-                      //         height: 20,
-                      //         child: isLoading
-                      //             ? const CircularProgressIndicator(
-                      //                 strokeWidth: 2,
-                      //               )
-                      //             : null,
-                      //       ),
-                      //       child: Text('Item ${index + 1}'),
-                      //     ),
-                      //   ),
-                      // ),
-                      // quizz.when(
-                      //   data: (quiz) {
-                      //     if (quiz == null) {
-                      //       return const SizedBox();
-                      //     }
-                      //     return Material(
-                      //       color: Colors.transparent,
-                      //       child: PopupMenuButton(
-                      //         shape: const RoundedRectangleBorder(
-                      //           borderRadius: BorderRadius.all(
-                      //             Radius.circular(16),
-                      //           ),
-                      //         ),
-                      //         itemBuilder: ((context) {
-                      //           return [
-                      //             PopupMenuItem(
-                      //               child: TextButton(
-                      //                 onPressed: () async {
-                      //                   Navigator.pop(context);
-                      //                   return showModalBottomSheet(
-                      //                     backgroundColor: Colors.transparent,
-                      //                     context: context,
-                      //                     isScrollControlled: true,
-                      //                     builder: (context) {
-                      //                       return CustomModal(
-                      //                         height: 0.9,
-                      //                         onClose: (context) {
-                      //                           print("close");
-                      //                           ref.invalidate(quizzProvider(
-                      //                               widget.infos));
-                      //                           Navigator.pop(context);
-                      //                         },
-                      //                         child: QuizzPage(
-                      //                           quiz: quiz,
-                      //                           infos: widget.infos,
-                      //                         ),
-                      //                       );
-                      //                     },
-                      //                   );
-                      //                 },
-                      //                 child: Row(
-                      //                   children: [
-                      //                     Icon(
-                      //                       Icons.quiz,
-                      //                       color: Colors.grey.shade900,
-                      //                       size: 30,
-                      //                     ),
-                      //                     const SizedBox(
-                      //                       width: 10,
-                      //                     ),
-                      //                     Text(
-                      //                       "Quiz",
-                      //                       style: TextStyle(
-                      //                         color: Colors.grey.shade900,
-                      //                         fontSize: 14,
-                      //                         fontWeight: FontWeight.bold,
-                      //                       ),
-                      //                     ),
-                      //                   ],
-                      //                 ),
-                      //               ),
-                      //             ),
-                      //             PopupMenuItem(
-                      //               child: TextButton(
-                      //                 onPressed: () async {
-                      //                   Navigator.of(context).pop();
-                      //                   if (!widgetsList.hasValue) {
-                      //                     return;
-                      //                   }
-
-                      //                   return showModalBottomSheet(
-                      //                     backgroundColor: Colors.transparent,
-                      //                     context: context,
-                      //                     isScrollControlled: true,
-                      //                     builder: (context) {
-                      //                       return CustomModal(
-                      //                         height: 1,
-                      //                         onClose: (context) {
-                      //                           Navigator.pop(context);
-                      //                         },
-                      //                         child: RecommendationPage(
-                      //                           infos: widget.infos,
-                      //                           widgetList: widgetsList.value!,
-                      //                         ),
-                      //                       );
-                      //                     },
-                      //                   );
-                      //                 },
-                      //                 child: Row(
-                      //                   children: [
-                      //                     Icon(
-                      //                       Icons.recommend,
-                      //                       color: Colors.grey.shade900,
-                      //                       size: 30,
-                      //                     ),
-                      //                     const SizedBox(
-                      //                       width: 10,
-                      //                     ),
-                      //                     Text(
-                      //                       "Recommandation",
-                      //                       style: TextStyle(
-                      //                         color: Colors.grey.shade900,
-                      //                         fontSize: 14,
-                      //                         fontWeight: FontWeight.bold,
-                      //                       ),
-                      //                     ),
-                      //                   ],
-                      //                 ),
-                      //               ),
-                      //             ),
-                      //             PopupMenuItem(
-                      //               child: TextButton(
-                      //                 onPressed: () async {
-                      //                   Navigator.of(context).pop();
-                      //                   if (!summary.hasValue) {
-                      //                     return;
-                      //                   }
-                      //                   return showModalBottomSheet(
-                      //                     backgroundColor: Colors.transparent,
-                      //                     context: context,
-                      //                     isScrollControlled: true,
-                      //                     builder: (context) {
-                      //                       return CustomModal(
-                      //                         height: 1,
-                      //                         onClose: (context) {
-                      //                           Navigator.pop(context);
-                      //                         },
-                      //                         child: SummaryScreen(
-                      //                           infos: widget.infos,
-                      //                           summary: summary.value ?? "",
-                      //                         ),
-                      //                       );
-                      //                     },
-                      //                   );
-                      //                 },
-                      //                 child: Row(
-                      //                   children: [
-                      //                     Icon(
-                      //                       Icons.summarize,
-                      //                       color: Colors.grey.shade900,
-                      //                       size: 30,
-                      //                     ),
-                      //                     const SizedBox(
-                      //                       width: 10,
-                      //                     ),
-                      //                     Text(
-                      //                       "Résumé",
-                      //                       style: TextStyle(
-                      //                         color: Colors.grey.shade900,
-                      //                         fontSize: 14,
-                      //                         fontWeight: FontWeight.bold,
-                      //                       ),
-                      //                     ),
-                      //                   ],
-                      //                 ),
-                      //               ),
-                      //             ),
-                      //           ];
-                      //         }),
-                      //         child: Padding(
-                      //           padding:
-                      //               const EdgeInsets.symmetric(horizontal: 16),
-                      //           child: Icon(
-                      //             Icons.more_vert,
-                      //             color: Colors.grey.shade900,
-                      //             size: 32,
-                      //           ),
-                      //         ),
-                      //       ),
-                      //     );
-                      //   },
-                      //   error: (err, stack) => const SizedBox(),
-                      //   loading: () => const SizedBox(
-                      //     height: 36,
-                      //     child: Padding(
-                      //         padding: EdgeInsets.only(right: 16),
-                      //         child: CircularProgressIndicator()),
-                      //   ),
-                      // ),
                     ],
                   ),
                 ),
@@ -617,10 +391,10 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
 
   Widget _buildNoteTools(
     WidgetRef ref,
-    AsyncValue<String?> summary,
     AsyncValue<List<V1Quiz>?> quizzList,
-    AsyncValue<List<V1Widget>?> widgetsList,
   ) {
+    if (!widget.needInternet!) return const SizedBox();
+
     return ExpandableFab(
       distance: 150,
       type: ExpandableFabType.fan,
@@ -665,7 +439,7 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
             }
 
             if (quizzList.value!.isEmpty) {
-              bool validNote = canGenerateQuizz(widget.note);
+              bool validNote = noteContainMoreThan100Words(widget.note);
 
               if (!validNote) {
                 CustomToast.show(
@@ -749,7 +523,56 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
           foregroundColor: Colors.white,
           elevation: 5,
           onPressed: () async {
-            if (!widgetsList.hasValue) {
+            bool validNote = noteContainMoreThan100Words(widget.note);
+
+            if (!validNote) {
+              CustomToast.show(
+                message:
+                    "La note doit contenir au moins 100 mots pour générer une recommandation",
+                type: ToastType.warning,
+                context: context,
+                gravity: ToastGravity.TOP,
+              );
+
+              return;
+            }
+
+            setState(() {
+              isLoadingRecommendation = true;
+            });
+
+            List<V1Widget>? widgetList = await createRecommendation(
+              ref,
+              widget.infos,
+              widget.note,
+            );
+
+            setState(() {
+              isLoadingRecommendation = false;
+            });
+
+            if (widgetList == null && mounted) {
+              CustomToast.show(
+                message: "Erreur lors de la génération de la recommandation",
+                type: ToastType.error,
+                context: context,
+                gravity: ToastGravity.TOP,
+              );
+              return;
+            }
+
+            if (widgetList!.isEmpty && mounted) {
+              CustomToast.show(
+                message:
+                    "Aucune recommandation n'a été générée.\nContinuer d'écrire pour générer une recommandation",
+                type: ToastType.warning,
+                context: context,
+                gravity: ToastGravity.TOP,
+              );
+              return;
+            }
+
+            if (!mounted) {
               return;
             }
 
@@ -765,15 +588,19 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
                   },
                   child: RecommendationPage(
                     infos: widget.infos,
-                    widgetList: widgetsList.value!,
+                    widgetList: widgetList,
                   ),
                 );
               },
             );
           },
-          child: const Icon(
-            Icons.recommend,
-          ),
+          child: isLoadingRecommendation
+              ? const CircularProgressIndicator(
+                  color: Colors.white,
+                )
+              : const Icon(
+                  Icons.recommend,
+                ),
         ),
         FloatingActionButton(
           heroTag: "summary",
@@ -781,9 +608,48 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
           foregroundColor: Colors.white,
           elevation: 5,
           onPressed: () async {
-            // Navigator.of(context).pop();
+            bool validNote = noteContainMoreThan100Words(widget.note);
 
-            if (!summary.hasValue) {
+            if (!validNote) {
+              CustomToast.show(
+                message:
+                    "La note doit contenir au moins 100 mots pour générer un résumé",
+                type: ToastType.warning,
+                context: context,
+                gravity: ToastGravity.TOP,
+              );
+
+              return;
+            }
+
+            setState(() {
+              isLoadingSummary = true;
+            });
+
+            String? summary = await createSummary(
+              ref,
+              widget.infos,
+              widget.note,
+            );
+
+            setState(() {
+              isLoadingSummary = false;
+            });
+
+            if (summary == null) {
+              if (!mounted) {
+                return;
+              }
+              CustomToast.show(
+                message: "Erreur lors de la génération du résumé",
+                type: ToastType.error,
+                context: context,
+                gravity: ToastGravity.TOP,
+              );
+              return;
+            }
+
+            if (!mounted) {
               return;
             }
 
@@ -799,15 +665,19 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
                   },
                   child: SummaryScreen(
                     infos: widget.infos,
-                    summary: summary.value ?? "",
+                    summary: summary,
                   ),
                 );
               },
             );
           },
-          child: const Icon(
-            Icons.summarize,
-          ),
+          child: isLoadingSummary
+              ? const CircularProgressIndicator(
+                  color: Colors.white,
+                )
+              : const Icon(
+                  Icons.summarize,
+                ),
         ),
       ],
     );
@@ -824,21 +694,19 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
         documentOverlayBuilders: const [
           DefaultCaretOverlayBuilder(),
         ],
-        selectionStyle: defaultSelectionStyle,
-        stylesheet: defaultStylesheet.copyWith(
-          addRulesAfter: [
-            taskStyles,
-          ],
-        ),
+        selectionStyle: SelectionStyles(
+            selectionColor: NotedColors.secondary.withOpacity(0.5)),
+        stylesheet: defaultStylesheet,
         componentBuilders: [
-          TaskComponentBuilder(_docEditor),
+          CustomParagraphComponentBuilder(),
           ...defaultComponentBuilders,
         ],
         gestureMode: _gestureMode,
         inputSource: _inputSource,
-        keyboardActions: _inputSource == TextInputSource.ime
-            ? defaultImeKeyboardActions
-            : defaultKeyboardActions,
+        keyboardActions: [
+          ...defaultKeyboardActions,
+          ...notedCustomKeyboardActions
+        ],
         androidToolbarBuilder: (_) => AndroidTextEditingFloatingToolbar(
           onCutPressed: _cut,
           onCopyPressed: _copy,
@@ -857,24 +725,69 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
   }
 
   Widget _buildMountedToolbar() {
-    return MultiListenableBuilder(
-      listenables: <Listenable>{
-        _composer.selectionNotifier,
-      },
-      builder: (_) {
-        final selection = _composer.selection;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: MultiListenableBuilder(
+        listenables: <Listenable>{
+          _composer.selectionNotifier,
+        },
+        builder: (_) {
+          final selection = _composer.selection;
 
-        if (selection == null) {
-          return const SizedBox();
-        }
-        return MyToolBar(
-          document: _doc,
-          composer: _composer,
-          commonOps: _docOps,
-          brightness: _brightness.value,
-        );
-      },
+          if (selection == null) {
+            return const SizedBox();
+          }
+          return MyToolBar(
+            document: _doc,
+            composer: _composer,
+            commonOps: _docOps,
+            brightness: _brightness.value,
+            docEditor: _docEditor,
+          );
+        },
+      ),
     );
+  }
+
+  Future<String?> createSummary(
+    WidgetRef ref,
+    Tuple2<String, String> infos,
+    V1Note note,
+  ) async {
+    try {
+      String? summary = await ref.read(noteClientProvider).summaryGenerator(
+            noteId: widget.infos.item1,
+            groupId: widget.infos.item2,
+          );
+
+      return summary;
+    } catch (e) {
+      print("catch failed to generate summary");
+      return null;
+    }
+  }
+
+  Future<List<V1Widget>?> createRecommendation(
+    WidgetRef ref,
+    Tuple2<String, String> infos,
+    V1Note note,
+  ) async {
+    try {
+      print("note : ${note.blocks?.length}");
+
+      print(note.blocks?.first.paragraph);
+
+      List<V1Widget>? recommendations =
+          await ref.read(noteClientProvider).recommendationGenerator(
+                noteId: widget.infos.item1,
+                groupId: widget.infos.item2,
+              );
+
+      return recommendations;
+    } catch (e) {
+      print("catch failed to generate recommendation");
+      return null;
+    }
   }
 
   Future<bool> creatQuiz(
@@ -892,9 +805,7 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
     }
   }
 
-  bool canGenerateQuizz(V1Note note) {
-    // si le nombre de mots dans tous les blocs est inférieur à 100, on ne peut pas générer de quizz
-
+  bool noteContainMoreThan100Words(V1Note note) {
     int nbWords = 0;
 
     for (var block in note.blocks!) {

@@ -3,11 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/components/home/home_infos_widget.dart';
 import 'package:noted_mobile/components/notes/latest_notes_widget.dart';
 import 'package:noted_mobile/components/groups/latest_groups_widget.dart';
-import 'package:noted_mobile/data/clients/tracker_client.dart';
 import 'package:noted_mobile/data/models/group/group.dart';
 import 'package:noted_mobile/data/providers/group_provider.dart';
 import 'package:noted_mobile/data/providers/note_provider.dart';
-import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:noted_mobile/pages/notifications/notification_page.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -36,10 +34,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         ),
         actions: [
           IconButton(
-            onPressed: (() {
-              ref.read(trackerProvider).trackPage(TrackPage.notification);
-              Scaffold.of(context).openEndDrawer();
-            }),
+            onPressed: () => Navigator.of(context).pushNamed('/notif'),
             icon: const Icon(Icons.send, color: Colors.black),
           ),
         ],
@@ -73,26 +68,3 @@ class _HomePageState extends ConsumerState<HomePage> {
     );
   }
 }
-
-// class NotifButton extends ConsumerStatefulWidget {
-//   const NotifButton({super.key});
-
-//   @override
-//   ConsumerState<NotifButton> createState() => _NotifButtonState();
-// }
-
-// class _NotifButtonState extends ConsumerState<NotifButton> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       padding: const EdgeInsets.only(right: 4),
-//       child: IconButton(
-//         onPressed: (() {
-//           ref.read(trackerProvider).trackPage(TrackPage.notification);
-//           Scaffold.of(context).openEndDrawer();
-//         }),
-//         icon: const Icon(Icons.send, color: Colors.black),
-//       ),
-//     );
-//   }
-// }

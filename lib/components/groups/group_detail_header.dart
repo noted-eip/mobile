@@ -88,10 +88,19 @@ class _GroupDetailHeaderState extends ConsumerState<GroupDetailHeader> {
                   width: 100,
                 ),
               ),
+        const SizedBox(
+          width: 4,
+        ),
         group.hasValue && member.hasValue
             ? Material(
+                clipBehavior: Clip.antiAlias,
+                borderRadius: BorderRadius.circular(8),
                 color: Colors.transparent,
                 child: PopupMenuButton(
+                  constraints: const BoxConstraints(
+                    minWidth: 40,
+                    maxWidth: 20,
+                  ),
                   shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(
                       Radius.circular(16),
@@ -231,13 +240,10 @@ class _GroupDetailHeaderState extends ConsumerState<GroupDetailHeader> {
                       ),
                     ];
                   }),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Icon(
-                      Icons.more_vert,
-                      color: Colors.grey.shade900,
-                      size: 32,
-                    ),
+                  child: Icon(
+                    Icons.more_vert,
+                    color: Colors.grey.shade900,
+                    size: 32,
                   ),
                 ),
               )

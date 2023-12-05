@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/data/clients/tracker_client.dart';
@@ -14,6 +13,7 @@ class BaseContainer extends ConsumerStatefulWidget {
     this.secondaryColor,
     this.notif,
     this.openDrawer,
+    this.openEndDrawer,
   }) : super(key: key);
 
   final Widget titleWidget;
@@ -22,6 +22,7 @@ class BaseContainer extends ConsumerStatefulWidget {
   final Color? secondaryColor;
   final bool? notif;
   final bool? openDrawer;
+  final bool? openEndDrawer;
 
   @override
   ConsumerState<BaseContainer> createState() => _BaseContainerState();
@@ -72,13 +73,16 @@ class _BaseContainerState extends ConsumerState<BaseContainer> {
                       color: Colors.transparent,
                       child: IconButton(
                         onPressed: (() {
-                          if (kDebugMode) {
-                            print("Send button pressed");
+                          if (widget.openEndDrawer != null &&
+                              !widget.openEndDrawer!) {
+                            Navigator.pushNamed(context, "/notif");
+                          } else {
+                            Scaffold.of(context).openEndDrawer();
                           }
+
                           ref
                               .read(trackerProvider)
                               .trackPage(TrackPage.notification);
-                          Navigator.pushNamed(context, "/notif");
                         }),
                         iconSize: 24,
                         icon: Icon(Icons.send_rounded,

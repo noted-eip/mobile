@@ -58,7 +58,6 @@ class _CreateNoteModalState extends ConsumerState<CreateNoteModal> {
             _descriptionController.clear();
             _titleController.clear();
 
-            // ref.invalidate(la);
             ref.invalidate(notesProvider);
           });
         } else {

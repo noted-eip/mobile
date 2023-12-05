@@ -1,4 +1,3 @@
-//TODO: handle error : eg: https://medium.com/flutter-community/handling-network-calls-like-a-pro-in-flutter-31bd30c86be1
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -40,7 +39,7 @@ class APIHelper {
     } on DioException catch (e) {
       return ApiResponse(
           statusCode: e.response!.statusCode,
-          error: DioExceptions.fromDioError(e).toString());
+          error: NotedException.fromDioException(e).toString());
     }
   }
 
@@ -62,7 +61,7 @@ class APIHelper {
       return ApiResponse(statusCode: response.statusCode, data: response.data);
     } on DioException catch (e) {
       return ApiResponse(
-          error: DioExceptions.fromDioError(e).toString(),
+          error: NotedException.fromDioException(e).toString(),
           statusCode: e.response!.statusCode);
     }
   }
@@ -86,7 +85,7 @@ class APIHelper {
       return ApiResponse(statusCode: response.statusCode, data: response.data);
     } on DioException catch (e) {
       return ApiResponse(
-          error: DioExceptions.fromDioError(e).toString(),
+          error: NotedException.fromDioException(e).toString(),
           statusCode: e.response!.statusCode);
     }
   }
@@ -111,7 +110,7 @@ class APIHelper {
         print('[API Helper - DELETE] Server Response: ${e.toString()}');
       }
       return ApiResponse(
-        error: DioExceptions.fromDioError(e).toString(),
+        error: NotedException.fromDioException(e).toString(),
         statusCode: e.response!.statusCode,
       );
     }

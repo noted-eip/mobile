@@ -12,8 +12,6 @@ import 'package:noted_mobile/data/providers/group_provider.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
 
-//TODO: delay  when refresh indicator is shown
-
 class GroupsListPage extends ConsumerStatefulWidget {
   const GroupsListPage({super.key});
 
@@ -152,7 +150,7 @@ class _GroupsListPageState extends ConsumerState<GroupsListPage> {
                   ),
                   SliverPersistentHeader(
                     pinned: true,
-                    delegate: OurDelegate(
+                    delegate: CustomDelegate(
                       closedHeight: 16,
                       openHeight: 16,
                       toolBarHeight: kToolbarHeight,
@@ -188,14 +186,6 @@ class _GroupsListPageState extends ConsumerState<GroupsListPage> {
                                         style: const TextStyle(fontSize: 18)),
                                   ],
                                 );
-
-                                // return Material(
-                                //   color: Colors.transparent,
-                                //   child: Center(
-                                // child: Text("my-groups.empty".tr(),
-                                // style: const TextStyle(fontSize: 18)),
-                                // ),
-                                // );
                               },
                               childCount: 1,
                             ),
@@ -261,21 +251,18 @@ class _GroupsListPageState extends ConsumerState<GroupsListPage> {
                       sliver: SliverList(
                         delegate: SliverChildBuilderDelegate(
                           (context, index) {
-                            return Container(
-                              color: Colors.green,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  LottieBuilder.asset(
-                                    'assets/animations/error.json',
-                                    width: 200,
-                                    height: 200,
-                                  ),
-                                  Text(
-                                    "my-groups.error".tr(),
-                                  ),
-                                ],
-                              ),
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                LottieBuilder.asset(
+                                  'assets/animations/error.json',
+                                  width: 200,
+                                  height: 200,
+                                ),
+                                Text(
+                                  "my-groups.error".tr(),
+                                ),
+                              ],
                             );
                           },
                           childCount: 1,
@@ -293,13 +280,13 @@ class _GroupsListPageState extends ConsumerState<GroupsListPage> {
   }
 }
 
-class OurDelegate extends SliverPersistentHeaderDelegate {
+class CustomDelegate extends SliverPersistentHeaderDelegate {
   double toolBarHeight;
   double closedHeight;
   double openHeight;
   Widget child;
 
-  OurDelegate({
+  CustomDelegate({
     required this.toolBarHeight,
     required this.closedHeight,
     required this.openHeight,

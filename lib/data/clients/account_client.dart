@@ -1,10 +1,10 @@
 import 'dart:async';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:noted_mobile/data/models/account/account.dart';
+import 'package:noted_mobile/data/notifiers/user_notifier.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:noted_mobile/data/providers/utils/api_provider.dart';
 import 'package:noted_mobile/data/services/api_execption.dart';
@@ -12,11 +12,12 @@ import 'package:noted_mobile/data/services/failure.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:openapi/openapi.dart';
 import 'package:tuple/tuple.dart';
-//TODO: revoir la gestion d'erreur
 
 class AccountClient {
   AccountClient({required this.ref});
   final ProviderRef<AccountClient> ref;
+
+  // Password
 
   Future<bool> resetPassword({
     required String password,
@@ -25,8 +26,6 @@ class AccountClient {
     String? resetToken,
     String? oldPaswword,
   }) async {
-    final apiP = ref.read(apiProvider);
-
     final AccountsAPIUpdateAccountPasswordRequest body =
         AccountsAPIUpdateAccountPasswordRequest(
       (body) => body
@@ -36,23 +35,21 @@ class AccountClient {
     );
 
     try {
-      final Response<V1UpdateAccountPasswordResponse> response = await apiP
-          .accountsAPIUpdateAccountPassword(
-              body: body,
-              accountId: accountId,
-              headers: {"Authorization": "Bearer $authToken"});
-
+      Response<V1UpdateAccountPasswordResponse> response =
+          await ref.read(apiProvider).accountsAPIUpdateAccountPassword(
+        body: body,
+        accountId: accountId,
+        headers: {
+          "Authorization": "Bearer $authToken",
+        },
+      );
       if (response.statusCode != 200 || response.data == null) {
-        if (kDebugMode) {
-          print(
-            "inside try : code = ${response.statusCode}, error = ${response.toString()}",
-          );
-        }
-        throw Failure(message: response.toString());
+        throw Failure(message: response.statusMessage ?? 'Error');
       }
+
       return true;
     } on DioException catch (e) {
-      String error = DioExceptions.fromDioError(e).toString();
+      String error = NotedException.fromDioException(e).toString();
       if (kDebugMode) {
         print("Exception when calling DefaultApi->resetPassword: $error\n");
       }
@@ -60,10 +57,37 @@ class AccountClient {
     }
   }
 
-  Future<Tuple3?> verifyToken(
-      {required String token, required String accountId}) async {
-    final apiP = ref.read(apiProvider);
+  Future<String?> forgetAccountPassword({required String email}) async {
+    V1ForgetAccountPasswordRequest body = V1ForgetAccountPasswordRequest(
+      (body) => body..email = email,
+    );
 
+    try {
+      final Response<V1ForgetAccountPasswordResponse> response = await ref
+          .read(apiProvider)
+          .accountsAPIForgetAccountPassword(body: body);
+
+      if (response.statusCode != 200 || response.data == null) {
+        throw Failure(message: response.statusMessage ?? 'Error');
+      }
+
+      return response.data!.accountId;
+    } on DioException catch (e) {
+      String error = NotedException.fromDioException(e).toString();
+      if (kDebugMode) {
+        print(
+            "Exception when calling DefaultApi->forgetAccountPassword: $error\n");
+      }
+      throw Failure(message: error);
+    }
+  }
+
+  // Validation Token
+
+  Future<Tuple3?> verifyToken({
+    required String token,
+    required String accountId,
+  }) async {
     final V1ForgetAccountPasswordValidateTokenRequest body =
         V1ForgetAccountPasswordValidateTokenRequest(
       (body) => body
@@ -73,71 +97,64 @@ class AccountClient {
 
     try {
       final Response<V1ForgetAccountPasswordValidateTokenResponse> response =
-          await apiP.accountsAPIForgetAccountPasswordValidateToken(body: body);
+          await ref
+              .read(apiProvider)
+              .accountsAPIForgetAccountPasswordValidateToken(body: body);
 
       if (response.statusCode != 200 || response.data == null) {
-        if (kDebugMode) {
-          print(
-            "inside try : code = ${response.statusCode}, error = ${response.toString()}",
-          );
-        }
-        throw Failure(message: response.toString());
+        throw Failure(message: response.statusMessage ?? 'Error');
       }
 
-      return Tuple3(response.data!.resetToken, response.data!.authToken,
-          response.data!.account.id);
+      return Tuple3(
+        response.data!.resetToken,
+        response.data!.authToken,
+        response.data!.account.id,
+      );
     } on DioException catch (e) {
-      String error = DioExceptions.fromDioError(e).toString();
+      String error = NotedException.fromDioException(e).toString();
       if (kDebugMode) {
-        print("error : $error");
-        print("error : ${e.response!.data}");
-        print("error : ${e.response!.statusCode}");
         print("Exception when calling DefaultApi->verifyToken: $error\n");
       }
       throw Failure(message: error);
     }
   }
 
-  Future<String?> forgetAccountPassword({required String email}) async {
-    final apiP = ref.read(apiProvider);
-
-    V1ForgetAccountPasswordRequest body = V1ForgetAccountPasswordRequest(
-      (body) => body..email = email,
-    );
-
+  Future<void> resendValidateToken({
+    required String email,
+    required String password,
+  }) async {
     try {
-      final Response<V1ForgetAccountPasswordResponse> response =
-          await apiP.accountsAPIForgetAccountPassword(body: body);
+      final V1SendValidationTokenRequest body = V1SendValidationTokenRequest(
+        (body) => body
+          ..email = email
+          ..password = password,
+      );
 
-      if (response.statusCode != 200 || response.data == null) {
-        if (kDebugMode) {
-          print(
-            "inside try : code = ${response.statusCode}, error = ${response.toString()}",
-          );
-        }
-        throw Failure(message: response.toString());
-      }
-      if (response.data == null) {
-        throw Failure(message: "No data");
-      }
+      final Response<Object> response = await ref
+          .read(apiProvider)
+          .accountsAPISendValidationToken(body: body);
 
-      return response.data!.accountId;
+      if (response.statusCode != 200) {
+        throw Failure(message: response.statusMessage ?? 'Error');
+      }
     } on DioException catch (e) {
-      String error = DioExceptions.fromDioError(e).toString();
+      String error = NotedException.fromDioException(e).toString();
       if (kDebugMode) {
         print(
-            "Exception when calling DefaultApi->forgetAccountPassword: $error\n");
+            "Exception when calling DefaultApi->resendValidateToken: $error\n");
       }
       throw Failure(message: error);
     }
   }
 
+  // Login
+
+  // TODO: add required parameters
   Future<bool> loginWithGoogle(
     String googleToken,
   ) async {
-    final apiP = ref.read(apiProvider);
-
-    final userNotifier = ref.read(userProvider);
+    final DefaultApi apiP = ref.read(apiProvider);
+    final UserNotifier userNotifier = ref.read(userProvider);
 
     final V1AuthenticateGoogleRequest body = V1AuthenticateGoogleRequest(
       (body) => body..clientAccessToken = googleToken,
@@ -148,16 +165,10 @@ class AccountClient {
           await apiP.accountsAPIAuthenticateGoogle(body: body);
 
       if (response.statusCode != 200 || response.data == null) {
-        if (kDebugMode) {
-          print(
-            "inside try : code = ${response.statusCode}, error = ${response.toString()}",
-          );
-        }
-
-        throw Failure(message: response.toString());
+        throw Failure(message: response.statusMessage ?? 'Error');
       }
 
-      final token = response.data!.token;
+      final String token = response.data!.token;
 
       Map<String, dynamic> decodedToken = Jwt.parseJwt(token);
 
@@ -166,19 +177,6 @@ class AccountClient {
         accountId: decodedToken['aid'],
         headers: {"Authorization": "Bearer $token"},
       );
-
-      // // TODO: check if this block is necessary
-      // TODO: check DIO docs for response.data == null
-      // if (user2.statusCode != 200 ||
-      //     user2.data == null ||
-      //     user2.data!.account == null) {
-      //   if (kDebugMode) {
-      //     print("api error user catch : ${user2.toString()}");
-      //   }
-      //   throw Failure(message: user2.toString());
-      // }
-
-      // //
 
       final V1Account userInfos = user2.data!.account;
 
@@ -196,7 +194,7 @@ class AccountClient {
 
       return true;
     } on DioException catch (e) {
-      String error = DioExceptions.fromDioError(e).toString();
+      String error = NotedException.fromDioException(e).toString();
       if (kDebugMode) {
         print("Exception when calling DefaultApi->loginWithGoogle: $error\n");
       }
@@ -208,8 +206,8 @@ class AccountClient {
     required String email,
     required String password,
   }) async {
-    final apiP = ref.read(apiProvider);
-    final userNotifier = ref.read(userProvider);
+    final DefaultApi apiP = ref.read(apiProvider);
+    final UserNotifier userNotifier = ref.read(userProvider);
 
     final V1AuthenticateRequest body = V1AuthenticateRequest(
       (body) => body
@@ -222,15 +220,10 @@ class AccountClient {
           await apiP.accountsAPIAuthenticate(body: body);
 
       if (response.statusCode != 200 || response.data == null) {
-        if (kDebugMode) {
-          print(
-            "inside try : code = ${response.statusCode}, error = ${response.toString()}",
-          );
-        }
-        throw Failure(message: response.toString());
+        throw Failure(message: response.statusMessage ?? 'Error');
       }
 
-      final token = response.data!.token;
+      final String token = response.data!.token;
 
       Map<String, dynamic> decodedToken = Jwt.parseJwt(token);
 
@@ -239,19 +232,6 @@ class AccountClient {
         accountId: decodedToken['aid'],
         headers: {"Authorization": "Bearer $token"},
       );
-
-      // // TODO: check if this block is necessary
-      // TODO: check DIO docs for response.data == null
-      // if (user2.statusCode != 200 ||
-      //     user2.data == null ||
-      //     user2.data!.account == null) {
-      //   if (kDebugMode) {
-      //     print("api error user catch : ${user2.toString()}");
-      //   }
-      //   throw Failure(message: user2.toString());
-      // }
-
-      // //
 
       final V1Account userInfos = user2.data!.account;
 
@@ -268,102 +248,35 @@ class AccountClient {
       });
 
       return true;
-    } catch (e) {
-      print("ERROR LOGIN ");
-      print("catch error : $e");
-      rethrow;
-
-      // String error = DioExceptions.fromDioError(e).toString();
-      // if (kDebugMode) {
-      //   print("Exception when calling DefaultApi->login: $error\n");
-      // }
-      // throw Failure(message: error);
+    } on DioException catch (e) {
+      String error = NotedException.fromDioException(e).toString();
+      if (kDebugMode) {
+        print("Exception when calling DefaultApi->login: $error\n");
+      }
+      throw Failure(message: error);
     }
   }
+
+  // Account Validation
 
   Future<bool?> isAccountValidated({
     required String email,
     required String password,
   }) async {
-    final apiP = ref.read(apiProvider);
     try {
-      Response<V1IsAccountValidateResponse> response = await apiP
+      final Response<V1IsAccountValidateResponse> response = await ref
+          .read(apiProvider)
           .accountsAPIIsAccountValidate(email: email, password: password);
 
       if (response.statusCode != 200 || response.data == null) {
-        if (kDebugMode) {
-          print("inside try : code = ${response.statusCode}");
-        }
-        throw Failure(message: response.toString());
+        throw Failure(message: response.statusMessage ?? 'Error');
       }
       return response.data!.isAccountValidate;
     } on DioException catch (e) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx and is also not 304.
-      //TODO: handle error here and in other catch and edit String error = DioExceptions.fromDioError(e).toString();
-      //TO
-
-      //e.message
-      //e.response
-      //e.response?.data['error']
-      //e.response?.statusCode
-
-      print("------------------------------");
-      print("----");
-      print("e.error");
-      print(e.error);
-      print("----");
-      print("e.message");
-      print(e.message);
-      print("----");
-      print("e.response");
-      print(e.response);
-      print("----");
-      print("e.type");
-      print(e.type);
-      print("------------------------------");
-      if (e.response != null) {
-        print(e.response?.data['error']);
-        print(e.response?.statusCode);
-      } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        print(e.requestOptions);
-        print(e.message);
-      }
-      String error = DioExceptions.fromDioError(e).toString();
-
-      throw Failure(message: error);
-    }
-  }
-
-  Future<void> resendValidateToken({
-    required String email,
-    required String password,
-  }) async {
-    final apiP = ref.read(apiProvider);
-
-    try {
-      final V1SendValidationTokenRequest body = V1SendValidationTokenRequest(
-        (body) => body
-          ..email = email
-          ..password = password,
-      );
-
-      final response = await apiP.accountsAPISendValidationToken(body: body);
-
-      if (response.statusCode != 200) {
-        if (kDebugMode) {
-          print(
-            "inside try : code = ${response.statusCode}, error = ${response.toString()}",
-          );
-        }
-        throw Failure(message: response.toString());
-      }
-    } on DioException catch (e) {
-      String error = DioExceptions.fromDioError(e).toString();
+      String error = NotedException.fromDioException(e).toString();
       if (kDebugMode) {
         print(
-            "Exception when calling DefaultApi->resendValidateToken: $error\n");
+            "Exception when calling DefaultApi->isAccountValidated: $error\n");
       }
       throw Failure(message: error);
     }
@@ -374,11 +287,6 @@ class AccountClient {
     required String email,
     required String password,
   }) async {
-    final apiP = ref.read(apiProvider);
-    print("token : $token");
-    print("email : $email");
-    print("password : $password");
-
     try {
       V1ValidateAccountRequest body = V1ValidateAccountRequest(
         (body) => body
@@ -388,17 +296,14 @@ class AccountClient {
       );
 
       Response<V1ValidateAccountResponse> response =
-          await apiP.accountsAPIValidateAccount(body: body);
+          await ref.read(apiProvider).accountsAPIValidateAccount(body: body);
 
       if (response.statusCode != 200 || response.data == null) {
-        if (kDebugMode) {
-          print("inside try : code = ${response.statusCode}");
-        }
-        throw Failure(message: response.toString());
+        throw Failure(message: response.statusMessage ?? 'Error');
       }
       return Account.fromApi(response.data!.account);
     } on DioException catch (e) {
-      String error = DioExceptions.fromDioError(e).toString();
+      String error = NotedException.fromDioException(e).toString();
       if (kDebugMode) {
         print("Exception when calling DefaultApi->validateAccount: $error\n");
       }
@@ -406,13 +311,13 @@ class AccountClient {
     }
   }
 
+  // Register
+
   Future<Account?> createAccount({
     required String name,
     required String email,
     required String password,
   }) async {
-    final apiP = ref.read(apiProvider);
-
     final V1CreateAccountRequest body = V1CreateAccountRequest(
       (body) => body
         ..name = name
@@ -422,21 +327,16 @@ class AccountClient {
 
     try {
       final Response<V1CreateAccountResponse> response =
-          await apiP.accountsAPICreateAccount(body: body);
+          await ref.read(apiProvider).accountsAPICreateAccount(body: body);
 
       if (response.statusCode != 200 || response.data == null) {
-        if (kDebugMode) {
-          print(
-            "inside try : code = ${response.statusCode}, error = ${response.toString()}",
-          );
-        }
-        throw Failure(message: response.toString());
+        throw Failure(message: response.statusMessage ?? 'Error');
       }
       final V1Account apiAccount = response.data!.account;
 
       return Account.fromApi(apiAccount);
     } on DioException catch (e) {
-      String error = DioExceptions.fromDioError(e).toString();
+      String error = NotedException.fromDioException(e).toString();
       if (kDebugMode) {
         print("Exception when calling DefaultApi->createAccount: $error\n");
       }
@@ -444,13 +344,14 @@ class AccountClient {
     }
   }
 
+  // Account CRUD
+
   Future<Account?> updateAccount({required String name}) async {
-    final apiP = ref.read(apiProvider);
-    final userNotifier = ref.read(userProvider);
+    final UserNotifier userNotifier = ref.read(userProvider);
 
     try {
       final Response<V1UpdateAccountResponse> response =
-          await apiP.accountsAPIUpdateAccount(
+          await ref.read(apiProvider).accountsAPIUpdateAccount(
         accountId: userNotifier.id,
         account: V1Account((account) {
           account
@@ -462,18 +363,11 @@ class AccountClient {
       );
 
       if (response.statusCode != 200 || response.data == null) {
-        if (kDebugMode) {
-          print(
-            "inside try : code = ${response.statusCode}, error = ${response.toString()}",
-          );
-        }
-        throw Failure(message: response.toString());
+        throw Failure(message: response.statusMessage ?? 'Error');
       }
       final V1Account apiAccount = response.data!.account;
 
       userNotifier.setName(name);
-
-      // TODO : save shared preferences in provider
 
       await SharedPreferences.getInstance().then((prefs) {
         prefs.setString('name', userNotifier.name);
@@ -481,7 +375,7 @@ class AccountClient {
 
       return Account.fromApi(apiAccount);
     } on DioException catch (e) {
-      String error = DioExceptions.fromDioError(e).toString();
+      String error = NotedException.fromDioException(e).toString();
       if (kDebugMode) {
         print("Exception when calling DefaultApi->updateAccount: $error\n");
       }
@@ -490,22 +384,17 @@ class AccountClient {
   }
 
   Future<bool> deleteAccount() async {
-    final userNotifier = ref.read(userProvider);
-
-    final apiP = ref.read(apiProvider);
+    final UserNotifier userNotifier = ref.read(userProvider);
 
     try {
-      final response = await apiP.accountsAPIDeleteAccount(
-          accountId: userNotifier.id,
-          headers: {"Authorization": "Bearer ${userNotifier.token}"});
+      final Response<Object> response = await ref
+          .read(apiProvider)
+          .accountsAPIDeleteAccount(
+              accountId: userNotifier.id,
+              headers: {"Authorization": "Bearer ${userNotifier.token}"});
 
       if (response.statusCode != 200) {
-        if (kDebugMode) {
-          print(
-            "inside try : code = ${response.statusCode}, error = ${response.toString()}",
-          );
-        }
-        throw Failure(message: response.toString());
+        throw Failure(message: response.statusMessage ?? 'Error');
       }
 
       await SharedPreferences.getInstance().then((prefs) {
@@ -516,7 +405,7 @@ class AccountClient {
       });
       return true;
     } on DioException catch (e) {
-      String error = DioExceptions.fromDioError(e).toString();
+      String error = NotedException.fromDioException(e).toString();
       if (kDebugMode) {
         print("Exception when calling DefaultApi->deleteAccount: $error\n");
       }
@@ -524,29 +413,23 @@ class AccountClient {
     }
   }
 
+  // TODO : add required parameters
   Future<Account?> getAccountById(String accountId) async {
-    final apiP = ref.read(apiProvider);
-    final userNotifier = ref.read(userProvider);
-
     try {
-      final Response<V1GetAccountResponse> response = await apiP
-          .accountsAPIGetAccount(
-              accountId: accountId,
-              headers: {"Authorization": "Bearer ${userNotifier.token}"});
+      final Response<V1GetAccountResponse> response = await ref
+          .read(apiProvider)
+          .accountsAPIGetAccount(accountId: accountId, headers: {
+        "Authorization": "Bearer ${ref.read(userProvider).token}"
+      });
 
       if (response.statusCode != 200 || response.data == null) {
-        if (kDebugMode) {
-          print(
-            "inside try : code = ${response.statusCode}, error = ${response.toString()}",
-          );
-        }
         return null;
       }
       final V1Account apiAccount = response.data!.account;
 
       return Account.fromApi(apiAccount);
     } on DioException catch (e) {
-      String error = DioExceptions.fromDioError(e).toString();
+      String error = NotedException.fromDioException(e).toString();
       if (kDebugMode) {
         print("Exception when calling DefaultApi->getAccountById: $error\n");
       }
@@ -554,20 +437,18 @@ class AccountClient {
     }
   }
 
+  // TODO : add required parameters
   Future<Account?> getAccountByEmail(String email, String token) async {
-    final apiP = ref.read(apiProvider);
-
-    final userNotifier = ref.read(userProvider);
-
     final V1GetAccountRequest body = V1GetAccountRequest(
       (body) => body..email = email,
     );
 
     try {
-      Response<V1GetAccountResponse> response = await apiP
-          .accountsAPIGetAccount2(
-              body: body,
-              headers: {"Authorization": "Bearer ${userNotifier.token}"});
+      Response<V1GetAccountResponse> response = await ref
+          .read(apiProvider)
+          .accountsAPIGetAccount2(body: body, headers: {
+        "Authorization": "Bearer ${ref.read(userProvider).token}"
+      });
 
       if (response.statusCode != 200 || response.data == null) {
         return null;
@@ -577,11 +458,39 @@ class AccountClient {
 
       return Account.fromApi(apiAccount);
     } on DioException catch (e) {
-      String error = DioExceptions.fromDioError(e).toString();
+      String error = NotedException.fromDioException(e).toString();
       if (kDebugMode) {
         print("Exception when calling DefaultApi->getAccountByEmail: $error\n");
       }
       throw Failure(message: error);
     }
+  }
+
+  // Test
+
+  Map<String, dynamic> testAll() {
+    return {
+      "CreateAccount": () async => await createAccount(
+          name: "name", email: "email", password: "password"),
+      "DeleteAccount": () async => await deleteAccount(),
+      "ForgetAccountPassword": () async =>
+          await forgetAccountPassword(email: "email"),
+      "GetAccountByEmail": () async =>
+          await getAccountByEmail("email", "token"),
+      "GetAccountById": () async => await getAccountById("accountId"),
+      "IsAccountValidated": () async =>
+          await isAccountValidated(email: "email", password: "password"),
+      "Login": () async => await login(email: "email", password: "password"),
+      "LoginWithGoogle": () async => await loginWithGoogle("googleToken"),
+      "ResendValidateToken": () async =>
+          await resendValidateToken(email: "email", password: "password"),
+      "ResetPassword": () async => await resetPassword(
+          password: "password", accountId: "accountId", authToken: "authToken"),
+      "UpdateAccount": () async => await updateAccount(name: "name"),
+      "ValidateAccount": () async => await validateAccount(
+          token: "token", email: "email", password: "password"),
+      "VerifyToken": () async =>
+          await verifyToken(token: "token", accountId: "accountId"),
+    };
   }
 }

@@ -8,6 +8,7 @@ import 'package:noted_mobile/pages/notes/notes_list_screen.dart';
 import 'package:noted_mobile/pages/account/profile_screen.dart';
 import 'package:noted_mobile/utils/color.dart';
 import 'package:noted_mobile/utils/language.dart';
+import 'package:noted_mobile/utils/test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../pages/home/home_screen.dart';
@@ -47,6 +48,8 @@ class _MyDrawerState extends ConsumerState<MyDrawer> {
         return const LatestsFilesList();
       case MyMenuItems.profil:
         return const ProfilePage();
+      case MyMenuItems.test:
+        return const TestPage();
       default:
         return const HomePage();
     }
@@ -85,12 +88,14 @@ class MyMenuItems {
   static const groups = MyMenuItem(icon: Icons.group, title: 'menu.groups');
   static const notes = MyMenuItem(icon: Icons.description, title: 'menu.notes');
   static const profil = MyMenuItem(icon: Icons.person, title: 'menu.profile');
+  static const test = MyMenuItem(title: "TEST", icon: Icons.texture_sharp);
 
   static const all = <MyMenuItem>[
     home,
     groups,
     notes,
     profil,
+    test,
   ];
 }
 
