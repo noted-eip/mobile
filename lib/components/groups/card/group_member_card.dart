@@ -47,11 +47,48 @@ class _GroupMemberCardState extends ConsumerState<GroupMemberCard> {
       decoration: BoxDecoration(
           color: Colors.red, borderRadius: BorderRadius.circular(16)),
       child: CustomSlide(
-        title: account.data.email,
-        subtitle: widget.memberData.isAdmin ? "Admin" : "Utilisateur",
-        avatar: account.data.name.substring(0, 1).toUpperCase(),
-        actions: widget.actions,
         color: Colors.blueGrey.shade800,
+        onTap: () {},
+        actions: widget.actions,
+        //TODO : add traduction
+        titleWidget: Text(
+          account.data.email,
+          maxLines: 2,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16.0,
+            color: Colors.white,
+          ),
+        ),
+
+        withWidget: true,
+        subtitleWidget: Text(
+          widget.memberData.isAdmin ? "Admin" : "Utilisateur",
+          maxLines: 2,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16.0,
+            color: Colors.white,
+          ),
+        ),
+
+        avatarWidget: Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            height: 40,
+            width: 40,
+            alignment: Alignment.center,
+            child: Text(
+              account.data.name.substring(0, 1).toUpperCase(),
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20.0,
+                color: Colors.white,
+              ),
+            )),
       ),
     );
   }

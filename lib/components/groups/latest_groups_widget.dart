@@ -43,19 +43,23 @@ class _LatestsGroupsState extends ConsumerState<LatestsGroups> {
         ref.watch(latestGroupsProvider);
 
     return Container(
-      padding: const EdgeInsets.only(left: 16, top: 16, bottom: 16),
+      padding: const EdgeInsets.only(top: 16, bottom: 16),
       child: latestGroups.when(
         data: (groups) {
           if (groups != null && groups.isNotEmpty) {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  "home.lastest-groups".tr(),
-                  style: Theme.of(context).textTheme.headlineSmall,
+                Padding(
+                  padding: const EdgeInsets.only(left: 16),
+                  child: Text(
+                    "home.lastest-groups".tr(),
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
                 ),
                 Expanded(
                   child: GridView.builder(
+                    padding: const EdgeInsets.only(left: 16, right: 16),
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 1,

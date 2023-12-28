@@ -10,9 +10,7 @@ class CustomParagraphNode extends TextNode {
     required String id,
     required AttributedText text,
     Map<String, dynamic>? metadata,
-  }) : super(id: id, text: text, metadata: metadata) {
-    // putMetadataValue("blockType", const NamedAttribution("task"));
-  }
+  }) : super(id: id, text: text, metadata: metadata);
 
   @override
   bool hasEquivalentContent(DocumentNode other) {
@@ -20,33 +18,19 @@ class CustomParagraphNode extends TextNode {
   }
 }
 
-/// Styles all task components to apply top padding
-// final customTaskStyles = StyleRule(
-//   const BlockSelector("paragraph"),
-//   (document, node) {
-//     if (node is! CustomParagraphNode) {
-//       return {};
-//     }
-
-//     return {
-//       "padding": const CascadingPadding.only(top: 24),
-//     };
-//   },
-// );
-
-/// Builds [CustomTaskComponentViewModel]s and [CustomTaskComponent]s for every
+/// Builds [CustomParagraphComponentViewModel]s and [CustomParagraphComponent]s for every
 /// [CustomParagraphNode] in a document.
 class CustomParagraphComponentBuilder implements ComponentBuilder {
   CustomParagraphComponentBuilder();
 
   @override
-  CustomTaskComponentViewModel? createViewModel(
+  CustomParagraphComponentViewModel? createViewModel(
       Document document, DocumentNode node) {
     if (node is! CustomParagraphNode) {
       return null;
     }
 
-    return CustomTaskComponentViewModel(
+    return CustomParagraphComponentViewModel(
       nodeId: node.id,
       padding: EdgeInsets.zero,
       text: node.text,
@@ -58,26 +42,26 @@ class CustomParagraphComponentBuilder implements ComponentBuilder {
   @override
   Widget? createComponent(SingleColumnDocumentComponentContext componentContext,
       SingleColumnLayoutComponentViewModel componentViewModel) {
-    if (componentViewModel is! CustomTaskComponentViewModel) {
+    if (componentViewModel is! CustomParagraphComponentViewModel) {
       return null;
     }
 
-    return CustomTaskComponent(
+    return CustomParagraphComponent(
       key: componentContext.componentKey,
       viewModel: componentViewModel,
     );
   }
 }
 
-/// View model that configures the appearance of a [CustomTaskComponent].
+/// View model that configures the appearance of a [CustomParagraphComponent].
 ///
 /// View models move through various style phases, which fill out
 /// various properties in the view model. For example, one phase applies
 /// all [StyleRule]s, and another phase configures content selection
 /// and caret appearance.
-class CustomTaskComponentViewModel extends SingleColumnLayoutComponentViewModel
-    with TextComponentViewModel {
-  CustomTaskComponentViewModel({
+class CustomParagraphComponentViewModel
+    extends SingleColumnLayoutComponentViewModel with TextComponentViewModel {
+  CustomParagraphComponentViewModel({
     required String nodeId,
     double? maxWidth,
     required EdgeInsetsGeometry padding,
@@ -106,8 +90,8 @@ class CustomTaskComponentViewModel extends SingleColumnLayoutComponentViewModel
   bool highlightWhenEmpty;
 
   @override
-  CustomTaskComponentViewModel copy() {
-    return CustomTaskComponentViewModel(
+  CustomParagraphComponentViewModel copy() {
+    return CustomParagraphComponentViewModel(
       nodeId: nodeId,
       maxWidth: maxWidth,
       padding: padding,
@@ -124,7 +108,7 @@ class CustomTaskComponentViewModel extends SingleColumnLayoutComponentViewModel
   bool operator ==(Object other) =>
       identical(this, other) ||
       super == other &&
-          other is CustomTaskComponentViewModel &&
+          other is CustomParagraphComponentViewModel &&
           runtimeType == other.runtimeType &&
           text == other.text &&
           textDirection == other.textDirection &&
@@ -150,24 +134,25 @@ class CustomTaskComponentViewModel extends SingleColumnLayoutComponentViewModel
 /// an individual task. This widget includes a checkbox that the
 /// user can tap to toggle the completeness of the task.
 ///
-/// The appearance of a [CustomTaskComponent] is configured by the given
+/// The appearance of a [CustomParagraphComponent] is configured by the given
 /// [viewModel].
-class CustomTaskComponent extends StatefulWidget {
-  const CustomTaskComponent({
+class CustomParagraphComponent extends StatefulWidget {
+  const CustomParagraphComponent({
     Key? key,
     required this.viewModel,
     this.showDebugPaint = false,
   }) : super(key: key);
 
-  final CustomTaskComponentViewModel viewModel;
+  final CustomParagraphComponentViewModel viewModel;
   final bool showDebugPaint;
 
   @override
-  State<CustomTaskComponent> createState() => _CustomTaskComponentState();
+  State<CustomParagraphComponent> createState() =>
+      _CustomParagraphComponentState();
 }
 
-class _CustomTaskComponentState extends State<CustomTaskComponent>
-    with ProxyDocumentComponent<CustomTaskComponent>, ProxyTextComposable {
+class _CustomParagraphComponentState extends State<CustomParagraphComponent>
+    with ProxyDocumentComponent<CustomParagraphComponent>, ProxyTextComposable {
   final _textKey = GlobalKey(debugLabel: "Text");
 
   @override
@@ -215,6 +200,7 @@ class _CustomTaskComponentState extends State<CustomTaskComponent>
                             MaterialPageRoute(
                               builder: (context) => CommentSection(
                                 blockId: widget.viewModel.nodeId,
+                                blockContent: widget.viewModel.text.text,
                               ),
                             ),
                           );

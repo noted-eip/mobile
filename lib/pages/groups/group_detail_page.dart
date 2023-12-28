@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -7,18 +6,20 @@ import 'package:noted_mobile/components/common/base_container.dart';
 import 'package:noted_mobile/components/common/custom_alerte.dart';
 import 'package:noted_mobile/components/common/custom_modal.dart';
 import 'package:noted_mobile/components/common/custom_toast.dart';
+import 'package:noted_mobile/components/groups/action_button.dart';
 import 'package:noted_mobile/components/groups/group_detail_header.dart';
 import 'package:noted_mobile/components/groups/group_info_widget.dart';
 import 'package:noted_mobile/components/groups/group_member_list.dart';
+import 'package:noted_mobile/components/groups/tab_bar/group_tab_bar.dart';
+import 'package:noted_mobile/components/groups/tab_bar/workspace_tab_bar.dart';
 import 'package:noted_mobile/components/invites/invite_member.dart';
-import 'package:noted_mobile/components/invites/pending_invite.dart';
 import 'package:noted_mobile/components/notes/notes_list_widget.dart';
-import 'package:noted_mobile/data/models/group/group.dart';
+import 'package:noted_mobile/data/models/invite/invite.dart';
 import 'package:noted_mobile/data/providers/group_provider.dart';
 import 'package:noted_mobile/data/providers/invite_provider.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
-import 'package:noted_mobile/pages/groups/group_activities.dart';
 import 'package:noted_mobile/utils/string_extension.dart';
+import 'package:openapi/openapi.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 //TODO: gérer les empty states sur les notes, les membres et les activités
@@ -34,9 +35,27 @@ class GroupDetailPage extends ConsumerStatefulWidget {
       _GroupDetailPageState();
 }
 
-class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
+class _GroupDetailPageState extends ConsumerState<GroupDetailPage>
+    with TickerProviderStateMixin {
   final RoundedLoadingButtonController btnController =
       RoundedLoadingButtonController();
+
+  late TabController _tabControllerWorkspace;
+  late TabController _tabControllerGroup;
+
+  @override
+  void initState() {
+    _tabControllerWorkspace = TabController(
+      length: 2,
+      vsync: this,
+    );
+    _tabControllerGroup = TabController(
+      length: 3,
+      vsync: this,
+    );
+
+    super.initState();
+  }
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -61,9 +80,9 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
       String userTkn, String memberId, String groupId, bool isLeave) async {
     try {
       await ref.read(groupClientProvider).deleteGroupMember(
-            groupId,
-            memberId,
-            userTkn,
+            groupId: groupId,
+            memberId: memberId,
+            token: userTkn,
           );
       if (mounted) {
         if (isLeave) {
@@ -144,7 +163,7 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
       isScrollControlled: true,
       builder: (context) {
         return CustomModal(
-          height: 0.92,
+          height: 0.85,
           child: InviteMemberWidget(
             controller: controller,
             formKey: roleformKey,
@@ -164,23 +183,95 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
 
     final user = ref.watch(userProvider);
 
-    final AsyncValue<Group?> groupFromApi = ref.watch(groupProvider(groupId));
+    final AsyncValue<V1Group?> groupFromApi = ref.watch(groupProvider(groupId));
 
     return Scaffold(
+      floatingActionButton: groupFromApi.when(
+        data: (group) {
+          if (group == null) {
+            return const SizedBox.shrink();
+          }
+
+          bool isWorkspace = group.workspaceAccountId != null &&
+              group.workspaceAccountId!.isNotEmpty;
+
+          return GroupActionButton(
+            controller:
+                isWorkspace ? _tabControllerWorkspace : _tabControllerGroup,
+            isWorkspace: isWorkspace,
+            group: group,
+            inviteMember: (recipientId) async {
+              try {
+                Invite? invite =
+                    await ref.read(inviteClientProvider).sendInvite(
+                          groupId: groupId,
+                          recipientId: recipientId,
+                        );
+
+                if (invite != null) {
+                  btnController.success();
+                  ref.invalidate(groupInvitesProvider(group.id));
+                } else {
+                  btnController.error();
+                }
+              } catch (e) {
+                //TODO : handle Error
+                // TODO: handle invite member if already in List
+
+                // if (mounted) {
+                //   CustomToast.show(
+                //     message: "Failed to send invite to ${members[i].item1}",
+                //     // message: e.toString().capitalize(),
+                //     type: ToastType.error,
+                //     context: saveContext,
+                //     gravity: ToastGravity.BOTTOM,
+                //     duration: 5,
+                //   );
+                // }
+                // btnController.error();
+              }
+              // await inviteMemberModal(
+              //   user.token,
+              //   groupId,
+              // );
+            },
+          );
+        },
+        loading: () {
+          return const SizedBox.shrink();
+        },
+        error: (error, stackTrace) {
+          return const SizedBox.shrink();
+        },
+      ),
       key: _scaffoldKey,
       body: BaseContainer(
-        titleWidget: GroupDetailHeader(
-          groupId: groupId,
-          deleteGroup: () async => await deleteGroup(
-            groupId,
-            user.token,
-          ),
-          leaveGroup: () async => await deleteGroupMember(
-            user.token,
-            user.id,
-            groupId,
-            true,
-          ),
+        titleWidget: groupFromApi.when(
+          data: (group) {
+            if (group == null) {
+              return const SizedBox.shrink();
+            }
+
+            return GroupDetailHeader(
+              group: group,
+              deleteGroup: () async => await deleteGroup(
+                groupId,
+                user.token,
+              ),
+              leaveGroup: () async => await deleteGroupMember(
+                user.token,
+                user.id,
+                groupId,
+                true,
+              ),
+            );
+          },
+          loading: () {
+            return const SizedBox.shrink();
+          },
+          error: (error, stackTrace) {
+            return const SizedBox.shrink();
+          },
         ),
         primaryColor: Colors.white,
         secondaryColor: Colors.grey.shade900,
@@ -190,152 +281,50 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage> {
             children: [
               Expanded(
                 child: groupFromApi.when(
-                  data: ((data) {
-                    if (data != null) {
-                      bool isWorkspace = data.data.workspaceAccountId != null &&
-                          data.data.workspaceAccountId!.isNotEmpty;
+                  data: ((group) {
+                    if (group != null) {
+                      bool isWorkspace = group.workspaceAccountId != null &&
+                          group.workspaceAccountId!.isNotEmpty;
 
                       return Column(
                         children: [
-                          GroupInfos(group: data),
+                          GroupInfos(group: group),
                           const SizedBox(
                             height: 20,
                           ),
-                          Expanded(
-                            child: DefaultTabController(
-                              length: isWorkspace ? 2 : 3,
-                              child: Column(
-                                children: [
-                                  TabBar(
-                                    indicatorColor: Colors.grey.shade900,
-                                    tabs: [
-                                      const Tab(
-                                        text: "Notes",
-                                      ),
-                                      if (!isWorkspace)
-                                        const Tab(
-                                          text: "Membres",
-                                        ),
-                                      const Tab(
-                                        text: "Activitées",
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    height: 16,
-                                  ),
-                                  Expanded(
-                                    child: TabBarView(
-                                      dragStartBehavior: DragStartBehavior.down,
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 16),
-                                          child: NotesList(
-                                            title: null,
-                                            isRefresh: true,
-                                            groupId: data.data.id,
-                                          ),
-                                        ),
-                                        if (!isWorkspace)
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 16.0),
-                                            child: Column(
-                                              children: [
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.end,
-                                                  mainAxisSize:
-                                                      MainAxisSize.max,
-                                                  children: [
-                                                    IconButton(
-                                                      onPressed: () async {
-                                                        ref.invalidate(
-                                                            groupInvitesProvider(
-                                                                groupId));
-
-                                                        await showModalBottomSheet(
-                                                          backgroundColor:
-                                                              Colors
-                                                                  .transparent,
-                                                          context: context,
-                                                          isScrollControlled:
-                                                              true,
-                                                          builder: (context) {
-                                                            return CustomModal(
-                                                              child: ListInvitesWidget(
-                                                                  groupId:
-                                                                      groupId),
-                                                              onClose:
-                                                                  (context2) {
-                                                                Navigator.pop(
-                                                                    context2,
-                                                                    false);
-                                                              },
-                                                            );
-                                                          },
-                                                        );
-                                                      },
-                                                      icon: const Icon(
-                                                        Icons.inbox,
-                                                        color: Colors.black,
-                                                      ),
-                                                    ),
-                                                    IconButton(
-                                                      onPressed: () async {
-                                                        await inviteMemberModal(
-                                                          user.token,
-                                                          groupId,
-                                                        );
-                                                      },
-                                                      icon: const Icon(
-                                                        Icons.add,
-                                                        color: Colors.black,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                Expanded(
-                                                  child: GroupMembersList(
-                                                    members: data.data.members,
-                                                    isPadding: false,
-                                                    deleteGroupMember:
-                                                        (accountId) {
-                                                      deleteGroupMemberDialog(
-                                                        user.token,
-                                                        accountId,
-                                                        groupId,
-                                                        ref,
-                                                      );
-                                                    },
-                                                    leaveGroup: (accountId) {
-                                                      leaveGroupDialog(
-                                                        user.token,
-                                                        accountId,
-                                                        groupId,
-                                                        ref,
-                                                      );
-                                                    },
-                                                    groupId: groupId,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 16.0),
-                                          child:
-                                              GroupActivities(groupId: groupId),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
+                          if (isWorkspace) ...[
+                            WorkspaceTabBar(
+                              controller: _tabControllerWorkspace,
+                              groupId: groupId,
                             ),
-                          ),
+                          ] else ...[
+                            GroupTabBar(
+                              controller: _tabControllerGroup,
+                              leaveGroup: (accountId) {
+                                leaveGroupDialog(
+                                  user.token,
+                                  accountId,
+                                  groupId,
+                                  ref,
+                                );
+                              },
+                              deleteGroup: (accountId) {
+                                deleteGroupMemberDialog(
+                                  user.token,
+                                  accountId,
+                                  groupId,
+                                  ref,
+                                );
+                              },
+                              inviteMember: () async {
+                                await inviteMemberModal(
+                                  user.token,
+                                  groupId,
+                                );
+                              },
+                              group: group,
+                            ),
+                          ]
                         ],
                       );
                     } else {

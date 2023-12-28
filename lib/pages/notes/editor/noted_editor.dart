@@ -283,9 +283,8 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
       quizzList = ref.watch(quizzListProvider(widget.infos));
     }
 
-    return PopScope(
-      canPop: !isUpdateInProgress,
-      onPopInvoked: (bool isPop) {
+    return WillPopScope(
+      onWillPop: () async {
         if (isUpdateInProgress) {
           CustomToast.show(
             message: "Mise à jour en cours",
@@ -293,97 +292,100 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
             context: context,
             gravity: ToastGravity.BOTTOM,
           );
-          return;
+          return false;
         }
+        return true;
       },
       child: Scaffold(
         floatingActionButtonLocation: ExpandableFab.location,
         floatingActionButton:
             !widget.needInternet! ? null : _buildNoteTools(ref, quizzList!),
         floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
-        body: Stack(
-          children: [
-            Column(
-              children: [
-                SizedBox(
-                  height: kToolbarHeight,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          if (isUpdateInProgress) {
-                            CustomToast.show(
-                              message: "Mise à jour en cours",
-                              type: ToastType.warning,
-                              context: context,
-                              gravity: ToastGravity.BOTTOM,
-                            );
-                            return;
-                          }
-
-                          Navigator.of(context).pop();
-                        },
-                        icon: const Icon(Icons.arrow_back),
-                      ),
-                      Expanded(
-                        flex: 6,
-                        child: Text(
-                          widget.note.title.capitalize(),
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      PopupMenuButton(
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(16),
-                          ),
-                        ),
-                        itemBuilder: (context) => [
-                          PopupMenuItem(
-                            child: const ListTile(
-                              leading: Icon(Icons.delete),
-                              title: Text("Supprimer"),
-                            ),
-                            onTap: () async {
-                              await deleteNoteDialog(ref);
-                              if (mounted) {
-                                ref.invalidate(
-                                    groupNotesProvider(widget.infos.item2));
-                                ref.invalidate(notesProvider);
-
-                                Navigator.of(context).pop();
-                              }
-                            },
-                          ),
-                          PopupMenuItem(
-                            child: const ListTile(
-                              leading: Icon(Icons.comment),
-                              title: Text("Commentaires"),
-                            ),
-                            onTap: () async {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return const CommentList();
-                                  },
-                                ),
+        body: SafeArea(
+          child: Stack(
+            children: [
+              Column(
+                children: [
+                  SizedBox(
+                    height: kToolbarHeight,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            if (isUpdateInProgress) {
+                              CustomToast.show(
+                                message: "Mise à jour en cours",
+                                type: ToastType.warning,
+                                context: context,
+                                gravity: ToastGravity.BOTTOM,
                               );
-                            },
+                              return;
+                            }
+
+                            Navigator.of(context).pop();
+                          },
+                          icon: const Icon(Icons.arrow_back),
+                        ),
+                        Expanded(
+                          flex: 6,
+                          child: Text(
+                            widget.note.title.capitalize(),
+                            style: Theme.of(context).textTheme.titleLarge,
                           ),
-                        ],
-                      ),
-                    ],
+                        ),
+                        const SizedBox(width: 4),
+                        PopupMenuButton(
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(16),
+                            ),
+                          ),
+                          itemBuilder: (context) => [
+                            PopupMenuItem(
+                              child: const ListTile(
+                                leading: Icon(Icons.delete),
+                                title: Text("Supprimer"),
+                              ),
+                              onTap: () async {
+                                await deleteNoteDialog(ref);
+                                if (mounted) {
+                                  ref.invalidate(
+                                      groupNotesProvider(widget.infos.item2));
+                                  ref.invalidate(notesProvider);
+
+                                  Navigator.of(context).pop();
+                                }
+                              },
+                            ),
+                            PopupMenuItem(
+                              child: const ListTile(
+                                leading: Icon(Icons.comment),
+                                title: Text("Commentaires"),
+                              ),
+                              onTap: () async {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return const CommentList();
+                                    },
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: _buildEditor(context),
-                ),
-                if (_isMobile) _buildMountedToolbar(),
-              ],
-            ),
-          ],
+                  Expanded(
+                    child: _buildEditor(context),
+                  ),
+                  if (_isMobile) _buildMountedToolbar(),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -396,8 +398,11 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
     if (!widget.needInternet!) return const SizedBox();
 
     return ExpandableFab(
-      distance: 150,
-      type: ExpandableFabType.fan,
+      overlayStyle: ExpandableFabOverlayStyle(
+        color: Colors.black.withOpacity(0.5),
+      ),
+      distance: 80,
+      type: ExpandableFabType.up,
       pos: ExpandableFabPos.right,
       openButtonBuilder: RotateFloatingActionButtonBuilder(
         child: const Icon(Icons.bolt),
@@ -418,309 +423,388 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
         ),
       ),
       children: [
-        FloatingActionButton(
-          heroTag: "quiz",
-          elevation: 5,
-          backgroundColor: NotedColors.secondary,
-          foregroundColor: Colors.white,
-          onPressed: () async {
-            if (quizzList.hasError) {
-              print("error quizz list");
-              return;
-            }
-            if (quizzList.isLoading) {
-              print("loading quizz list");
-              return;
-            }
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: NotedColors.primary,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 10,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Text(
+                "Quizz",
+                style: Theme.of(context)
+                    .textTheme
+                    .headlineSmall!
+                    .copyWith(color: Colors.white),
+              ),
+              const SizedBox(width: 8),
+              FloatingActionButton(
+                heroTag: "quiz",
+                tooltip: "Quiz",
+                elevation: 5,
+                backgroundColor: NotedColors.secondary,
+                foregroundColor: Colors.white,
+                onPressed: () async {
+                  if (quizzList.hasError) {
+                    print("error quizz list");
+                    return;
+                  }
+                  if (quizzList.isLoading) {
+                    print("loading quizz list");
+                    return;
+                  }
 
-            if (quizzList.value == null) {
-              print("quizz list is null");
-              return;
-            }
+                  if (quizzList.value == null) {
+                    print("quizz list is null");
+                    return;
+                  }
 
-            if (quizzList.value!.isEmpty) {
-              bool validNote = noteContainMoreThan100Words(widget.note);
+                  if (quizzList.value!.isEmpty) {
+                    bool validNote = noteContainMoreThan100Words(widget.note);
 
-              if (!validNote) {
-                CustomToast.show(
-                  message:
-                      "La note doit contenir au moins 100 mots pour générer un quizz",
-                  type: ToastType.warning,
-                  context: context,
-                  gravity: ToastGravity.TOP,
-                );
+                    if (!validNote) {
+                      CustomToast.show(
+                        message:
+                            "La note doit contenir au moins 100 mots pour générer un quizz",
+                        type: ToastType.warning,
+                        context: context,
+                        gravity: ToastGravity.TOP,
+                      );
 
-                return;
-              }
+                      return;
+                    }
 
-              setState(() {
-                isLoadingQuizz = true;
-              });
-              bool isQuizzGenerated = await creatQuiz(
-                ref,
-                widget.infos,
-                widget.note,
-              );
-              if (mounted) {
-                if (isQuizzGenerated) {
-                  ref.invalidate(quizzListProvider(widget.infos));
-                  CustomToast.show(
-                    message: "Quizz généré",
-                    type: ToastType.success,
+                    setState(() {
+                      isLoadingQuizz = true;
+                    });
+                    bool isQuizzGenerated = await creatQuiz(
+                      ref,
+                      widget.infos,
+                      widget.note,
+                    );
+                    if (mounted) {
+                      if (isQuizzGenerated) {
+                        ref.invalidate(quizzListProvider(widget.infos));
+                        CustomToast.show(
+                          message: "Quizz généré",
+                          type: ToastType.success,
+                          context: context,
+                          gravity: ToastGravity.TOP,
+                        );
+                      } else {
+                        CustomToast.show(
+                          message: "Erreur lors de la génération du quizz",
+                          type: ToastType.error,
+                          context: context,
+                          gravity: ToastGravity.TOP,
+                        );
+                      }
+                    }
+                    setState(() {
+                      isLoadingQuizz = false;
+                    });
+
+                    print("quizz list is empty");
+                    return;
+                  }
+
+                  V1Quiz quiz = quizzList.value!.first;
+
+                  return showModalBottomSheet(
+                    backgroundColor: Colors.transparent,
                     context: context,
-                    gravity: ToastGravity.TOP,
+                    isScrollControlled: true,
+                    builder: (context) {
+                      return CustomModal(
+                        height: 0.9,
+                        onClose: (context) {
+                          print("close");
+                          ref.invalidate(quizzListProvider(widget.infos));
+                          Navigator.pop(context);
+                        },
+                        child: QuizzPage(
+                          quiz: quiz,
+                          infos: widget.infos,
+                        ),
+                      );
+                    },
                   );
-                } else {
-                  CustomToast.show(
-                    message: "Erreur lors de la génération du quizz",
-                    type: ToastType.error,
+                },
+                child: isLoadingQuizz
+                    ? const CircularProgressIndicator(
+                        color: Colors.white,
+                      )
+                    : const Icon(
+                        Icons.quiz,
+                      ),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: NotedColors.primary,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 10,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Text(
+                "Résumé",
+                style: Theme.of(context)
+                    .textTheme
+                    .headlineSmall!
+                    .copyWith(color: Colors.white),
+              ),
+              const SizedBox(width: 8),
+              FloatingActionButton(
+                heroTag: "summary",
+                tooltip: "Résumé",
+                backgroundColor: NotedColors.secondary,
+                foregroundColor: Colors.white,
+                elevation: 5,
+                onPressed: () async {
+                  bool validNote = noteContainMoreThan100Words(widget.note);
+
+                  if (!validNote) {
+                    CustomToast.show(
+                      message:
+                          "La note doit contenir au moins 100 mots pour générer un résumé",
+                      type: ToastType.warning,
+                      context: context,
+                      gravity: ToastGravity.TOP,
+                    );
+
+                    return;
+                  }
+
+                  setState(() {
+                    isLoadingSummary = true;
+                  });
+
+                  String? summary = await createSummary(
+                    ref,
+                    widget.infos,
+                    widget.note,
+                  );
+
+                  setState(() {
+                    isLoadingSummary = false;
+                  });
+
+                  if (summary == null) {
+                    if (!mounted) {
+                      return;
+                    }
+                    CustomToast.show(
+                      message: "Erreur lors de la génération du résumé",
+                      type: ToastType.error,
+                      context: context,
+                      gravity: ToastGravity.TOP,
+                    );
+                    return;
+                  }
+
+                  if (!mounted) {
+                    return;
+                  }
+
+                  return showModalBottomSheet(
+                    backgroundColor: Colors.transparent,
                     context: context,
-                    gravity: ToastGravity.TOP,
+                    isScrollControlled: true,
+                    builder: (context) {
+                      return CustomModal(
+                        height: 1,
+                        onClose: (context) {
+                          Navigator.pop(context);
+                        },
+                        child: SummaryScreen(
+                          infos: widget.infos,
+                          summary: summary,
+                        ),
+                      );
+                    },
                   );
-                }
-              }
-              setState(() {
-                isLoadingQuizz = false;
-              });
-
-              print("quizz list is empty");
-              return;
-            }
-
-            V1Quiz quiz = quizzList.value!.first;
-
-            return showModalBottomSheet(
-              backgroundColor: Colors.transparent,
-              context: context,
-              isScrollControlled: true,
-              builder: (context) {
-                return CustomModal(
-                  height: 0.9,
-                  onClose: (context) {
-                    print("close");
-                    ref.invalidate(quizzListProvider(widget.infos));
-                    Navigator.pop(context);
-                  },
-                  child: QuizzPage(
-                    quiz: quiz,
-                    infos: widget.infos,
-                  ),
-                );
-              },
-            );
-          },
-          child: isLoadingQuizz
-              ? const CircularProgressIndicator(
-                  color: Colors.white,
-                )
-              : const Icon(
-                  Icons.quiz,
-                ),
+                },
+                child: isLoadingSummary
+                    ? const CircularProgressIndicator(
+                        color: Colors.white,
+                      )
+                    : const Icon(
+                        Icons.summarize,
+                      ),
+              ),
+            ],
+          ),
         ),
-        FloatingActionButton(
-          heroTag: "recommendation",
-          backgroundColor: NotedColors.secondary,
-          foregroundColor: Colors.white,
-          elevation: 5,
-          onPressed: () async {
-            bool validNote = noteContainMoreThan100Words(widget.note);
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: NotedColors.primary,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 10,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Text(
+                "Recommandation",
+                style: Theme.of(context)
+                    .textTheme
+                    .headlineSmall!
+                    .copyWith(color: Colors.white),
+              ),
+              const SizedBox(width: 8),
+              FloatingActionButton(
+                heroTag: "recommendation",
+                tooltip: "Recommandation",
+                backgroundColor: NotedColors.secondary,
+                foregroundColor: Colors.white,
+                elevation: 5,
+                onPressed: () async {
+                  bool validNote = noteContainMoreThan100Words(widget.note);
 
-            if (!validNote) {
-              CustomToast.show(
-                message:
-                    "La note doit contenir au moins 100 mots pour générer une recommandation",
-                type: ToastType.warning,
-                context: context,
-                gravity: ToastGravity.TOP,
-              );
+                  if (!validNote) {
+                    CustomToast.show(
+                      message:
+                          "La note doit contenir au moins 100 mots pour générer une recommandation",
+                      type: ToastType.warning,
+                      context: context,
+                      gravity: ToastGravity.TOP,
+                    );
 
-              return;
-            }
+                    return;
+                  }
 
-            setState(() {
-              isLoadingRecommendation = true;
-            });
+                  setState(() {
+                    isLoadingRecommendation = true;
+                  });
 
-            List<V1Widget>? widgetList = await createRecommendation(
-              ref,
-              widget.infos,
-              widget.note,
-            );
+                  List<V1Widget>? widgetList = await createRecommendation(
+                    ref,
+                    widget.infos,
+                    widget.note,
+                  );
 
-            setState(() {
-              isLoadingRecommendation = false;
-            });
+                  setState(() {
+                    isLoadingRecommendation = false;
+                  });
 
-            if (widgetList == null && mounted) {
-              CustomToast.show(
-                message: "Erreur lors de la génération de la recommandation",
-                type: ToastType.error,
-                context: context,
-                gravity: ToastGravity.TOP,
-              );
-              return;
-            }
+                  if (widgetList == null && mounted) {
+                    CustomToast.show(
+                      message:
+                          "Erreur lors de la génération de la recommandation",
+                      type: ToastType.error,
+                      context: context,
+                      gravity: ToastGravity.TOP,
+                    );
+                    return;
+                  }
 
-            if (widgetList!.isEmpty && mounted) {
-              CustomToast.show(
-                message:
-                    "Aucune recommandation n'a été générée.\nContinuer d'écrire pour générer une recommandation",
-                type: ToastType.warning,
-                context: context,
-                gravity: ToastGravity.TOP,
-              );
-              return;
-            }
+                  if (widgetList!.isEmpty && mounted) {
+                    CustomToast.show(
+                      message:
+                          "Aucune recommandation n'a été générée.\nContinuer d'écrire pour générer une recommandation",
+                      type: ToastType.warning,
+                      context: context,
+                      gravity: ToastGravity.TOP,
+                    );
+                    return;
+                  }
 
-            if (!mounted) {
-              return;
-            }
+                  if (!mounted) {
+                    return;
+                  }
 
-            return showModalBottomSheet(
-              backgroundColor: Colors.transparent,
-              context: context,
-              isScrollControlled: true,
-              builder: (context) {
-                return CustomModal(
-                  height: 1,
-                  onClose: (context) {
-                    Navigator.pop(context);
-                  },
-                  child: RecommendationPage(
-                    infos: widget.infos,
-                    widgetList: widgetList,
-                  ),
-                );
-              },
-            );
-          },
-          child: isLoadingRecommendation
-              ? const CircularProgressIndicator(
-                  color: Colors.white,
-                )
-              : const Icon(
-                  Icons.recommend,
-                ),
-        ),
-        FloatingActionButton(
-          heroTag: "summary",
-          backgroundColor: NotedColors.secondary,
-          foregroundColor: Colors.white,
-          elevation: 5,
-          onPressed: () async {
-            bool validNote = noteContainMoreThan100Words(widget.note);
-
-            if (!validNote) {
-              CustomToast.show(
-                message:
-                    "La note doit contenir au moins 100 mots pour générer un résumé",
-                type: ToastType.warning,
-                context: context,
-                gravity: ToastGravity.TOP,
-              );
-
-              return;
-            }
-
-            setState(() {
-              isLoadingSummary = true;
-            });
-
-            String? summary = await createSummary(
-              ref,
-              widget.infos,
-              widget.note,
-            );
-
-            setState(() {
-              isLoadingSummary = false;
-            });
-
-            if (summary == null) {
-              if (!mounted) {
-                return;
-              }
-              CustomToast.show(
-                message: "Erreur lors de la génération du résumé",
-                type: ToastType.error,
-                context: context,
-                gravity: ToastGravity.TOP,
-              );
-              return;
-            }
-
-            if (!mounted) {
-              return;
-            }
-
-            return showModalBottomSheet(
-              backgroundColor: Colors.transparent,
-              context: context,
-              isScrollControlled: true,
-              builder: (context) {
-                return CustomModal(
-                  height: 1,
-                  onClose: (context) {
-                    Navigator.pop(context);
-                  },
-                  child: SummaryScreen(
-                    infos: widget.infos,
-                    summary: summary,
-                  ),
-                );
-              },
-            );
-          },
-          child: isLoadingSummary
-              ? const CircularProgressIndicator(
-                  color: Colors.white,
-                )
-              : const Icon(
-                  Icons.summarize,
-                ),
+                  return showModalBottomSheet(
+                    backgroundColor: Colors.transparent,
+                    context: context,
+                    isScrollControlled: true,
+                    builder: (context) {
+                      return CustomModal(
+                        height: 1,
+                        onClose: (context) {
+                          Navigator.pop(context);
+                        },
+                        child: RecommendationPage(
+                          infos: widget.infos,
+                          widgetList: widgetList,
+                        ),
+                      );
+                    },
+                  );
+                },
+                child: isLoadingRecommendation
+                    ? const CircularProgressIndicator(
+                        color: Colors.white,
+                      )
+                    : const Icon(
+                        Icons.recommend,
+                      ),
+              ),
+            ],
+          ),
         ),
       ],
     );
   }
 
   Widget _buildEditor(BuildContext context) {
-    return KeyedSubtree(
-      key: _viewportKey,
-      child: SuperEditor(
-        editor: _docEditor,
-        composer: _composer,
-        focusNode: _editorFocusNode,
-        documentLayoutKey: _docLayoutKey,
-        documentOverlayBuilders: const [
-          DefaultCaretOverlayBuilder(),
-        ],
-        selectionStyle: SelectionStyles(
-            selectionColor: NotedColors.secondary.withOpacity(0.5)),
-        stylesheet: defaultStylesheet,
-        componentBuilders: [
-          CustomParagraphComponentBuilder(),
-          ...defaultComponentBuilders,
-        ],
-        gestureMode: _gestureMode,
-        inputSource: _inputSource,
-        keyboardActions: [
-          ...defaultKeyboardActions,
-          ...notedCustomKeyboardActions
-        ],
-        androidToolbarBuilder: (_) => AndroidTextEditingFloatingToolbar(
-          onCutPressed: _cut,
-          onCopyPressed: _copy,
-          onPastePressed: _paste,
-          onSelectAllPressed: _selectAll,
-        ),
-        iOSToolbarBuilder: (_) => IOSTextEditingFloatingToolbar(
-          onCutPressed: _cut,
-          onCopyPressed: _copy,
-          onPastePressed: _paste,
-          focalPoint: _overlayController.toolbarTopAnchor!,
-        ),
-        overlayController: _overlayController,
+    return SuperEditor(
+      editor: _docEditor,
+      composer: _composer,
+      focusNode: _editorFocusNode,
+      documentLayoutKey: _docLayoutKey,
+      documentOverlayBuilders: const [
+        DefaultCaretOverlayBuilder(),
+      ],
+      selectionStyle: SelectionStyles(
+          selectionColor: NotedColors.secondary.withOpacity(0.5)),
+      stylesheet: defaultStylesheet,
+      componentBuilders: [
+        CustomParagraphComponentBuilder(),
+        ...defaultComponentBuilders,
+      ],
+      gestureMode: _gestureMode,
+      inputSource: _inputSource,
+      keyboardActions: [
+        ...defaultKeyboardActions,
+        ...notedCustomKeyboardActions
+      ],
+      androidToolbarBuilder: (_) => AndroidTextEditingFloatingToolbar(
+        onCutPressed: _cut,
+        onCopyPressed: _copy,
+        onPastePressed: _paste,
+        onSelectAllPressed: _selectAll,
       ),
+      iOSToolbarBuilder: (_) => IOSTextEditingFloatingToolbar(
+        onCutPressed: _cut,
+        onCopyPressed: _copy,
+        onPastePressed: _paste,
+        focalPoint: _overlayController.toolbarTopAnchor!,
+      ),
+      overlayController: _overlayController,
     );
   }
 

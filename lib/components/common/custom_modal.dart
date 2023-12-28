@@ -13,7 +13,7 @@ class CustomModal extends ConsumerStatefulWidget {
       this.height});
   final Widget child;
   final ContextCallBack? onClose;
-  final IconButton? iconButton;
+  final Widget? iconButton;
   final double? height;
 
   @override

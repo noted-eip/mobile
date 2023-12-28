@@ -53,9 +53,13 @@ class _GroupMembersListState extends ConsumerState<GroupMembersList> {
   Future<void> editGroupMemberRole(
       String userTkn, String accountId, String groupId, bool isAdmin) async {
     try {
-      V1GroupMember? member = await ref
-          .read(groupClientProvider)
-          .updateGroupMember(groupId, accountId, isAdmin, userTkn);
+      V1GroupMember? member =
+          await ref.read(groupClientProvider).updateGroupMember(
+                groupId: groupId,
+                memberId: accountId,
+                isAdmin: isAdmin,
+                token: userTkn,
+              );
 
       if (member == null) {
         return;
@@ -112,7 +116,7 @@ class _GroupMembersListState extends ConsumerState<GroupMembersList> {
               List<ActionSlidable> adminActions = [
                 ActionSlidable(
                   Icons.delete,
-                  Colors.red,
+                  Colors.transparent,
                   (() async {
                     if (kDebugMode) {
                       print("delete");

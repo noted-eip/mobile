@@ -7,7 +7,8 @@ final accountClientProvider =
 
 final accountProvider =
     FutureProvider.family<Account?, String>(((ref, id) async {
-  final account = await ref.watch(accountClientProvider).getAccountById(id);
+  final account =
+      await ref.watch(accountClientProvider).getAccountById(accountId: id);
 
   return account;
 }));

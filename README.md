@@ -4,7 +4,9 @@ Mobile app for Noted
 
 ## TODO / IN PROGRESS
 
-Revoir pour tous les try catch de requete api la récupération des messages d'erreurs
+end drawer -> notif
+activités
+invitations
 
 ## NEXT Sprint
 

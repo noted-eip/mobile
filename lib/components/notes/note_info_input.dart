@@ -16,6 +16,7 @@ class NoteInfosInput extends ConsumerStatefulWidget {
       required this.title,
       required this.onGroupSelected,
       required this.onLanguageSelected,
+      this.canChooseGroup = true,
       super.key});
 
   final String title;
@@ -25,6 +26,7 @@ class NoteInfosInput extends ConsumerStatefulWidget {
   final TextEditingController descriptionController;
   final StringCallBack onGroupSelected;
   final StringCallBack onLanguageSelected;
+  final bool canChooseGroup;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _NoteInfosInputState();
@@ -73,7 +75,8 @@ class _NoteInfosInputState extends ConsumerState<NoteInfosInput> {
               TextFormField(
                 enabled: groups.hasValue &&
                     groups.value != null &&
-                    groups.value!.isNotEmpty,
+                    groups.value!.isNotEmpty &&
+                    widget.canChooseGroup,
                 minLines: 1,
                 maxLines: 1,
                 controller: widget.descriptionController,
@@ -86,76 +89,80 @@ class _NoteInfosInputState extends ConsumerState<NoteInfosInput> {
                   }
                   return null;
                 },
-                onTap: () {
-                  if (groups.hasValue &&
-                      groups.value != null &&
-                      groups.value!.isNotEmpty) {
-                    if (widget.descriptionController.text.isEmpty) {
-                      //TODO: check si les groupes sont vides
+                onTap: !widget.canChooseGroup
+                    ? null
+                    : () {
+                        if (groups.hasValue &&
+                            groups.value != null &&
+                            groups.value!.isNotEmpty) {
+                          if (widget.descriptionController.text.isEmpty) {
+                            //TODO: check si les groupes sont vides
 
-                      widget.descriptionController.text =
-                          groups.value!.elementAt(0).data.name;
-                      widget
-                          .onGroupSelected(groups.value!.elementAt(0).data.id);
-                    }
+                            widget.descriptionController.text =
+                                groups.value!.elementAt(0).data.name;
+                            widget.onGroupSelected(
+                                groups.value!.elementAt(0).data.id);
+                          }
 
-                    showCupertinoModalPopup(
-                      context: context,
-                      builder: (context) {
-                        return Container(
-                          height: 216,
-                          padding: const EdgeInsets.only(top: 6.0),
-                          // The Bottom margin is provided to align the popup above the system navigation bar.
-                          margin: EdgeInsets.only(
-                            bottom: MediaQuery.of(context).viewInsets.bottom,
-                          ),
-                          // Provide a background color for the popup.
-                          color: CupertinoColors.systemBackground
-                              .resolveFrom(context),
-                          // Use a SafeArea widget to avoid system overlaps.
-                          child: SafeArea(
-                            top: false,
-                            child: CupertinoPicker(
-                              magnification: 1.22,
-                              squeeze: 1.2,
-                              useMagnifier: true,
-                              itemExtent: 32.0,
-                              // This sets the initial item.
-                              scrollController: FixedExtentScrollController(
-                                initialItem: selectedGroupIndex,
-                              ),
-                              // This is called when selected item is changed.
-                              onSelectedItemChanged: (int selectedItem) {
-                                setState(() {
-                                  selectedGroupIndex = selectedItem;
-                                });
-                                var selectedGroupId = groups.value!
-                                    .elementAt(selectedItem)
-                                    .data
-                                    .id;
-                                widget.onGroupSelected(selectedGroupId);
-                                widget.descriptionController.text = groups
-                                    .value!
-                                    .elementAt(selectedItem)
-                                    .data
-                                    .name;
-                              },
-                              children: List<Widget>.from(
-                                groups.value!.map(
-                                  (Group group) {
-                                    return Center(
-                                      child: Text(group.data.name),
-                                    );
-                                  },
+                          showCupertinoModalPopup(
+                            context: context,
+                            builder: (context) {
+                              return Container(
+                                height: 216,
+                                padding: const EdgeInsets.only(top: 6.0),
+                                // The Bottom margin is provided to align the popup above the system navigation bar.
+                                margin: EdgeInsets.only(
+                                  bottom:
+                                      MediaQuery.of(context).viewInsets.bottom,
                                 ),
-                              ),
-                            ),
-                          ),
-                        );
+                                // Provide a background color for the popup.
+                                color: CupertinoColors.systemBackground
+                                    .resolveFrom(context),
+                                // Use a SafeArea widget to avoid system overlaps.
+                                child: SafeArea(
+                                  top: false,
+                                  child: CupertinoPicker(
+                                    magnification: 1.22,
+                                    squeeze: 1.2,
+                                    useMagnifier: true,
+                                    itemExtent: 32.0,
+                                    // This sets the initial item.
+                                    scrollController:
+                                        FixedExtentScrollController(
+                                      initialItem: selectedGroupIndex,
+                                    ),
+                                    // This is called when selected item is changed.
+                                    onSelectedItemChanged: (int selectedItem) {
+                                      setState(() {
+                                        selectedGroupIndex = selectedItem;
+                                      });
+                                      var selectedGroupId = groups.value!
+                                          .elementAt(selectedItem)
+                                          .data
+                                          .id;
+                                      widget.onGroupSelected(selectedGroupId);
+                                      widget.descriptionController.text = groups
+                                          .value!
+                                          .elementAt(selectedItem)
+                                          .data
+                                          .name;
+                                    },
+                                    children: List<Widget>.from(
+                                      groups.value!.map(
+                                        (Group group) {
+                                          return Center(
+                                            child: Text(group.data.name),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        }
                       },
-                    );
-                  }
-                },
               ),
               const SizedBox(height: 30.0),
               TextFormField(

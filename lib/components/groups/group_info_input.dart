@@ -51,6 +51,7 @@ class _GroupInfosInputState extends ConsumerState<GroupInfosInput> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           widget.title,
@@ -75,10 +76,11 @@ class _GroupInfosInputState extends ConsumerState<GroupInfosInput> {
                   }
                   return null;
                 },
+                textInputAction: TextInputAction.next,
               ),
               const SizedBox(height: 30.0),
               TextFormField(
-                minLines: 3,
+                minLines: 1,
                 maxLines: 3,
                 controller: widget.descriptionController,
                 decoration: ThemeHelper().textInputDecoration(
@@ -92,6 +94,7 @@ class _GroupInfosInputState extends ConsumerState<GroupInfosInput> {
                   }
                   return null;
                 },
+                textInputAction: TextInputAction.done,
               ),
             ],
           ),

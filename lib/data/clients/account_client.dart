@@ -149,10 +149,7 @@ class AccountClient {
 
   // Login
 
-  // TODO: add required parameters
-  Future<bool> loginWithGoogle(
-    String googleToken,
-  ) async {
+  Future<bool> loginWithGoogle({required String googleToken}) async {
     final DefaultApi apiP = ref.read(apiProvider);
     final UserNotifier userNotifier = ref.read(userProvider);
 
@@ -413,8 +410,7 @@ class AccountClient {
     }
   }
 
-  // TODO : add required parameters
-  Future<Account?> getAccountById(String accountId) async {
+  Future<Account?> getAccountById({required String accountId}) async {
     try {
       final Response<V1GetAccountResponse> response = await ref
           .read(apiProvider)
@@ -437,8 +433,10 @@ class AccountClient {
     }
   }
 
-  // TODO : add required parameters
-  Future<Account?> getAccountByEmail(String email, String token) async {
+  Future<Account?> getAccountByEmail({
+    required String email,
+    required String token,
+  }) async {
     final V1GetAccountRequest body = V1GetAccountRequest(
       (body) => body..email = email,
     );
@@ -476,12 +474,14 @@ class AccountClient {
       "ForgetAccountPassword": () async =>
           await forgetAccountPassword(email: "email"),
       "GetAccountByEmail": () async =>
-          await getAccountByEmail("email", "token"),
-      "GetAccountById": () async => await getAccountById("accountId"),
+          await getAccountByEmail(email: "email", token: "token"),
+      "GetAccountById": () async =>
+          await getAccountById(accountId: "accountId"),
       "IsAccountValidated": () async =>
           await isAccountValidated(email: "email", password: "password"),
       "Login": () async => await login(email: "email", password: "password"),
-      "LoginWithGoogle": () async => await loginWithGoogle("googleToken"),
+      "LoginWithGoogle": () async =>
+          await loginWithGoogle(googleToken: "googleToken"),
       "ResendValidateToken": () async =>
           await resendValidateToken(email: "email", password: "password"),
       "ResetPassword": () async => await resetPassword(

@@ -19,23 +19,21 @@ class _NoteDetailState extends ConsumerState<NoteDetail> {
     final note = ref.watch(noteProvider(infos));
 
     return Scaffold(
-      body: SafeArea(
-        child: note.when(
-          data: (data) {
-            if (data == null) {
-              return const Center(
-                child: Text("No data"),
-              );
-            }
-            return NotedEditor(
-              note: data,
-              infos: infos,
+      body: note.when(
+        data: (data) {
+          if (data == null) {
+            return const Center(
+              child: Text("No data"),
             );
-          },
-          error: (error, stackTrace) => Text(error.toString()),
-          loading: () => const Center(
-            child: CircularProgressIndicator(),
-          ),
+          }
+          return NotedEditor(
+            note: data,
+            infos: infos,
+          );
+        },
+        error: (error, stackTrace) => Text(error.toString()),
+        loading: () => const Center(
+          child: CircularProgressIndicator(),
         ),
       ),
     );

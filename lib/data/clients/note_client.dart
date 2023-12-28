@@ -101,7 +101,11 @@ class NoteClient {
     }
   }
 
-  Future<V1Note?> getNote(String noteId, String groupId, String token) async {
+  Future<V1Note?> getNote({
+    required String noteId,
+    required String groupId,
+    required String token,
+  }) async {
     try {
       final Response<V1GetNoteResponse> response = await ref
           .read(apiProvider)
@@ -123,7 +127,10 @@ class NoteClient {
     }
   }
 
-  Future<List<V1Note>?> listGroupNotes(String groupId, String token) async {
+  Future<List<V1Note>?> listGroupNotes({
+    required String groupId,
+    required String token,
+  }) async {
     try {
       final Response<V1ListNotesResponse> response = await ref
           .read(apiProvider)
@@ -145,7 +152,10 @@ class NoteClient {
     }
   }
 
-  Future<List<V1Note>?> listNotes(String authorId, String token) async {
+  Future<List<V1Note>?> listNotes({
+    required String authorId,
+    required String token,
+  }) async {
     try {
       final Response<V1ListNotesResponse> response = await ref
           .read(apiProvider)
@@ -391,9 +401,9 @@ class NoteClient {
 
       try {
         final note = await getNote(
-          noteId,
-          groupId,
-          ref.read(userProvider).token,
+          noteId: noteId,
+          groupId: groupId,
+          token: ref.read(userProvider).token,
         );
 
         if (note == null) {

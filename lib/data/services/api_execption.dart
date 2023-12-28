@@ -38,6 +38,7 @@ class NotedException implements Exception {
   }
 
   String _handleError(int statusCode, dynamic error) {
+    print("Error: $error");
     return error["error"];
   }
 

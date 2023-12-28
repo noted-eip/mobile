@@ -26,10 +26,13 @@ final apiProvider = Provider<DefaultApi>((ref) {
   //   connectTimeout: const Duration(seconds: 20),
   // );
 
+  // TODO: revoir les timeout
+  //TODO : mettre un message pop up error reseau
+
   var dio = Dio(
     BaseOptions(
       baseUrl: kBaseUrl,
-      receiveTimeout: const Duration(seconds: 20),
+      receiveTimeout: const Duration(seconds: 50),
     ),
   );
 

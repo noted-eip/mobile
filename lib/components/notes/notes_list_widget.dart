@@ -1,16 +1,15 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lottie/lottie.dart';
 import 'package:noted_mobile/components/notes/note_card_widget.dart';
 import 'package:noted_mobile/data/clients/tracker_client.dart';
-import 'package:noted_mobile/data/models/group/group.dart';
 import 'package:noted_mobile/data/providers/group_provider.dart';
 import 'package:noted_mobile/data/providers/note_provider.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:openapi/openapi.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:tuple/tuple.dart';
-//TODO: refactor this widget
 
 class NotesList extends ConsumerStatefulWidget {
   const NotesList({
@@ -114,7 +113,7 @@ class _NotesListState extends ConsumerState<NotesList> {
     List<Widget> expansionTiles = [];
 
     for (var groupId in groupIds) {
-      AsyncValue<Group?> groupFromApi =
+      AsyncValue<V1Group?> groupFromApi =
           ref.read(groupProvider(notesByGroup[groupId]![0].groupId));
       isExpandedList.add(false);
       expansionTiles.add(
@@ -137,7 +136,7 @@ class _NotesListState extends ConsumerState<NotesList> {
             ),
             title: Text(
               groupFromApi.when(
-                data: (group) => group!.data.name,
+                data: (group) => group == null ? "" : group.name,
                 loading: () => '',
                 error: (error, stackTrace) => '',
               ),
@@ -436,31 +435,58 @@ class _NotesListState extends ConsumerState<NotesList> {
         if (data == null) {
           return buildLoading(widget.isRefresh!);
         }
+
         return RefreshIndicator(
           displacement: 0,
           onRefresh: () async {
             ref.invalidate(groupNotesProvider(groupId));
           },
-          child: ListView.builder(
-            padding: EdgeInsets.zero,
-            itemBuilder: (context, index) {
-              V1Note note = data[index];
-              // Note note = data[index];
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: NoteCard(
-                  note: note,
-                  baseColor: Colors.white,
-                  onTap: () {
-                    ref.read(trackerProvider).trackPage(TrackPage.noteDetail);
-                    Navigator.pushNamed(context, '/note-detail',
-                        arguments: Tuple2(note.id, note.groupId));
+          child: data.isEmpty
+              ? SafeArea(
+                  top: false,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 32),
+                      Lottie.asset(
+                        'assets/animations/empty-box.json',
+                        height: 250,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        "home.no-notes".tr(),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.grey.shade700,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                    ],
+                  ),
+                )
+              : ListView.builder(
+                  padding: EdgeInsets.zero,
+                  itemBuilder: (context, index) {
+                    V1Note note = data[index];
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: NoteCard(
+                        note: note,
+                        baseColor: Colors.white,
+                        onTap: () {
+                          ref
+                              .read(trackerProvider)
+                              .trackPage(TrackPage.noteDetail);
+                          Navigator.pushNamed(context, '/note-detail',
+                              arguments: Tuple2(note.id, note.groupId));
+                        },
+                      ),
+                    );
                   },
+                  itemCount: data.length,
                 ),
-              );
-            },
-            itemCount: data.length,
-          ),
         );
       },
       error: (error, stackTrace) => Text(error.toString()),

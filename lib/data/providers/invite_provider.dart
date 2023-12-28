@@ -9,7 +9,7 @@ final inviteClientProvider =
 final sendInvitesProvider = FutureProvider<List<Invite>?>((ref) async {
   final account = ref.watch(userProvider);
   final inviteList = await ref.watch(inviteClientProvider).listInvites(
-        account.token,
+        token: account.token,
         senderId: account.id,
       );
 
@@ -19,7 +19,7 @@ final sendInvitesProvider = FutureProvider<List<Invite>?>((ref) async {
 final receiveInvitesProvider = FutureProvider<List<Invite>?>((ref) async {
   final account = ref.watch(userProvider);
   final inviteList = await ref.watch(inviteClientProvider).listInvites(
-        account.token,
+        token: account.token,
         recipientId: account.id,
       );
   return inviteList;
@@ -29,7 +29,7 @@ final groupInvitesProvider =
     FutureProvider.family<List<Invite>?, String>((ref, groupId) async {
   final account = ref.watch(userProvider);
   final inviteList = await ref.watch(inviteClientProvider).listInvites(
-        account.token,
+        token: account.token,
         groupId: groupId,
       );
   return inviteList;

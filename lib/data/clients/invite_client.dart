@@ -48,9 +48,10 @@ class InviteClient {
     }
   }
 
-// TODO: add required params
-  Future<Invite?> getInvite(String inviteId, String token) async {
-    // TODO: implement getInvite
+  Future<Invite?> getInvite({
+    required String inviteId,
+    required String token,
+  }) async {
     final api = singleton.get<APIHelper>();
 
     try {
@@ -71,9 +72,8 @@ class InviteClient {
     }
   }
 
-// TODO: add required params
-  Future<List<Invite>?> listInvites(
-    String token, {
+  Future<List<Invite>?> listInvites({
+    required String token,
     String? senderId,
     String? recipientId,
     String? groupId,

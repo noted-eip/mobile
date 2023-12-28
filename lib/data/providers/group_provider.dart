@@ -36,7 +36,7 @@ final latestGroupsProvider = FutureProvider<List<Group>?>((ref) async {
 });
 
 final groupProvider =
-    FutureProvider.family<Group?, String>((ref, groupId) async {
+    FutureProvider.family<V1Group?, String>((ref, groupId) async {
   final group = await ref.watch(groupClientProvider).getGroup(groupId: groupId);
 
   return group;
@@ -47,9 +47,11 @@ final groupMemberProvider =
   final account = ref.watch(userProvider);
   final user = ref.watch(userProvider);
 
-  final groupMember = await ref
-      .watch(groupClientProvider)
-      .getGroupMember(groupId, user.id, account.token);
+  final groupMember = await ref.watch(groupClientProvider).getGroupMember(
+        groupId: groupId,
+        memberId: user.id,
+        token: account.token,
+      );
 
   return groupMember;
 });

@@ -41,12 +41,12 @@ class _InviteFieldState extends ConsumerState<InviteField> {
   @override
   void initState() {
     super.initState();
-    widget.controller.addListener((() => checkEmail()));
+    widget.controller.addListener(checkEmail);
   }
 
   @override
   void dispose() {
-    widget.controller.dispose();
+    widget.controller.removeListener(checkEmail);
     super.dispose();
   }
 
@@ -83,7 +83,7 @@ class _InviteFieldState extends ConsumerState<InviteField> {
           try {
             Account? account = await ref
                 .read(accountClientProvider)
-                .getAccountByEmail(email, user.token);
+                .getAccountByEmail(email: email, token: user.token);
 
             if (account == null) {
               setState(() {
@@ -230,6 +230,7 @@ class _InviteMemberState extends ConsumerState<InviteMemberWidget> {
           child: Form(
             key: widget.formKey,
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 InviteField(
                   controller: widget.controller,
@@ -240,9 +241,7 @@ class _InviteMemberState extends ConsumerState<InviteMemberWidget> {
                     });
                   },
                 ),
-                const SizedBox(
-                  height: 48,
-                ),
+
                 // TODO: Edit role
                 // Row(
                 //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -272,14 +271,14 @@ class _InviteMemberState extends ConsumerState<InviteMemberWidget> {
                       : widget.formKey.currentState!.validate(),
                   text: "Envoyer l'invitation",
                 ),
-                const SizedBox(
-                  height: 32,
-                ),
-                Expanded(
-                  child: ListInvitesWidget(
-                    groupId: widget.groupId,
-                  ),
-                ),
+                // const SizedBox(
+                //   height: 32,
+                // ),
+                // Expanded(
+                //   child: ListInvitesWidget(
+                //     groupId: widget.groupId,
+                //   ),
+                // ),
               ],
             ),
           ),

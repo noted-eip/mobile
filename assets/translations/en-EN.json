@@ -1,57 +1,57 @@
 {
-    "signin": {
-        "title": "Sign in to your account",
-        "email": {
-            "label": "Email",
-            "hint": "Enter your email address",
+    "signin" : {
+        "title" : "Sign in to your account",
+        "email" : {
+            "label" : "Email",
+            "hint" : "Enter your email address",
             "validator": "Please enter a valid email address"
         },
-        "password": {
-            "label": "Password",
-            "hint": "Enter your password",
-            "validator": "Please enter your password"
+        "password" : {
+            "label" : "Password",
+            "hint" : "Enter your password",
+            "validator" : "Please enter your password"
         },
-        "forgot": "Forgot password?",
-        "button": "Sign In",
-        "other": "Or sign in with",
-        "signup": "Don't have an account?",
-        "signupButton": "Sign Up"
+        "forgot" : "Forgot password?",
+        "button" : "Sign in",
+        "other" : "Or sign in with",
+        "signup" : "Don't have an account?",
+        "signupButton" : "Sign up"
     },
-    "signup": {
-        "title": "Create your account",
-        "name": {
-            "label": "Name",
-            "hint": "Enter your name",
+    "signup" : {
+        "title" : "Create your account",
+        "name" : {
+            "label" : "Name",
+            "hint" : "Enter your name",
             "validator": "Please enter a name"
         },
-        "email": {
-            "label": "Email",
-            "hint": "Enter your email address",
+        "email" : {
+            "label" : "Email",
+            "hint" : "Enter your email address",
             "validator": "Please enter a valid email address"
         },
-        "password": {
-            "label": "Password",
-            "hint": "Enter your password",
-            "validator": "Please enter your password"
+        "password" : {
+            "label" : "Password",
+            "hint" : "Enter your password",
+            "validator" : "Please enter your password"
         },
-        "button": "Sign Up",
-        "other": "Or sign up with",
-        "signin": "Already have an account?",
-        "signinButton": "Sign In"
+        "button" : "Sign up",
+        "other" : "Or sign up with",
+        "signin" : "Already have an account?",
+        "signinButton" : "Sign in"
     },
-    "forgot": {
+    "forgot" : {
         "step1": {
-            "title": "Forgot Password?",
-            "description": "Enter your email address associated with your account.",
-            "description2": "We will send you a verification code to reset your password.",
-            "email": {
-                "label": "Email",
-                "hint": "Enter your email address",
+            "title" : "Forgot Password?",
+            "description" : "Enter your email address associated with your account.",
+            "description2" : "We will send you a verification code to reset your password.",
+            "email" : {
+                "label" : "Email",
+                "hint" : "Enter your email address",
                 "validator": "Please enter a valid email address"
             },
-            "button": "Send",
-            "remember": "Remember your password?",
-            "signin": "Sign In"
+            "button" : "Send",
+            "remember" : "Remember your password?",
+            "signin" : "Sign in"
         },
         "step2": {
             "title": "Verification Code",
@@ -60,7 +60,7 @@
             "validator": "Please enter a valid code",
             "resend": "Resend",
             "resend-pop-up": {
-                "title": "Successfully Sent",
+                "title": "Sent Successfully",
                 "description": "We have sent a new verification code to your email address.",
                 "button": "Ok"
             },
@@ -75,11 +75,11 @@
         "profile": "Profile",
         "logout": "Logout"
     },
-    "home": {
-        "hello": "Hello,",
-        "start": "Let's start writing our story!",
-        "lastest-groups": "Latest Groups",
-        "lastest-notes": "Latest Notes",
+    "home" : {
+        "hello" : "Hello,",
+        "start" : "Let's start writing our story!",
+        "lastest-groups" : "Latest groups",
+        "lastest-notes" : "Latest notes",
         "see-more": "See more...",
         "start-w-group": "Start with a group",
         "create-group": "Create a group",
@@ -89,57 +89,58 @@
         "error": "An error occurred!",
         "title": "My Groups",
         "search": "Search...",
-        "empty": "No groups found!",
+        "empty": "No group found!",
         "create-group-modal": {
-            "title": "Create a Group",
-            "name-label": "Group Name",
+            "title": "Create a group",
+            "name-label": "Group name",
             "name-hint": "Enter the group name",
             "name-empty": "Name cannot be empty",
-            "description-label": "Group Description",
+            "description-label": "Group description",
             "description-hint": "Enter a group description",
             "description-empty": "Description cannot be empty",
             "button1": "Next",
-            "invite-title": "Invite Members",
+            "invite-title": "Invite members",
             "invite-label": "Email",
-            "invite-hint": "Enter member's email address",
+            "invite-hint": "Enter the member's email address",
             "invite-empty": "Email cannot be empty",
             "invite-valid": "Please enter a valid email address",
-            "pending-invites": "Pending Invitations",
+            "pending-invites": "Pending invitations",
             "no-pending-invites": "No invitations found!",
-            "send-invites": "Send Invitation",
+            "send-invites": "Send invitation",
             "button2": "Create"
         }
     },
     "my-notes": {
         "title": "My Notes",
         "search": "Search...",
-        "empty": "No notes found!",
+        "empty": "No note found!",
         "create-note-modal": {
-            "title": "Create a Note",
-            "name-label": "Note Name",
+            "title": "Create a note",
+            "name-label": "Note name",
             "name-hint": "Enter the note name",
             "name-empty": "Name cannot be empty",
-            "group-label": "Note Group",
+            "group-label": "Note group",
             "group-empty": "Please select a group",
             "button": "Create"
         }
+
     },
-    "profile": {
+    "profil": {
         "title": "My Profile",
-        "edit-profile": "Edit Profile",
+        "edit-profile": "Edit profile",
         "name": "Name",
         "name-hint": "Enter your name",
         "name-empty": "Name cannot be empty",
-        "name-length": "Name must be at least 4 characters",
+        "name-length": "Name must be at least 4 characters long",
         "email": "Email",
         "email-hint": "Enter your email address",
         "password": "Password",
-        "password-length": "Password must be at least 4 characters",
+        "password-length": "Password must be at least 4 characters long",
         "password-no-match": "Passwords do not match",
-        "confirm-password": "Confirm Password",
+        "confirm-password": "Confirm password",
         "button": "Save",
         "close": "Close",
-        "delete-account": "Delete Account"
+        "delete-account": "Delete account"
     },
     "group-detail": {
         "title": "Group Details",
@@ -148,14 +149,14 @@
         "members": "Members",
         "notes": "Notes",
         "activities": "Activities",
-        "edit-group": "Edit Group",
-        "delete-group": "Delete Group",
-        "leave-group": "Leave Group",
-        "edit-group-modal": {
-            "title": "Edit Group",
-            "name-label": "Group Name",
+        "edit-group": "Edit group",
+        "delete-group": "Delete group",
+        "leave-group": "Leave group",
+        "edit-group-modal" : {
+            "title": "Edit group",
+            "name-label": "Group name",
             "name-hint": "Enter the group name",
-            "description-label": "Group Description",
+            "description-label": "Group description",
             "description-hint": "Enter a group description",
             "button": "Save",
             "close": "Close"
@@ -170,7 +171,7 @@
         "title": "Invitations",
         "sent-invites": "Sent",
         "received-invites": "Received",
-        "empty": "No invitations found!"
+        "empty": "No invitation found!"
     },
     "pop-up": {
         "delete-group": {
@@ -185,13 +186,15 @@
             "button": "Leave",
             "cancel": "Cancel"
         },
-        "edit-member": {
+        "edit-member": 
+        {
             "title": "Edit Member Role",
             "description": "Are you sure you want to change the role of this member?",
             "button": "Promote",
             "cancel": "Cancel"
         },
-        "delete-member": {
+        "delete-member": 
+        {
             "title": "Delete Member",
             "description": "Are you sure you want to delete this member?",
             "button": "Delete",
@@ -200,14 +203,14 @@
     },
     "close": "Close",
     "validator": {
-        "name-empty": "Please enter a name",
-        "name-length": "Name must be between 4 and 20 characters",
-        "email-empty": "Please enter an email address",
-        "email-valid": "Please enter a valid email address",
-        "password-empty": "Please enter a password",
-        "password-length": "Password must be between 4 and 20 characters",
-        "password-no-match": "Passwords do not match",
+        "name-empty" : "Please enter a name",
+        "name-length" : "Name must be between 4 and 20 characters",
+        "email-empty" : "Please enter an email address",
+        "email-valid" : "Please enter a valid email address",
+        "password-empty" : "Please enter a password",
+        "password-length" : "Password must be between 4 and 20 characters",
+        "password-no-match" : "Passwords do not match", 
         "code-empty" : "Please enter a code",
-        "code-length" : "Code must be 4 characters"
+        "code-length" : "Code must be 4 characters long"
     }
 }

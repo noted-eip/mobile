@@ -27,6 +27,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
     return Scaffold(
       appBar: AppBar(
+        forceMaterialTransparency: true,
         title: const Text('NOTED'),
         leading: IconButton(
           icon: const Icon(Icons.menu),

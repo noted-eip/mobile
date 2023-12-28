@@ -1,61 +1,61 @@
 {
-    "signin" : {
-        "title" : "Melden Sie sich bei Ihrem Konto an",
-        "email" : {
-            "label" : "E-Mail",
-            "hint" : "Geben Sie Ihre E-Mail-Adresse ein",
+    "signin": {
+        "title": "Melden Sie sich bei Ihrem Konto an",
+        "email": {
+            "label": "E-Mail",
+            "hint": "Geben Sie Ihre E-Mail-Adresse ein",
             "validator": "Bitte geben Sie eine gültige E-Mail-Adresse ein"
         },
-        "password" : {
-            "label" : "Passwort",
-            "hint" : "Geben Sie Ihr Passwort ein",
-            "validator" : "Bitte geben Sie Ihr Passwort ein"
+        "password": {
+            "label": "Passwort",
+            "hint": "Geben Sie Ihr Passwort ein",
+            "validator": "Bitte geben Sie Ihr Passwort ein"
         },
-        "forgot" : "Passwort vergessen?",
-        "button" : "Anmelden",
-        "other" : "Oder melden Sie sich an mit",
-        "signup" : "Sie haben noch kein Konto?",
-        "signupButton" : "Registrieren"
+        "forgot": "Passwort vergessen?",
+        "button": "Anmelden",
+        "other": "Oder melden Sie sich an mit",
+        "signup": "Sie haben noch kein Konto?",
+        "signupButton": "Registrieren"
     },
-    "signup" : {
-        "title" : "Erstelle dein Konto",
-        "name" : {
-            "label" : "Name",
-            "hint" : "Geben Sie Ihren Namen ein",
+    "signup": {
+        "title": "Erstellen Sie Ihr Konto",
+        "name": {
+            "label": "Name",
+            "hint": "Geben Sie Ihren Namen ein",
             "validator": "Bitte geben Sie einen Namen ein"
         },
-        "email" : {
-            "label" : "E-Mail",
-            "hint" : "Geben Sie Ihre E-Mail-Adresse ein",
+        "email": {
+            "label": "E-Mail",
+            "hint": "Geben Sie Ihre E-Mail-Adresse ein",
             "validator": "Bitte geben Sie eine gültige E-Mail-Adresse ein"
         },
-        "password" : {
-            "label" : "Passwort",
-            "hint" : "Geben Sie Ihr Passwort ein",
-            "validator" : "Bitte geben Sie Ihr Passwort ein"
+        "password": {
+            "label": "Passwort",
+            "hint": "Geben Sie Ihr Passwort ein",
+            "validator": "Bitte geben Sie Ihr Passwort ein"
         },
-        "button" : "Registrieren",
-        "other" : "Oder registrieren Sie sich mit",
-        "signin" : "Sie haben bereits ein Konto?",
-        "signinButton" : "Anmelden"
+        "button": "Registrieren",
+        "other": "Oder registrieren Sie sich mit",
+        "signin": "Sie haben bereits ein Konto?",
+        "signinButton": "Anmelden"
     },
-    "forgot" : {
+    "forgot": {
         "step1": {
-            "title" : "Passwort vergessen?",
-            "description" : "Geben Sie Ihre mit Ihrem Konto verknüpfte E-Mail-Adresse ein.",
-            "description2" : "Wir senden Ihnen einen Bestätigungscode, um Ihr Passwort zurückzusetzen.",
-            "email" : {
-                "label" : "E-Mail",
-                "hint" : "Geben Sie Ihre E-Mail-Adresse ein",
+            "title": "Passwort vergessen?",
+            "description": "Geben Sie Ihre mit Ihrem Konto verknüpfte E-Mail-Adresse ein.",
+            "description2": "Wir senden Ihnen einen Bestätigungscode zum Zurücksetzen Ihres Passworts.",
+            "email": {
+                "label": "E-Mail",
+                "hint": "Geben Sie Ihre E-Mail-Adresse ein",
                 "validator": "Bitte geben Sie eine gültige E-Mail-Adresse ein"
             },
-            "button" : "Senden",
-            "remember" : "Erinnern Sie sich an Ihr Passwort?",
-            "signin" : "Anmelden"
+            "button": "Senden",
+            "remember": "Erinnern Sie sich an Ihr Passwort?",
+            "signin": "Anmelden"
         },
         "step2": {
             "title": "Bestätigungscode",
-            "description": "Geben Sie den Bestätigungscode ein, der an Ihre E-Mail-Adresse gesendet wurde.",
+            "description": "Geben Sie den an Ihre E-Mail-Adresse gesendeten Bestätigungscode ein.",
             "not-received": "Sie haben den Code nicht erhalten?",
             "validator": "Bitte geben Sie einen gültigen Code ein",
             "resend": "Erneut senden",
@@ -75,11 +75,11 @@
         "profile": "Profil",
         "logout": "Abmelden"
     },
-    "home" : {
-        "hello" : "Hallo,",
-        "start" : "Lassen Sie uns unsere Geschichte schreiben!",
-        "lastest-groups" : "Neueste Gruppen",
-        "lastest-notes" : "Neueste Notizen",
+    "home": {
+        "hello": "Hallo,",
+        "start": "Lassen Sie uns unsere Geschichte schreiben!",
+        "lastest-groups": "Neueste Gruppen",
+        "lastest-notes": "Neueste Notizen",
         "see-more": "Mehr sehen...",
         "start-w-group": "Mit einer Gruppe beginnen",
         "create-group": "Gruppe erstellen",
@@ -88,15 +88,15 @@
     "my-groups": {
         "error": "Ein Fehler ist aufgetreten!",
         "title": "Meine Gruppen",
-        "search": "Suche...",
-        "empty": "Keine Gruppe gefunden!",
+        "search": "Suchen...",
+        "empty": "Keine Gruppen gefunden!",
         "create-group-modal": {
             "title": "Gruppe erstellen",
-            "name-label": "Gruppenname",
-            "name-hint": "Geben Sie den Gruppennamen ein",
+            "name-label": "Name der Gruppe",
+            "name-hint": "Geben Sie den Namen der Gruppe ein",
             "name-empty": "Der Name darf nicht leer sein",
-            "description-label": "Gruppenbeschreibung",
-            "description-hint": "Geben Sie eine Gruppenbeschreibung ein",
+            "description-label": "Beschreibung der Gruppe",
+            "description-hint": "Geben Sie eine Beschreibung der Gruppe ein",
             "description-empty": "Die Beschreibung darf nicht leer sein",
             "button1": "Weiter",
             "invite-title": "Mitglieder einladen",
@@ -112,18 +112,17 @@
     },
     "my-notes": {
         "title": "Meine Notizen",
-        "search": "Suche...",
+        "search": "Suchen...",
         "empty": "Keine Notizen gefunden!",
         "create-note-modal": {
             "title": "Notiz erstellen",
-            "name-label": "Notizenname",
-            "name-hint": "Geben Sie den Notiznamen ein",
+            "name-label": "Name der Notiz",
+            "name-hint": "Geben Sie den Namen der Notiz ein",
             "name-empty": "Der Name darf nicht leer sein",
             "group-label": "Gruppe der Notiz",
             "group-empty": "Bitte wählen Sie eine Gruppe aus",
             "button": "Erstellen"
         }
-
     },
     "profil": {
         "title": "Mein Profil",
@@ -152,25 +151,25 @@
         "edit-group": "Gruppe bearbeiten",
         "delete-group": "Gruppe löschen",
         "leave-group": "Gruppe verlassen",
-        "edit-group-modal" : {
+        "edit-group-modal": {
             "title": "Gruppe bearbeiten",
-            "name-label": "Gruppenname",
-            "name-hint": "Geben Sie den Gruppennamen ein",
-            "description-label": "Gruppenbeschreibung",
-            "description-hint": "Geben Sie eine Gruppenbeschreibung ein",
+            "name-label": "Name der Gruppe",
+            "name-hint": "Geben Sie den Namen der Gruppe ein",
+            "description-label": "Beschreibung der Gruppe",
+            "description-hint": "Geben Sie eine Beschreibung der Gruppe ein",
             "button": "Speichern",
             "close": "Schließen"
         }
     },
     "note-detail": {
         "quiz": "Quiz",
-        "recommendations": "Empfehlungen",
+        "recommandations": "Empfehlungen",
         "summary": "Zusammenfassung"
     },
     "invites": {
         "title": "Einladungen",
         "sent-invites": "Gesendet",
-        "received-invites": "Erhalten",
+        "received-invites": "Empfangen",
         "empty": "Keine Einladungen gefunden!"
     },
     "pop-up": {
@@ -186,15 +185,13 @@
             "button": "Verlassen",
             "cancel": "Abbrechen"
         },
-        "edit-member": 
-        {
-            "title": "Rollen des Mitglieds bearbeiten",
+        "edit-member": {
+            "title": "Rollen des Mitglieds ändern",
             "description": "Sind Sie sicher, dass Sie die Rolle dieses Mitglieds ändern möchten?",
             "button": "Befördern",
             "cancel": "Abbrechen"
         },
-        "delete-member": 
-        {
+        "delete-member": {
             "title": "Mitglied löschen",
             "description": "Sind Sie sicher, dass Sie dieses Mitglied löschen möchten?",
             "button": "Löschen",
@@ -203,14 +200,14 @@
     },
     "close": "Schließen",
     "validator": {
-        "name-empty" : "Bitte geben Sie einen Namen ein",
-        "name-length" : "Der Name muss zwischen 4 und 20 Zeichen lang sein",
-        "email-empty" : "Bitte geben Sie eine E-Mail-Adresse ein",
-        "email-valid" : "Bitte geben Sie eine gültige E-Mail-Adresse ein",
-        "password-empty" : "Bitte geben Sie ein Passwort ein",
-        "password-length" : "Das Passwort muss zwischen 4 und 20 Zeichen lang sein",
-        "password-no-match" : "Die Passwörter stimmen nicht überein",
-        "code-empty" : "Bitte geben Sie den Bestätigungscode ein",
-        "code-length" : "Der Code muss 4 Zeichen lang sein"
+        "name-empty": "Bitte geben Sie einen Namen ein",
+        "name-length": "Der Name muss zwischen 4 und 20 Zeichen lang sein",
+        "email-empty": "Bitte geben Sie eine E-Mail-Adresse ein",
+        "email-valid": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+        "password-empty": "Bitte geben Sie ein Passwort ein",
+        "password-length": "Das Passwort muss zwischen 4 und 20 Zeichen lang sein",
+        "password-no-match": "Die Passwörter stimmen nicht überein",
+        "code-empty": "Bitte geben Sie einen Code ein",
+        "code-length": "Der Code muss 4 Zeichen lang sein"
     }
 }

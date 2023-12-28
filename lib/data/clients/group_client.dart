@@ -104,12 +104,13 @@ class GroupClient {
     int? offset,
     int? limit,
   }) async {
-    // // TODO: implement optional parameters for offset and limit
-
     try {
+      //TODO: check if its functional
       Response<V1ListGroupsResponse> response =
           await ref.read(apiProvider).groupsAPIListGroups(
         accountId: accountId,
+        offset: offset,
+        limit: limit,
         headers: {"Authorization": "Bearer ${ref.read(userProvider).token}"},
       );
 
@@ -133,7 +134,7 @@ class GroupClient {
     }
   }
 
-  Future<Group?> getGroup({required String groupId}) async {
+  Future<V1Group?> getGroup({required String groupId}) async {
     try {
       final Response<V1GetGroupResponse> response =
           await ref.read(apiProvider).groupsAPIGetGroup(
@@ -145,7 +146,9 @@ class GroupClient {
         throw Failure(message: response.statusMessage ?? 'Error');
       }
 
-      return Group.fromApi(response.data!.group);
+      return response.data!.group;
+
+      // return Group.fromApi(response.data!.group);
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
       if (kDebugMode) {
@@ -157,9 +160,11 @@ class GroupClient {
 
   // Group Members
 
-// TODO : add required parameters
-  Future<V1GroupMember?> getGroupMember(
-      String groupId, String memberId, String token) async {
+  Future<V1GroupMember?> getGroupMember({
+    required String groupId,
+    required String memberId,
+    required String token,
+  }) async {
     try {
       Response<V1GetMemberResponse> response =
           await ref.read(apiProvider).groupsAPIGetMember(
@@ -181,10 +186,14 @@ class GroupClient {
     }
   }
 
-// TODO : add required parameters
-  Future<V1GroupMember?> updateGroupMember(
-      String groupId, String memberId, bool isAdmin, String token) async {
-    V1GroupMember? member = await getGroupMember(groupId, memberId, token);
+  Future<V1GroupMember?> updateGroupMember({
+    required String groupId,
+    required String memberId,
+    required bool isAdmin,
+    required String token,
+  }) async {
+    V1GroupMember? member = await getGroupMember(
+        groupId: groupId, memberId: memberId, token: token);
 
     if (member == null) {
       throw Failure(message: "Membre non trouvé"); // TODO: add traduction
@@ -214,9 +223,11 @@ class GroupClient {
     }
   }
 
-// TODO : add required parameters
-  Future<void> deleteGroupMember(
-      String groupId, String memberId, String token) async {
+  Future<void> deleteGroupMember({
+    required String groupId,
+    required String memberId,
+    required String token,
+  }) async {
     try {
       final Response<Object> response =
           await ref.read(apiProvider).groupsAPIRemoveMember(

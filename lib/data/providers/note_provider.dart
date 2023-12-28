@@ -35,8 +35,9 @@ final noteClientProvider = Provider<NoteClient>((ref) => NoteClient(ref: ref));
 
 final notesProvider = FutureProvider<List<V1Note>?>((ref) async {
   final account = ref.watch(userProvider);
-  final notelist =
-      await ref.watch(noteClientProvider).listNotes(account.id, account.token);
+  final notelist = await ref
+      .watch(noteClientProvider)
+      .listNotes(authorId: account.id, token: account.token);
 
   final search = ref.watch(searchNoteProvider);
 
@@ -55,7 +56,7 @@ final groupNotesProvider =
   final account = ref.watch(userProvider);
   final notelist = await ref
       .watch(noteClientProvider)
-      .listGroupNotes(groupId, account.token);
+      .listGroupNotes(groupId: groupId, token: account.token);
 
   return notelist;
 });
@@ -64,9 +65,9 @@ final noteProvider =
     FutureProvider.family<V1Note?, Tuple2<String, String>>((ref, infos) async {
   final account = ref.watch(userProvider);
   final note = await ref.watch(noteClientProvider).getNote(
-        infos.item1,
-        infos.item2,
-        account.token,
+        noteId: infos.item1,
+        groupId: infos.item2,
+        token: account.token,
       );
 
   return note;

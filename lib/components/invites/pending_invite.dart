@@ -64,14 +64,7 @@ class _ListInvitesWidgetState extends ConsumerState<ListInvitesWidget> {
                     triggerMode: RefreshIndicatorTriggerMode.onEdge,
                     displacement: 0,
                     onRefresh: () async {
-                      if (widget.groupId != null) {
-                        ref.invalidate(groupInvitesProvider(widget.groupId!));
-                        ref.invalidate(groupInvitesProvider);
-                      } else if (widget.isSender != null && widget.isSender!) {
-                        ref.invalidate(sendInvitesProvider);
-                      } else {
-                        ref.invalidate(receiveInvitesProvider);
-                      }
+                      invalidateProvider();
                     },
                     child: ListView(
                       children: const [
@@ -84,14 +77,7 @@ class _ListInvitesWidgetState extends ConsumerState<ListInvitesWidget> {
                 return RefreshIndicator(
                   displacement: 0,
                   onRefresh: () async {
-                    if (widget.groupId != null) {
-                      ref.invalidate(groupInvitesProvider(widget.groupId!));
-                      ref.invalidate(groupInvitesProvider);
-                    } else if (widget.isSender != null && widget.isSender!) {
-                      ref.invalidate(sendInvitesProvider);
-                    } else {
-                      ref.invalidate(receiveInvitesProvider);
-                    }
+                    invalidateProvider();
                   },
                   child: ListView.builder(
                     itemCount: data.length,
@@ -103,6 +89,9 @@ class _ListInvitesWidgetState extends ConsumerState<ListInvitesWidget> {
                           invite: invite,
                           isSentInvite: true,
                           isInGroup: true,
+                          onRefresh: () {
+                            invalidateProvider();
+                          },
                         ),
                       );
                     },
@@ -131,14 +120,7 @@ class _ListInvitesWidgetState extends ConsumerState<ListInvitesWidget> {
                   return RefreshIndicator(
                     displacement: 0,
                     onRefresh: () async {
-                      if (widget.groupId != null) {
-                        ref.invalidate(groupInvitesProvider(widget.groupId!));
-                        ref.invalidate(groupInvitesProvider);
-                      } else if (widget.isSender != null && widget.isSender!) {
-                        ref.invalidate(sendInvitesProvider);
-                      } else {
-                        ref.invalidate(receiveInvitesProvider);
-                      }
+                      invalidateProvider();
                     },
                     child: ListView(
                       children: const [
@@ -181,14 +163,7 @@ class _ListInvitesWidgetState extends ConsumerState<ListInvitesWidget> {
                   return RefreshIndicator(
                     displacement: 0,
                     onRefresh: () async {
-                      if (widget.groupId != null) {
-                        ref.invalidate(groupInvitesProvider(widget.groupId!));
-                        ref.invalidate(groupInvitesProvider);
-                      } else if (widget.isSender != null && widget.isSender!) {
-                        ref.invalidate(sendInvitesProvider);
-                      } else {
-                        ref.invalidate(receiveInvitesProvider);
-                      }
+                      invalidateProvider();
                     },
                     child: ListView(
                       children: const [

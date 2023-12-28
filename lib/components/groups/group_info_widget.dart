@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:noted_mobile/data/models/group/group.dart';
 import 'package:noted_mobile/utils/format_helper.dart';
+import 'package:openapi/openapi.dart';
 import 'package:shimmer/shimmer.dart';
 
 class GroupInfos extends StatelessWidget {
   const GroupInfos({Key? key, required this.group}) : super(key: key);
   const GroupInfos.empty({Key? key}) : this(key: key, group: null);
 
-  final Group? group;
+  final V1Group? group;
 
   @override
   Widget build(BuildContext context) {
@@ -114,75 +114,75 @@ class GroupInfos extends StatelessWidget {
           ],
         ),
       );
-    }
-
-    return Container(
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(16),
-          bottomRight: Radius.circular(16),
-        ),
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 10.0,
-            spreadRadius: 1.0,
-            offset: Offset(
-              0.0,
-              10.0,
-            ),
-          )
-        ],
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text("Description",
-                  style: TextStyle(
-                      color: Colors.grey.shade900,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold)),
-              Row(
-                children: [
-                  const Icon(
-                    Icons.schedule,
-                    color: Colors.grey,
-                    size: 20,
-                  ),
-                  SizedBox(
-                    width: 180,
-                    child: Text(
-                      formatDateToString(group!.data.createdAt),
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold),
-                      overflow: TextOverflow.clip,
-                    ),
-                  ),
-                ],
+    } else {
+      return Container(
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(16),
+            bottomRight: Radius.circular(16),
+          ),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 10.0,
+              spreadRadius: 1.0,
+              offset: Offset(
+                0.0,
+                10.0,
               ),
-            ],
-          ),
-          const SizedBox(
-            height: 16,
-          ),
-          Text(
-            group!.data.description,
-            style: TextStyle(
-              color: Colors.grey.shade900,
-              fontSize: 18,
+            )
+          ],
+        ),
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Description",
+                    style: TextStyle(
+                        color: Colors.grey.shade900,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold)),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.schedule,
+                      color: Colors.grey,
+                      size: 20,
+                    ),
+                    SizedBox(
+                      width: 180,
+                      child: Text(
+                        formatDateToString(group!.createdAt),
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold),
+                        overflow: TextOverflow.clip,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
-    );
+            const SizedBox(
+              height: 16,
+            ),
+            Text(
+              group!.description,
+              style: TextStyle(
+                color: Colors.grey.shade900,
+                fontSize: 18,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
   }
 }

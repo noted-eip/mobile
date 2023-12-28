@@ -17,12 +17,14 @@ class InviteCard extends ConsumerStatefulWidget {
     required this.invite,
     required this.isSentInvite,
     this.isInGroup,
+    this.onRefresh,
     super.key,
   });
 
   final Invite invite;
   final bool isSentInvite;
   final bool? isInGroup;
+  final VoidCallback? onRefresh;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _InviteCardState();
@@ -175,8 +177,8 @@ class _InviteCardState extends ConsumerState<InviteCard> {
         }
         setState(() {
           groupAlive = true;
-          titleWidget = Text(group.data.name,
-              style: const TextStyle(color: Colors.white));
+          titleWidget =
+              Text(group.name, style: const TextStyle(color: Colors.white));
         });
 
         return null;
@@ -289,12 +291,16 @@ class _InviteCardState extends ConsumerState<InviteCard> {
       actions: widget.isSentInvite
           ? [
               ActionSlidable(
-                  Icons.cancel_schedule_send,
-                  Colors.grey,
-                  () async => revokeInvite(
+                Icons.cancel_schedule_send,
+                Colors.grey,
+                () async {
+                  await revokeInvite(
                           inviteId: widget.invite.id,
                           groupId: widget.invite.group_id)
-                      .then((value) => invalidateInvites(widget.isSentInvite))),
+                      .then((value) => invalidateInvites(widget.isSentInvite));
+                  widget.onRefresh?.call();
+                },
+              ),
             ]
           : [
               ActionSlidable(

@@ -11,9 +11,11 @@ class CommentSection extends ConsumerStatefulWidget {
   const CommentSection({
     Key? key,
     required this.blockId,
+    required this.blockContent,
   }) : super(key: key);
 
   final String blockId;
+  final String blockContent;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _CommentSectionState();
@@ -62,15 +64,18 @@ class _CommentSectionState extends ConsumerState<CommentSection> {
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
-        title: const Text('Comment Section'),
+        title: const Text('Commentaires de block'),
       ),
       body: SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
-            Text(
-              widget.blockId,
-              style: Theme.of(context).textTheme.headlineSmall,
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                widget.blockContent,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
             ),
             const SizedBox(height: 16),
             Expanded(

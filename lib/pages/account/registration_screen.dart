@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:noted_mobile/components/common/custom_toast.dart';
+import 'package:noted_mobile/components/common/google_button.dart';
 import 'package:noted_mobile/components/common/loading_button.dart';
 import 'package:noted_mobile/data/clients/tracker_client.dart';
 import 'package:noted_mobile/data/providers/account_provider.dart';
@@ -15,7 +16,6 @@ import 'package:noted_mobile/pages/account/helper/account.dart';
 import 'package:noted_mobile/utils/color.dart';
 import 'package:noted_mobile/utils/string_extension.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:noted_mobile/utils/validator.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
@@ -38,56 +38,6 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
   bool checkedValue = false;
   bool checkboxValue = false;
 
-  final List<dynamic> oAuth = [
-    {
-      'name': 'Google',
-      'icon': FontAwesomeIcons.google,
-      'color': Colors.redAccent,
-      'controller': RoundedLoadingButtonController(),
-      'onPressed': () {},
-    },
-  ];
-
-  List<Widget> buildOAuthButtons() {
-    List<Widget> buttons = [];
-
-    for (int i = 0; i < oAuth.length; i++) {
-      buttons.add(
-        Expanded(
-          child: LoadingButton(
-              width: 48,
-              color: oAuth[i]['color'],
-              onPressed: () async {
-                (oAuth[i]['controller'] as RoundedLoadingButtonController)
-                    .error();
-                resetButton(oAuth[i]['controller']);
-              },
-              btnController: oAuth[i]['controller'],
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    oAuth[i]['icon'],
-                    color: Colors.white,
-                  ),
-                  const SizedBox(width: 16.0),
-                  Text(
-                    oAuth[i]['name'],
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              )),
-        ),
-      );
-    }
-
-    return buttons;
-  }
-
   Future<void> createAccount(String name, String email, String password,
       RoundedLoadingButtonController btnController) async {
     if (_formKey.currentState!.validate()) {
@@ -108,17 +58,34 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
 
           ref.read(trackerProvider).trackPage(TrackPage.login);
 
-          await AccountHelper().login(
-            email: email,
-            password: password,
-            context: context,
-            btnController: btnController,
-            ref: ref,
-            isRegister: true,
-          );
+          try {
+            LoginAction? loginRes = await AccountHelper().login(
+              email: email,
+              password: password,
+              btnController: btnController,
+              ref: ref,
+              isRegistration: true,
+            );
 
-          // Navigator.pushNamed(context, '/registration-verification',
-          //     arguments: Tuple2(email, password));
+            if (!mounted) return;
+
+            AccountHelper().handleNavigation(
+              action: loginRes,
+              context: context,
+              password: password,
+              email: email,
+            );
+          } catch (e) {
+            if (!mounted) return;
+            CustomToast.show(
+              message: e.toString().capitalize(),
+              type: ToastType.error,
+              context: context,
+              gravity: ToastGravity.BOTTOM,
+            );
+            btnController.error();
+            resetButton(btnController);
+          }
         }
       } catch (e) {
         if (mounted) {
@@ -305,12 +272,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                             style: const TextStyle(color: Colors.grey),
                           ),
                           const SizedBox(height: 24.0),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              ...buildOAuthButtons(),
-                            ],
-                          ),
+                          const GoogleButton(),
                           const SizedBox(
                             width: 32.0,
                           ),

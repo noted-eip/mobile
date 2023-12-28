@@ -60,6 +60,8 @@ class _CommentListState extends ConsumerState<CommentList> {
                           MaterialPageRoute(
                             builder: (context) => CommentSection(
                               blockId: data[index].id,
+                              blockContent:
+                                  getBlockTextFromV1Block(data[index]),
                             ),
                           ),
                         );

@@ -15,8 +15,15 @@ import 'package:openapi/openapi.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:tuple/tuple.dart';
 
+//TODO: remove pageview , use default parameters for lang
+
 class CreateNoteModal extends ConsumerStatefulWidget {
-  const CreateNoteModal({super.key});
+  const CreateNoteModal({
+    Key? key,
+    this.group,
+  }) : super(key: key);
+
+  final V1Group? group;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -38,6 +45,15 @@ class _CreateNoteModalState extends ConsumerState<CreateNoteModal> {
   String buttonText = "Suivant";
   String selectedLang = "fr";
 
+  @override
+  void initState() {
+    super.initState();
+    if (widget.group != null) {
+      groupId = widget.group!.id;
+      _descriptionController.text = widget.group!.name;
+    }
+  }
+
   Future<void> createNote(UserNotifier user, String? lang) async {
     if (_formKey.currentState!.validate()) {
       try {
@@ -50,6 +66,9 @@ class _CreateNoteModalState extends ConsumerState<CreateNoteModal> {
         if (note != null) {
           btnController.success();
           Future.delayed(const Duration(seconds: 1), () {
+            if (widget.group != null) {
+              ref.invalidate(groupNotesProvider(widget.group!.id));
+            }
             btnController.reset();
             Navigator.pop(context);
             Navigator.pushNamed(context, "/note-detail",
@@ -96,6 +115,7 @@ class _CreateNoteModalState extends ConsumerState<CreateNoteModal> {
       setState(() {
         pages.add(
           NoteInfosInput(
+            canChooseGroup: widget.group == null,
             formKey: _formKey,
             descriptionController: _descriptionController,
             titleController: _titleController,
@@ -106,6 +126,9 @@ class _CreateNoteModalState extends ConsumerState<CreateNoteModal> {
             },
             title: "my-notes.create-note-modal.title".tr(),
             onGroupSelected: (data) {
+              if (widget.group != null) {
+                return;
+              }
               setState(() {
                 groupId = data;
               });
