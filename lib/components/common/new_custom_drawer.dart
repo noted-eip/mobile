@@ -2,13 +2,15 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/data/clients/tracker_client.dart';
+import 'package:noted_mobile/data/providers/group_provider.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
+import 'package:noted_mobile/pages/groups/group_detail_page.dart';
 import 'package:noted_mobile/pages/groups/groups_list_screen.dart';
 import 'package:noted_mobile/pages/notes/notes_list_screen.dart';
 import 'package:noted_mobile/pages/account/profile_screen.dart';
+import 'package:noted_mobile/pages/notifications/notification_page.dart';
 import 'package:noted_mobile/utils/color.dart';
 import 'package:noted_mobile/utils/language.dart';
-// import 'package:noted_mobile/utils/test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../pages/home/home_screen.dart';
@@ -21,11 +23,22 @@ class MyDrawer extends ConsumerStatefulWidget {
 }
 
 class _MyDrawerState extends ConsumerState<MyDrawer> {
+  late GlobalKey<ScaffoldState> _scaffoldKey;
+
+  @override
+  void initState() {
+    super.initState();
+    _scaffoldKey = ref.read(mainScreenProvider).scaffoldKey;
+  }
+
   @override
   Widget build(BuildContext context) {
     MyMenuItem currentItem = ref.watch(mainScreenProvider).item;
 
+    var workspaceIdFromProvider = ref.read(workspaceIdProvider);
+
     return Scaffold(
+      key: _scaffoldKey,
       drawer: MenuScreen(
         currentItem: currentItem,
         onSelected: (item) {
@@ -34,14 +47,25 @@ class _MyDrawerState extends ConsumerState<MyDrawer> {
           Navigator.of(context).pop();
         },
       ),
-      body: getScreen(currentItem),
+      endDrawer: const NotificationPage(),
+      body: getScreen(currentItem, workspaceIdFromProvider),
     );
   }
 
-  Widget getScreen(MyMenuItem currentItem) {
+  Widget getScreen(
+      MyMenuItem currentItem, AsyncValue<String> workspaceIdFromProvider) {
     switch (currentItem) {
       case MyMenuItems.home:
         return const HomePage();
+      case MyMenuItems.workspace:
+        if (workspaceIdFromProvider.hasValue &&
+            workspaceIdFromProvider.value != null &&
+            workspaceIdFromProvider.value!.isNotEmpty) {
+          return GroupDetailPage(groupId: workspaceIdFromProvider.value);
+        } else {
+          return const GroupsListPage();
+        }
+
       case MyMenuItems.groups:
         return const GroupsListPage();
       case MyMenuItems.notes:
@@ -71,6 +95,8 @@ class MyMenuItem {
     switch (this) {
       case MyMenuItems.home:
         return TrackPage.home;
+      case MyMenuItems.workspace:
+        return TrackPage.home;
       case MyMenuItems.groups:
         return TrackPage.groupsList;
       case MyMenuItems.notes:
@@ -85,6 +111,8 @@ class MyMenuItem {
 
 class MyMenuItems {
   static const home = MyMenuItem(icon: Icons.home, title: 'menu.home');
+  static const workspace =
+      MyMenuItem(icon: Icons.folder, title: 'menu.workspace');
   static const groups = MyMenuItem(icon: Icons.group, title: 'menu.groups');
   static const notes = MyMenuItem(icon: Icons.description, title: 'menu.notes');
   static const profil = MyMenuItem(icon: Icons.person, title: 'menu.profile');
@@ -92,6 +120,7 @@ class MyMenuItems {
 
   static const all = <MyMenuItem>[
     home,
+    workspace,
     groups,
     notes,
     profil,

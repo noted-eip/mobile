@@ -10,19 +10,21 @@ class LanguagePreferences {
   static const List<Locale> languages = [
     Locale('en', 'EN'),
     Locale('fr', 'FRA'),
-    Locale('de', 'DE'),
   ];
 
   static const Map<String, Locale> _languageMap = {
     'en': Locale('en', 'EN'),
     'fr': Locale('fr', 'FRA'),
-    'de': Locale('de', 'DE'),
   };
 
   static const Map<String, String> languageNameMap = {
     'en': 'English',
     'fr': 'Français',
-    'de': 'Deutsch',
+  };
+
+  static const Map<String, String> languageFlagMap = {
+    'en': '🇬🇧',
+    'fr': '🇫🇷',
   };
 
   static Future<void> setLangue(BuildContext context, String langCode) async {
@@ -33,6 +35,16 @@ class LanguagePreferences {
   static Future<void> saveLanguage(String languageCode) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString(_kLanguageKey, languageCode);
+  }
+
+  static Future<String> getLanguageCode() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? langue = prefs.getString(_kLanguageKey);
+
+    if (langue == null) {
+      return _defaultLanguage.languageCode;
+    }
+    return langue;
   }
 
   static Future<void> resetLanguage() async {

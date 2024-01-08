@@ -246,6 +246,7 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage>
       ),
       key: _scaffoldKey,
       body: BaseContainer(
+        openEndDrawer: false,
         titleWidget: groupFromApi.when(
           data: (group) {
             if (group == null) {

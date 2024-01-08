@@ -113,6 +113,7 @@ class _GroupMembersListState extends ConsumerState<GroupMembersList> {
             itemCount: widget.members!.length,
             itemBuilder: (context, index) {
               final V1GroupMember member = widget.members![index];
+              var isMemberAdmin = member.isAdmin;
               List<ActionSlidable> adminActions = [
                 ActionSlidable(
                   Icons.delete,
@@ -150,13 +151,16 @@ class _GroupMembersListState extends ConsumerState<GroupMembersList> {
                 ),
               ];
               List<ActionSlidable> userActions = [];
-              bool isUserAdmin = widget.members!
+              bool isActiveUserAdmin = widget.members!
                   .firstWhere((element) => element.accountId == user.id)
                   .isAdmin;
 
               return GroupMemberCard(
-                  memberData: widget.members![index],
-                  actions: isUserAdmin ? adminActions : userActions);
+                memberData: widget.members![index],
+                actions: isActiveUserAdmin && !isMemberAdmin
+                    ? adminActions
+                    : userActions,
+              );
             },
           ),
         ),

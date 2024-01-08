@@ -54,6 +54,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             .updateAccount(name: nameController.text);
 
         if (updatedAccount != null) {
+          ref.invalidate(accountProvider(ref.read(userProvider).id));
           _btnControllerSave.success();
           Future.delayed(const Duration(seconds: 1), () {
             Navigator.of(context).pop();
@@ -164,15 +165,23 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     super.initState();
     nameController.text = ref.read(userProvider).name;
     emailController.text = ref.read(userProvider).email;
+
+    // saveLanguage = context.locale.languageCode;
   }
 
   bool isValid = false;
+
+  String saveLanguage = "";
 
   @override
   Widget build(BuildContext context) {
     final MediaQueryData mediaQuery = MediaQuery.of(context);
 
     GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+    if (saveLanguage.isEmpty) {
+      saveLanguage = context.locale.languageCode;
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -503,14 +512,43 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                         borderRadius: BorderRadius.circular(16),
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         underline: const SizedBox(),
-                        icon: const Icon(Icons.language),
+                        selectedItemBuilder: (context) =>
+                            LanguagePreferences.languageNameMap.entries
+                                .map((e) => Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(e.value),
+                                        const SizedBox(width: 10),
+                                        Text(LanguagePreferences
+                                            .languageFlagMap[e.key]!),
+                                      ],
+                                    ))
+                                .toList(),
                         iconSize: 16,
                         value: context.locale.languageCode,
                         items: LanguagePreferences.languageNameMap.entries
                             .map((e) => DropdownMenuItem(
-                                value: e.key, child: Text(e.value)))
+                                value: e.key,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    saveLanguage == e.key
+                                        ? const Icon(Icons.check, size: 16)
+                                        : const SizedBox(width: 16),
+                                    const SizedBox(width: 10),
+                                    Text(e.value),
+                                    const SizedBox(width: 10),
+                                    Text(LanguagePreferences
+                                        .languageFlagMap[e.key]!),
+                                  ],
+                                )))
                             .toList(),
                         onChanged: <String>(code) async {
+                          setState(() {
+                            saveLanguage = code;
+                          });
                           await LanguagePreferences.setLangue(context, code);
                         })
                   ],

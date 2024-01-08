@@ -6,7 +6,7 @@ import 'package:noted_mobile/components/groups/latest_groups_widget.dart';
 import 'package:noted_mobile/data/models/group/group.dart';
 import 'package:noted_mobile/data/providers/group_provider.dart';
 import 'package:noted_mobile/data/providers/note_provider.dart';
-import 'package:noted_mobile/pages/notifications/notification_page.dart';
+import 'package:noted_mobile/data/providers/provider_list.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -35,13 +35,22 @@ class _HomePageState extends ConsumerState<HomePage> {
         ),
         actions: [
           IconButton(
-            onPressed: () => Navigator.of(context).pushNamed('/notif'),
+            onPressed: () {
+              ScaffoldState? scaffoldState =
+                  ref.read(mainScreenProvider).scaffoldKey.currentState;
+
+              if (scaffoldState == null || !scaffoldState.hasEndDrawer) {
+                Navigator.of(context).pushNamed('/notif');
+                return;
+              }
+
+              scaffoldState.openEndDrawer();
+            },
             icon: const Icon(Icons.send, color: Colors.black),
           ),
         ],
         elevation: 0,
       ),
-      endDrawer: const NotificationPage(),
       body: SafeArea(
         child: RefreshIndicator(
           displacement: 0,

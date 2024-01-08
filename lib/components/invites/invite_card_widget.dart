@@ -18,6 +18,7 @@ class InviteCard extends ConsumerStatefulWidget {
     required this.isSentInvite,
     this.isInGroup,
     this.onRefresh,
+    this.canRevoke = false,
     super.key,
   });
 
@@ -25,6 +26,7 @@ class InviteCard extends ConsumerStatefulWidget {
   final bool isSentInvite;
   final bool? isInGroup;
   final VoidCallback? onRefresh;
+  final bool canRevoke;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _InviteCardState();
@@ -41,6 +43,8 @@ class _InviteCardState extends ConsumerState<InviteCard> {
       await ref
           .read(inviteClientProvider)
           .acceptInvite(inviteId: inviteId, groupId: groupId);
+
+      ref.invalidate(groupsProvider);
       if (mounted) {
         CustomToast.show(
           message: "Invitation acceptée",
@@ -211,11 +215,13 @@ class _InviteCardState extends ConsumerState<InviteCard> {
         }
         setState(() {
           if (widget.isSentInvite) {
-            titleWidget = Text("To: ${account.data.name.toUpperCase()}",
-                style: const TextStyle(color: Colors.white));
+            titleWidget = Text(
+              "To: ${account.data.email}",
+              style: const TextStyle(color: Colors.white, fontSize: 14),
+            );
           } else {
-            titleWidget = Text("From: ${account.data.name.toUpperCase()}",
-                style: const TextStyle(color: Colors.white));
+            titleWidget = Text("From: ${account.data.email}",
+                style: const TextStyle(color: Colors.white, fontSize: 14));
           }
         });
 
@@ -250,10 +256,10 @@ class _InviteCardState extends ConsumerState<InviteCard> {
       setState(() {
         if (!isPendingGroupInvites) {
           subtitleWidget = Text("To: ${account.data.email}",
-              style: const TextStyle(color: Colors.white));
+              style: const TextStyle(color: Colors.white, fontSize: 12));
         } else {
           subtitleWidget = Text("From: ${account.data.email}",
-              style: const TextStyle(color: Colors.white));
+              style: const TextStyle(color: Colors.white, fontSize: 12));
         }
       });
 
@@ -289,19 +295,22 @@ class _InviteCardState extends ConsumerState<InviteCard> {
         ),
       ),
       actions: widget.isSentInvite
-          ? [
-              ActionSlidable(
-                Icons.cancel_schedule_send,
-                Colors.grey,
-                () async {
-                  await revokeInvite(
-                          inviteId: widget.invite.id,
-                          groupId: widget.invite.group_id)
-                      .then((value) => invalidateInvites(widget.isSentInvite));
-                  widget.onRefresh?.call();
-                },
-              ),
-            ]
+          ? widget.canRevoke
+              ? [
+                  ActionSlidable(
+                    Icons.cancel_schedule_send,
+                    Colors.grey,
+                    () async {
+                      await revokeInvite(
+                              inviteId: widget.invite.id,
+                              groupId: widget.invite.group_id)
+                          .then((value) =>
+                              invalidateInvites(widget.isSentInvite));
+                      widget.onRefresh?.call();
+                    },
+                  ),
+                ]
+              : null
           : [
               ActionSlidable(
                 Icons.check,

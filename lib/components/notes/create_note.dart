@@ -7,6 +7,7 @@ import 'package:noted_mobile/components/common/custom_modal.dart';
 import 'package:noted_mobile/components/common/custom_toast.dart';
 import 'package:noted_mobile/components/common/loading_button.dart';
 import 'package:noted_mobile/components/notes/note_info_input.dart';
+import 'package:noted_mobile/data/models/group/group.dart';
 import 'package:noted_mobile/data/notifiers/user_notifier.dart';
 import 'package:noted_mobile/data/providers/note_provider.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
@@ -20,10 +21,14 @@ import 'package:tuple/tuple.dart';
 class CreateNoteModal extends ConsumerStatefulWidget {
   const CreateNoteModal({
     Key? key,
+    required this.initialLang,
     this.group,
+    this.groupsList,
   }) : super(key: key);
 
   final V1Group? group;
+  final String initialLang;
+  final List<Group>? groupsList;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -35,23 +40,20 @@ class _CreateNoteModalState extends ConsumerState<CreateNoteModal> {
   final roleformKey = GlobalKey<FormState>();
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
   final RoundedLoadingButtonController btnController =
       RoundedLoadingButtonController();
-  List<Widget> pages = [];
   String groupId = "";
-  PageController pageController = PageController(initialPage: 0);
-  int pageIndex = 0;
-  String buttonText = "Suivant";
-  String selectedLang = "fr";
+  late String selectedLang;
 
   @override
   void initState() {
     super.initState();
     if (widget.group != null) {
       groupId = widget.group!.id;
-      _descriptionController.text = widget.group!.name;
+    } else {
+      groupId = widget.groupsList!.first.data.id;
     }
+    selectedLang = widget.initialLang;
   }
 
   Future<void> createNote(UserNotifier user, String? lang) async {
@@ -66,18 +68,15 @@ class _CreateNoteModalState extends ConsumerState<CreateNoteModal> {
         if (note != null) {
           btnController.success();
           Future.delayed(const Duration(seconds: 1), () {
-            if (widget.group != null) {
-              ref.invalidate(groupNotesProvider(widget.group!.id));
-            }
             btnController.reset();
             Navigator.pop(context);
             Navigator.pushNamed(context, "/note-detail",
                 arguments: Tuple2(note.id, note.groupId));
 
-            _descriptionController.clear();
             _titleController.clear();
 
             ref.invalidate(notesProvider);
+            ref.invalidate(groupNotesProvider(groupId));
           });
         } else {
           print("note is null");
@@ -111,33 +110,6 @@ class _CreateNoteModalState extends ConsumerState<CreateNoteModal> {
 
   @override
   Widget build(BuildContext context) {
-    if (pages.isEmpty) {
-      setState(() {
-        pages.add(
-          NoteInfosInput(
-            canChooseGroup: widget.group == null,
-            formKey: _formKey,
-            descriptionController: _descriptionController,
-            titleController: _titleController,
-            onLanguageSelected: (lang) {
-              setState(() {
-                selectedLang = lang;
-              });
-            },
-            title: "my-notes.create-note-modal.title".tr(),
-            onGroupSelected: (data) {
-              if (widget.group != null) {
-                return;
-              }
-              setState(() {
-                groupId = data;
-              });
-            },
-          ),
-        );
-      });
-    }
-
     final user = ref.read(userProvider);
 
     return CustomModal(
@@ -146,21 +118,26 @@ class _CreateNoteModalState extends ConsumerState<CreateNoteModal> {
       child: Column(
         children: [
           Expanded(
-            child: PageView.builder(
-              itemBuilder: (context, index) {
-                if (index < pages.length) {
-                  return pages[index];
-                }
-                return Container();
-              },
-              onPageChanged: (value) {
+            child: NoteInfosInput(
+              formKey: _formKey,
+              titleController: _titleController,
+              initialLang: selectedLang,
+              initialGroup: widget.group,
+              groupsList: widget.groupsList,
+              onLanguageSelected: (lang) {
                 setState(() {
-                  pageIndex = value;
-                  buttonText = "Finish";
+                  selectedLang = lang;
                 });
               },
-              controller: pageController,
-              physics: const NeverScrollableScrollPhysics(),
+              title: "my-notes.create-note-modal.title".tr(),
+              onGroupSelected: (data) {
+                if (widget.group != null) {
+                  return;
+                }
+                setState(() {
+                  groupId = data;
+                });
+              },
             ),
           ),
           LoadingButton(
@@ -171,5 +148,71 @@ class _CreateNoteModalState extends ConsumerState<CreateNoteModal> {
         ],
       ),
     );
+
+    // var groupsList = ref.watch(groupsProvider);
+
+    // return groupsList.when(
+    //   data: (groupsList) {
+    //     if (groupsList == null || groupsList.isEmpty) {
+    //       return CustomModal(
+    //         height: 0.4,
+    //         onClose: (context) => Navigator.pop(context, false),
+    //         child: Column(
+    //           crossAxisAlignment: CrossAxisAlignment.stretch,
+    //           mainAxisSize: MainAxisSize.max,
+    //           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    //           children: [
+    //             const Text(
+    //               "Error, please try again !",
+    //               style: TextStyle(fontSize: 24),
+    //             ),
+    //             FilledButton(
+    //               onPressed: () => retryFetchGroups(),
+    //               child: const Text("Retry"),
+    //             )
+    //           ],
+    //         ),
+    //       );
+    //     } else {
+    //       if (widget.group == null || groupId.isEmpty) {
+    //         setState(() {
+    //           groupId = groupsList.first.data.id;
+    //         });
+    //       }
+
+    //     }
+    //   },
+    //   loading: () => CustomModal(
+    //       height: 0.9,
+    //       onClose: (context) => Navigator.pop(context, false),
+    //       child: const Center(
+    //         child: CircularProgressIndicator(),
+    //       )),
+    //   error: (error, stackTrace) {
+    //     return CustomModal(
+    //       height: 0.4,
+    //       onClose: (context) => Navigator.pop(context, false),
+    //       child: Column(
+    //         crossAxisAlignment: CrossAxisAlignment.stretch,
+    //         mainAxisSize: MainAxisSize.max,
+    //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    //         children: [
+    //           const Text(
+    //             "Error, please try again !",
+    //             style: TextStyle(fontSize: 24),
+    //           ),
+    //           FilledButton(
+    //             onPressed: () => retryFetchGroups(),
+    //             child: const Text("Retry"),
+    //           )
+    //         ],
+    //       ),
+    //     );
+    //   },
+    // );
   }
+
+  // retryFetchGroups() {
+  //   ref.invalidate(groupsProvider);
+  // }
 }

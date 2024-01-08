@@ -7,9 +7,12 @@ import 'package:lottie/lottie.dart';
 import 'package:noted_mobile/components/notes/create_note.dart';
 import 'package:noted_mobile/components/notes/note_card_widget.dart';
 import 'package:noted_mobile/data/clients/tracker_client.dart';
+import 'package:noted_mobile/data/models/group/group.dart';
+import 'package:noted_mobile/data/providers/group_provider.dart';
 import 'package:noted_mobile/data/providers/note_provider.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:noted_mobile/pages/groups/groups_list_screen.dart';
+import 'package:noted_mobile/utils/language.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
 import 'package:openapi/openapi.dart';
 import 'package:tuple/tuple.dart';
@@ -43,6 +46,7 @@ class _LatestsFilesListState extends ConsumerState<LatestsFilesList> {
   Widget build(BuildContext context) {
     // final AsyncValue<List<Note>?> notes = ref.watch(notesProvider);
     final AsyncValue<List<V1Note>?> notes = ref.watch(notesProvider);
+    final AsyncValue<List<Group>?> groupslist = ref.watch(groupsProvider);
 
     return Scaffold(
       body: GestureDetector(
@@ -97,21 +101,32 @@ class _LatestsFilesListState extends ConsumerState<LatestsFilesList> {
                           "my-notes.title".tr(),
                         ),
                         const Spacer(),
-                        Material(
-                          color: Colors.transparent,
-                          child: Padding(
-                            padding: const EdgeInsets.only(right: 8.0),
-                            child: IconButton(
-                              padding: EdgeInsets.zero,
-                              color: Colors.grey.shade900,
-                              splashColor: Colors.black,
-                              splashRadius: 35,
-                              focusColor: Colors.blueAccent,
-                              iconSize: 32,
-                              onPressed: () => openCreateNoteModal(),
-                              icon: const Icon(Icons.add),
-                            ),
-                          ),
+                        groupslist.when(
+                          data: (groupslist) {
+                            if (groupslist == null || groupslist.isEmpty) {
+                              return const SizedBox();
+                            }
+
+                            return Material(
+                              color: Colors.transparent,
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 8.0),
+                                child: IconButton(
+                                  padding: EdgeInsets.zero,
+                                  color: Colors.grey.shade900,
+                                  splashColor: Colors.black,
+                                  splashRadius: 35,
+                                  focusColor: Colors.blueAccent,
+                                  iconSize: 32,
+                                  onPressed: () =>
+                                      openCreateNoteModal(groupslist),
+                                  icon: const Icon(Icons.add),
+                                ),
+                              ),
+                            );
+                          },
+                          loading: () => const CircularProgressIndicator(),
+                          error: (error, stackTrace) => const SizedBox(),
                         ),
                       ],
                     ),
@@ -126,13 +141,18 @@ class _LatestsFilesListState extends ConsumerState<LatestsFilesList> {
                             padding: EdgeInsets.zero,
                             iconSize: 24,
                             onPressed: (() {
-                              if (kDebugMode) {
-                                print("Send button pressed");
+                              ScaffoldState? scaffoldState = ref
+                                  .read(mainScreenProvider)
+                                  .scaffoldKey
+                                  .currentState;
+
+                              if (scaffoldState == null ||
+                                  !scaffoldState.hasEndDrawer) {
+                                Navigator.of(context).pushNamed('/notif');
+                                return;
                               }
-                              ref
-                                  .read(trackerProvider)
-                                  .trackPage(TrackPage.notification);
-                              Navigator.pushNamed(context, "/notif");
+
+                              scaffoldState.openEndDrawer();
                             }),
                             icon: Icon(Icons.send_rounded,
                                 color: Colors.grey.shade900),
@@ -263,13 +283,22 @@ class _LatestsFilesListState extends ConsumerState<LatestsFilesList> {
     );
   }
 
-  Future<void> openCreateNoteModal() async {
+  Future<void> openCreateNoteModal(List<Group> groupslist) async {
+    var lang = await LanguagePreferences.getLanguageCode();
+
+    if (!context.mounted) {
+      return;
+    }
+
     showModalBottomSheet(
       backgroundColor: Colors.transparent,
       context: context,
       isScrollControlled: true,
       builder: (context) {
-        return const CreateNoteModal();
+        return CreateNoteModal(
+          initialLang: lang,
+          groupsList: groupslist,
+        );
       },
     );
   }

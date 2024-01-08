@@ -425,11 +425,13 @@ class AccountClient {
 
       return Account.fromApi(apiAccount);
     } on DioException catch (e) {
-      String error = NotedException.fromDioException(e).toString();
-      if (kDebugMode) {
-        print("Exception when calling DefaultApi->getAccountById: $error\n");
-      }
-      throw Failure(message: error);
+      //TODO: check if this is the right way to handle this
+      return null;
+      // String error = NotedException.fromDioException(e).toString();
+      // if (kDebugMode) {
+      //   print("Exception when calling DefaultApi->getAccountById: $error\n");
+      // }
+      // throw Failure(message: error);
     }
   }
 

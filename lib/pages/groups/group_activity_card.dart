@@ -112,8 +112,37 @@ class _GroupActivityCardState extends ConsumerState<GroupActivityCard> {
           error: (error, stack) => _buildListTile(user, null, type),
         );
       },
-      loading: () => const CircularProgressIndicator(),
-      error: (error, stack) => const Text("Erreur"),
+      loading: () => Padding(
+        padding: const EdgeInsets.only(bottom: 16.0),
+        child: CustomSlide(
+          color: Colors.purple.shade900,
+          actions: null,
+          titleWidget: SizedBox(
+            height: 20,
+            width: 100,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ),
+          withWidget: true,
+          avatarWidget: Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            height: 40,
+            width: 40,
+            child: Icon(
+              getIcon(type),
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+      error: (error, stack) => const SizedBox(),
     );
   }
 
@@ -124,25 +153,17 @@ class _GroupActivityCardState extends ConsumerState<GroupActivityCard> {
       if (user != null && note != null) {
         title =
             "${user.data.name}${getTitleFromEvent(widget.groupActivity.event)}${note.title}.";
-      } else if (user != null && note == null) {
-        title =
-            "${user.data.name}${getTitleFromEvent(widget.groupActivity.event)} ...";
-      } else if (user == null && note != null) {
-        title =
-            "...${getTitleFromEvent(widget.groupActivity.event)}${note.title}.";
-      } else {
-        title = "...${getTitleFromEvent(widget.groupActivity.event)}...";
       }
     } else if (type == GroupActivityType.addMember ||
         type == GroupActivityType.removeMember) {
       if (user != null) {
         title =
             "${user.data.name}${getTitleFromEvent(widget.groupActivity.event)}";
-      } else {
-        title = "...${getTitleFromEvent(widget.groupActivity.event)}";
       }
-    } else {
-      title = "Erreur";
+    }
+
+    if (title.isEmpty) {
+      return const SizedBox();
     }
 
     return Padding(

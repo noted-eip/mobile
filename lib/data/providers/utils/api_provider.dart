@@ -32,7 +32,7 @@ final apiProvider = Provider<DefaultApi>((ref) {
   var dio = Dio(
     BaseOptions(
       baseUrl: kBaseUrl,
-      receiveTimeout: const Duration(seconds: 50),
+      // receiveTimeout: const Duration(seconds: 50),
     ),
   );
 

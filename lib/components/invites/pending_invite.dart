@@ -3,19 +3,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/components/invites/invite_card_widget.dart';
 import 'package:noted_mobile/components/common/custom_slide.dart';
 import 'package:noted_mobile/data/models/invite/invite.dart';
+import 'package:noted_mobile/data/providers/group_provider.dart';
 import 'package:noted_mobile/data/providers/invite_provider.dart';
+import 'package:noted_mobile/data/providers/provider_list.dart';
+import 'package:openapi/openapi.dart';
 
 //TODO: gérer l'affichage des invites dans un group -> l'user doit pouvoir voir les invites qu'il a envoyé
 
 class ListInvitesWidget extends ConsumerStatefulWidget {
   const ListInvitesWidget({
-    this.groupId,
+    this.group,
     this.isSender,
     super.key,
   });
 
-  final String? groupId;
   final bool? isSender;
+  final V1Group? group;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -23,23 +26,37 @@ class ListInvitesWidget extends ConsumerStatefulWidget {
 }
 
 class _ListInvitesWidgetState extends ConsumerState<ListInvitesWidget> {
-  late ProviderListenable provider;
-
   void invalidateProvider() {
-    if (widget.groupId != null) {
-      ref.invalidate(groupInvitesProvider(widget.groupId!));
+    if (widget.group != null) {
+      ref.invalidate(groupInvitesProvider(widget.group!.id));
       ref.invalidate(groupInvitesProvider);
     } else if (widget.isSender != null && widget.isSender!) {
       ref.invalidate(sendInvitesProvider);
     } else {
       ref.invalidate(receiveInvitesProvider);
     }
+    ref.invalidate(groupsProvider);
+  }
+
+  bool canRevoke = false;
+
+  @override
+  void initState() {
+    var userId = ref.read(userProvider).id;
+
+    if (widget.group != null && widget.group!.members != null) {
+      canRevoke = widget.group!.members!
+          .firstWhere((element) => element.accountId == userId)
+          .isAdmin;
+    }
+
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final pendingGroupInvites =
-        ref.watch(groupInvitesProvider(widget.groupId!));
+        ref.watch(groupInvitesProvider(widget.group!.id));
     final pendingSendInvites = ref.watch(sendInvitesProvider);
     final pendingReceiveInvites = ref.watch(receiveInvitesProvider);
 
@@ -55,7 +72,7 @@ class _ListInvitesWidgetState extends ConsumerState<ListInvitesWidget> {
         const SizedBox(
           height: 32,
         ),
-        if (widget.groupId != null)
+        if (widget.group != null)
           Expanded(
             child: pendingGroupInvites.when(
               data: ((data) {
@@ -89,6 +106,7 @@ class _ListInvitesWidgetState extends ConsumerState<ListInvitesWidget> {
                           invite: invite,
                           isSentInvite: true,
                           isInGroup: true,
+                          canRevoke: canRevoke,
                           onRefresh: () {
                             invalidateProvider();
                           },

@@ -3,30 +3,35 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/data/models/group/group.dart';
-import 'package:noted_mobile/data/providers/group_provider.dart';
+import 'package:noted_mobile/utils/color.dart';
+import 'package:noted_mobile/utils/language.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
+import 'package:openapi/openapi.dart';
 
 typedef StringCallBack = void Function(String);
 
 class NoteInfosInput extends ConsumerStatefulWidget {
-  const NoteInfosInput(
-      {required this.formKey,
-      required this.descriptionController,
-      required this.titleController,
-      required this.title,
-      required this.onGroupSelected,
-      required this.onLanguageSelected,
-      this.canChooseGroup = true,
-      super.key});
+  const NoteInfosInput({
+    required this.formKey,
+    required this.titleController,
+    required this.title,
+    required this.onGroupSelected,
+    required this.onLanguageSelected,
+    required this.initialLang,
+    this.initialGroup,
+    this.groupsList,
+    super.key,
+  });
 
   final String title;
 
   final GlobalKey<FormState> formKey;
   final TextEditingController titleController;
-  final TextEditingController descriptionController;
   final StringCallBack onGroupSelected;
   final StringCallBack onLanguageSelected;
-  final bool canChooseGroup;
+  final String initialLang;
+  final V1Group? initialGroup;
+  final List<Group>? groupsList;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _NoteInfosInputState();
@@ -34,17 +39,17 @@ class NoteInfosInput extends ConsumerStatefulWidget {
 
 class _NoteInfosInputState extends ConsumerState<NoteInfosInput> {
   int selectedGroupIndex = 0;
-  int selectedLangIndex = 0;
-  final TextEditingController _langController = TextEditingController();
+  late int selectedLangIndex;
 
-  final List<String> langList = ["fr", "en"];
-
-  final List<String> langListLabel = ["Français", "Anglais"];
+  @override
+  void initState() {
+    selectedLangIndex = LanguagePreferences.languages
+        .indexWhere((element) => element.languageCode == widget.initialLang);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final AsyncValue<List<Group>?> groups = ref.watch(groupsProvider);
-
     return Column(
       children: [
         Text(
@@ -72,129 +77,120 @@ class _NoteInfosInputState extends ConsumerState<NoteInfosInput> {
                 },
               ),
               const SizedBox(height: 30.0),
-              TextFormField(
-                enabled: groups.hasValue &&
-                    groups.value != null &&
-                    groups.value!.isNotEmpty &&
-                    widget.canChooseGroup,
-                minLines: 1,
-                maxLines: 1,
-                controller: widget.descriptionController,
-                decoration: ThemeHelper().textInputDecoration(
-                    'my-notes.create-note-modal.group-label'.tr(),
-                    'Choose a group for your note'),
-                validator: (val) {
-                  if (val!.isEmpty) {
-                    return 'my-notes.create-note-modal.group-empty'.tr();
-                  }
-                  return null;
-                },
-                onTap: !widget.canChooseGroup
-                    ? null
-                    : () {
-                        if (groups.hasValue &&
-                            groups.value != null &&
-                            groups.value!.isNotEmpty) {
-                          if (widget.descriptionController.text.isEmpty) {
-                            //TODO: check si les groupes sont vides
-
-                            widget.descriptionController.text =
-                                groups.value!.elementAt(0).data.name;
-                            widget.onGroupSelected(
-                                groups.value!.elementAt(0).data.id);
-                          }
-
-                          showCupertinoModalPopup(
-                            context: context,
-                            builder: (context) {
-                              return Container(
-                                height: 216,
-                                padding: const EdgeInsets.only(top: 6.0),
-                                // The Bottom margin is provided to align the popup above the system navigation bar.
-                                margin: EdgeInsets.only(
-                                  bottom:
-                                      MediaQuery.of(context).viewInsets.bottom,
+              if ((widget.groupsList != null &&
+                      widget.groupsList!.isNotEmpty) &&
+                  widget.initialGroup == null) ...[
+                GestureDetector(
+                  onTap: () {
+                    showCupertinoModalPopup(
+                      context: context,
+                      builder: (context) {
+                        return Container(
+                          height: 216,
+                          padding: const EdgeInsets.only(top: 6.0),
+                          margin: EdgeInsets.only(
+                            bottom: MediaQuery.of(context).viewInsets.bottom,
+                          ),
+                          color: CupertinoColors.systemBackground
+                              .resolveFrom(context),
+                          child: SafeArea(
+                            top: false,
+                            child: CupertinoPicker(
+                              magnification: 1.22,
+                              squeeze: 1.2,
+                              useMagnifier: true,
+                              itemExtent: 32.0,
+                              // This sets the initial item.
+                              scrollController: FixedExtentScrollController(
+                                initialItem: selectedGroupIndex,
+                              ),
+                              // This is called when selected item is changed.
+                              onSelectedItemChanged: (int selectedItem) {
+                                setState(() {
+                                  selectedGroupIndex = selectedItem;
+                                });
+                                var selectedGroupId = widget.groupsList!
+                                    .elementAt(selectedItem)
+                                    .data
+                                    .id;
+                                widget.onGroupSelected(selectedGroupId);
+                              },
+                              children: List<Widget>.from(
+                                widget.groupsList!.map(
+                                  (Group group) {
+                                    return Center(
+                                      child: Text(group.data.name),
+                                    );
+                                  },
                                 ),
-                                // Provide a background color for the popup.
-                                color: CupertinoColors.systemBackground
-                                    .resolveFrom(context),
-                                // Use a SafeArea widget to avoid system overlaps.
-                                child: SafeArea(
-                                  top: false,
-                                  child: CupertinoPicker(
-                                    magnification: 1.22,
-                                    squeeze: 1.2,
-                                    useMagnifier: true,
-                                    itemExtent: 32.0,
-                                    // This sets the initial item.
-                                    scrollController:
-                                        FixedExtentScrollController(
-                                      initialItem: selectedGroupIndex,
-                                    ),
-                                    // This is called when selected item is changed.
-                                    onSelectedItemChanged: (int selectedItem) {
-                                      setState(() {
-                                        selectedGroupIndex = selectedItem;
-                                      });
-                                      var selectedGroupId = groups.value!
-                                          .elementAt(selectedItem)
-                                          .data
-                                          .id;
-                                      widget.onGroupSelected(selectedGroupId);
-                                      widget.descriptionController.text = groups
-                                          .value!
-                                          .elementAt(selectedItem)
-                                          .data
-                                          .name;
-                                    },
-                                    children: List<Widget>.from(
-                                      groups.value!.map(
-                                        (Group group) {
-                                          return Center(
-                                            child: Text(group.data.name),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          );
-                        }
+                              ),
+                            ),
+                          ),
+                        );
                       },
-              ),
+                    );
+                  },
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: Colors.grey.shade400),
+                        ),
+                        padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                        alignment: Alignment.centerLeft,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              widget.groupsList!
+                                  .elementAt(selectedGroupIndex)
+                                  .data
+                                  .name,
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Positioned(
+                        top: -10,
+                        left: 20,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 5),
+                          color: Colors.white,
+                          child: Text(
+                            'my-notes.create-note-modal.group-label'.tr(),
+                            style: const TextStyle(
+                              color: NotedColors.primary,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
               const SizedBox(height: 30.0),
-              TextFormField(
-                enabled: true,
-                minLines: 1,
-                maxLines: 1,
-                controller: _langController,
-                decoration: ThemeHelper().textInputDecoration(
-                    'Langue', 'Choisissez une langue pour votre note'),
-                validator: (val) {
-                  if (val!.isEmpty) {
-                    return 'Vous devez choisir une langue';
-                  }
-                  return null;
-                },
+              GestureDetector(
                 onTap: () {
-                  widget.onLanguageSelected(langList[selectedLangIndex]);
-                  _langController.text = langListLabel[selectedLangIndex];
                   showCupertinoModalPopup(
                     context: context,
                     builder: (context) {
                       return Container(
                         height: 216,
                         padding: const EdgeInsets.only(top: 6.0),
-                        // The Bottom margin is provided to align the popup above the system navigation bar.
                         margin: EdgeInsets.only(
                           bottom: MediaQuery.of(context).viewInsets.bottom,
                         ),
-                        // Provide a background color for the popup.
                         color: CupertinoColors.systemBackground
                             .resolveFrom(context),
-                        // Use a SafeArea widget to avoid system overlaps.
                         child: SafeArea(
                           top: false,
                           child: CupertinoPicker(
@@ -202,38 +198,100 @@ class _NoteInfosInputState extends ConsumerState<NoteInfosInput> {
                             squeeze: 1.2,
                             useMagnifier: true,
                             itemExtent: 32.0,
-                            // This sets the initial item.
                             scrollController: FixedExtentScrollController(
                               initialItem: selectedLangIndex,
                             ),
-                            // This is called when selected item is changed.
                             onSelectedItemChanged: (int selectedItem) {
                               setState(() {
                                 selectedLangIndex = selectedItem;
                               });
 
-                              widget.onLanguageSelected(
-                                  langList[selectedLangIndex]);
-
-                              _langController.text =
-                                  langListLabel[selectedLangIndex];
+                              widget.onLanguageSelected(LanguagePreferences
+                                  .languageNameMap.keys
+                                  .elementAt(selectedLangIndex));
                             },
                             children: List<Widget>.from(
-                              langList.map(
-                                (lang) {
-                                  return Center(
-                                    child: Text(lang),
-                                  );
-                                },
-                              ),
-                            ),
+                              LanguagePreferences.languageNameMap.keys
+                                  .map((key) {
+                                return SizedBox(
+                                  width: MediaQuery.of(context).size.width / 3,
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.max,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        LanguagePreferences
+                                            .languageNameMap[key]!,
+                                      ),
+                                      Text(
+                                        LanguagePreferences
+                                            .languageFlagMap[key]!,
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }),
+                            ).toList(),
                           ),
                         ),
                       );
                     },
                   );
                 },
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.grey.shade400),
+                      ),
+                      padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                      alignment: Alignment.centerLeft,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            LanguagePreferences.languageNameMap.values
+                                .elementAt(selectedLangIndex),
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                            ),
+                          ),
+                          Text(
+                            LanguagePreferences.languageFlagMap.values
+                                .elementAt(selectedLangIndex),
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Positioned(
+                      top: -10,
+                      left: 20,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                        color: Colors.white,
+                        child: const Text(
+                          "Langue",
+                          style: TextStyle(
+                            color: NotedColors.primary,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(height: 30.0),
             ],
           ),
         ),

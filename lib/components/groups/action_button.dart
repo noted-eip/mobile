@@ -7,8 +7,10 @@ import 'package:noted_mobile/components/common/custom_modal.dart';
 import 'package:noted_mobile/components/dialog/custom_dialog.dart';
 import 'package:noted_mobile/components/invites/pending_invite.dart';
 import 'package:noted_mobile/components/notes/create_note.dart';
+import 'package:noted_mobile/data/providers/group_provider.dart';
 import 'package:noted_mobile/data/providers/invite_provider.dart';
 import 'package:noted_mobile/utils/color.dart';
+import 'package:noted_mobile/utils/language.dart';
 import 'package:openapi/openapi.dart';
 
 enum ActionButton { addNote, invite }
@@ -68,6 +70,7 @@ class _GroupActionButtonState extends ConsumerState<GroupActionButton> {
       udpateActionButton(ActionButton.invite);
     } else if (index == 2 && !isWorkspace || index == 1 && isWorkspace) {
       updateVisibility(false);
+      ref.invalidate(groupActivitiesProvider(widget.group.id));
     }
   }
 
@@ -96,12 +99,19 @@ class _GroupActionButtonState extends ConsumerState<GroupActionButton> {
   }
 
   Future<void> addNote() async {
+    var lang = await LanguagePreferences.getLanguageCode();
+
+    if (!context.mounted) {
+      return;
+    }
+
     showModalBottomSheet(
       backgroundColor: Colors.transparent,
       context: context,
       isScrollControlled: true,
       builder: (context) {
         return CreateNoteModal(
+          initialLang: lang,
           group: widget.group,
         );
       },
@@ -159,7 +169,9 @@ class _GroupActionButtonState extends ConsumerState<GroupActionButton> {
               textAlign: TextAlign.start,
             ),
           ),
-          child: ListInvitesWidget(groupId: widget.group.id),
+          child: ListInvitesWidget(
+            group: widget.group,
+          ),
           onClose: (context2) {
             Navigator.pop(context2, false);
           },

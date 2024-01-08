@@ -119,11 +119,13 @@ class NoteClient {
 
       return response.data!.note;
     } on DioException catch (e) {
-      String error = NotedException.fromDioException(e).toString();
-      if (kDebugMode) {
-        print("Exception when calling DefaultApi->getNote: $error\n");
-      }
-      throw Failure(message: error);
+      // TODO: check if this is the right way to handle this
+      return null;
+      // String error = NotedException.fromDioException(e).toString();
+      // if (kDebugMode) {
+      //   print("Exception when calling DefaultApi->getNote: $error\n");
+      // }
+      // throw Failure(message: error);
     }
   }
 

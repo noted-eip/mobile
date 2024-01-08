@@ -6,7 +6,6 @@ import 'dart:async';
 
 import 'package:noted_mobile/components/common/custom_toast.dart';
 import 'package:noted_mobile/components/common/loading_button.dart';
-import 'package:noted_mobile/components/invites/pending_invite.dart';
 import 'package:noted_mobile/data/models/account/account.dart';
 import 'package:noted_mobile/data/models/invite/invite.dart';
 import 'package:noted_mobile/data/providers/account_provider.dart';
@@ -241,24 +240,6 @@ class _InviteMemberState extends ConsumerState<InviteMemberWidget> {
                     });
                   },
                 ),
-
-                // TODO: Edit role
-                // Row(
-                //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //   children: [
-                //     const Text("Choose member role :"),
-                //     CustomSwitch(
-                //       onChanged: (bool value) {
-                //         setState(() {
-                //           isAdmin = value;
-                //         });
-                //       },
-                //     ),
-                //   ],
-                // ),
-                // const SizedBox(
-                //   height: 32,
-                // ),
                 LoadingButton(
                   btnController: btnController,
                   color: isValidEmailAdress
@@ -271,14 +252,6 @@ class _InviteMemberState extends ConsumerState<InviteMemberWidget> {
                       : widget.formKey.currentState!.validate(),
                   text: "Envoyer l'invitation",
                 ),
-                // const SizedBox(
-                //   height: 32,
-                // ),
-                // Expanded(
-                //   child: ListInvitesWidget(
-                //     groupId: widget.groupId,
-                //   ),
-                // ),
               ],
             ),
           ),

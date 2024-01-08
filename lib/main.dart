@@ -25,6 +25,7 @@ import 'package:noted_mobile/pages/notifications/notification_page.dart';
 import 'package:noted_mobile/pages/home/splash_screen.dart';
 import 'package:noted_mobile/utils/language.dart';
 import 'package:noted_mobile/utils/noted_theme.dart';
+import 'dart:async';
 
 void main() async {
   init();
@@ -58,10 +59,15 @@ void main() async {
   ));
 }
 
-class MyApp extends StatelessWidget {
-  final Color _primaryColor = Colors.grey;
-
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final Color _primaryColor = Colors.grey;
 
   @override
   Widget build(BuildContext context) {

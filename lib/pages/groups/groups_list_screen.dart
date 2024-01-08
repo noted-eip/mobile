@@ -1,6 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
@@ -133,13 +132,25 @@ class _GroupsListPageState extends ConsumerState<GroupsListPage> {
                             padding: EdgeInsets.zero,
                             iconSize: 24,
                             onPressed: (() {
-                              if (kDebugMode) {
-                                print("Send button pressed");
+                              ScaffoldState? scaffoldState = ref
+                                  .read(mainScreenProvider)
+                                  .scaffoldKey
+                                  .currentState;
+
+                              if (scaffoldState == null ||
+                                  !scaffoldState.hasEndDrawer) {
+                                Navigator.of(context).pushNamed('/notif');
+                                return;
                               }
-                              ref
-                                  .read(trackerProvider)
-                                  .trackPage(TrackPage.notification);
-                              Navigator.pushNamed(context, "/notif");
+
+                              scaffoldState.openEndDrawer();
+                              // if (kDebugMode) {
+                              //   print("Send button pressed");
+                              // }
+                              // ref
+                              //     .read(trackerProvider)
+                              //     .trackPage(TrackPage.notification);
+                              // Navigator.pushNamed(context, "/notif");
                             }),
                             icon: Icon(Icons.send_rounded,
                                 color: Colors.grey.shade900),

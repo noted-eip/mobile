@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:noted_mobile/components/invites/invite_member.dart';
-import 'package:tuple/tuple.dart';
 
 class CustomDialogWidget extends StatefulWidget {
   const CustomDialogWidget({

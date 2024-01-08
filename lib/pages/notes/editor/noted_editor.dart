@@ -10,7 +10,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:noted_mobile/components/common/custom_alerte.dart';
 import 'package:noted_mobile/components/common/custom_modal.dart';
 import 'package:noted_mobile/components/common/custom_toast.dart';
+import 'package:noted_mobile/data/providers/account_provider.dart';
 import 'package:noted_mobile/data/providers/note_provider.dart';
+import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:noted_mobile/pages/notes/comment_list.dart';
 import 'package:noted_mobile/pages/notes/editor/_custom_component.dart';
 import 'package:noted_mobile/pages/notes/editor/_toolbar.dart';
@@ -21,6 +23,7 @@ import 'package:noted_mobile/pages/recommendation/recommendation_screen.dart';
 import 'package:noted_mobile/utils/color.dart';
 import 'package:noted_mobile/utils/string_extension.dart';
 import 'package:openapi/openapi.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:super_editor/super_editor.dart';
 import 'package:tuple/tuple.dart';
 
@@ -72,6 +75,8 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
   bool isUpdateInProgress = false;
 
   void updateNote() {
+    print("update note : ${widget.note.id}");
+    print("token : ${ref.read(userProvider).token}");
     print("note before update");
     print("length: ${widget.note.blocks?.length}");
 
@@ -189,7 +194,11 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
       ref.read(noteIdProvider.notifier).update((state) => widget.infos.item1);
       ref.read(groupIdProvider.notifier).update((state) => widget.infos.item2);
     });
+
+    userId = ref.read(userProvider).id;
   }
+
+  late String userId;
 
   @override
   void dispose() {
@@ -342,22 +351,24 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
                             ),
                           ),
                           itemBuilder: (context) => [
-                            PopupMenuItem(
-                              child: const ListTile(
-                                leading: Icon(Icons.delete),
-                                title: Text("Supprimer"),
-                              ),
-                              onTap: () async {
-                                await deleteNoteDialog(ref);
-                                if (mounted) {
-                                  ref.invalidate(
-                                      groupNotesProvider(widget.infos.item2));
-                                  ref.invalidate(notesProvider);
+                            if (userId == widget.note.authorAccountId) ...[
+                              PopupMenuItem(
+                                child: const ListTile(
+                                  leading: Icon(Icons.delete),
+                                  title: Text("Supprimer"),
+                                ),
+                                onTap: () async {
+                                  await deleteNoteDialog(ref);
+                                  if (mounted) {
+                                    ref.invalidate(
+                                        groupNotesProvider(widget.infos.item2));
+                                    ref.invalidate(notesProvider);
 
-                                  Navigator.of(context).pop();
-                                }
-                              },
-                            ),
+                                    Navigator.of(context).pop();
+                                  }
+                                },
+                              ),
+                            ],
                             PopupMenuItem(
                               child: const ListTile(
                                 leading: Icon(Icons.comment),
@@ -379,7 +390,7 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
                     ),
                   ),
                   Expanded(
-                    child: _buildEditor(context),
+                    child: _buildEditor(context, ref),
                   ),
                   if (_isMobile) _buildMountedToolbar(),
                 ],
@@ -770,7 +781,19 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
     );
   }
 
-  Widget _buildEditor(BuildContext context) {
+  Widget _buildEditor(BuildContext context, WidgetRef ref) {
+    var userId = ref.read(userProvider).id;
+
+    if (userId != widget.note.authorAccountId) {
+      return SuperReader(
+        document: _doc,
+        componentBuilders: [
+          CustomParagraphComponentBuilder(),
+          ...defaultComponentBuilders,
+        ],
+      );
+    }
+
     return SuperEditor(
       editor: _docEditor,
       composer: _composer,
