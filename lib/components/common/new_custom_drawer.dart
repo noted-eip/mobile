@@ -1,6 +1,8 @@
+import 'package:app_settings/app_settings.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:internet_popup/internet_popup.dart';
 import 'package:noted_mobile/data/clients/tracker_client.dart';
 import 'package:noted_mobile/data/providers/group_provider.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
@@ -28,7 +30,18 @@ class _MyDrawerState extends ConsumerState<MyDrawer> {
   @override
   void initState() {
     super.initState();
+    InternetPopup().initialize(
+      context: context,
+      customMessage: "alert.internet.title".tr(),
+      customDescription: "alert.internet.description".tr(),
+      onTapPop: true,
+    );
+
     _scaffoldKey = ref.read(mainScreenProvider).scaffoldKey;
+  }
+
+  openSettings() {
+    AppSettings.openAppSettings(type: AppSettingsType.wifi);
   }
 
   @override
@@ -116,7 +129,6 @@ class MyMenuItems {
   static const groups = MyMenuItem(icon: Icons.group, title: 'menu.groups');
   static const notes = MyMenuItem(icon: Icons.description, title: 'menu.notes');
   static const profil = MyMenuItem(icon: Icons.person, title: 'menu.profile');
-  // static const test = MyMenuItem(title: "TEST", icon: Icons.texture_sharp);
 
   static const all = <MyMenuItem>[
     home,
@@ -124,7 +136,6 @@ class MyMenuItems {
     groups,
     notes,
     profil,
-    // test,
   ];
 }
 

@@ -76,7 +76,7 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
         ),
       );
     }), error: ((error, stackTrace) {
-      return const Center(child: Text("Error"));
+      return Center(child: Text(error.toString()));
     }), loading: () {
       return const Center(child: CircularProgressIndicator());
     });

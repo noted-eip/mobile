@@ -15,27 +15,33 @@ void resetButton(RoundedLoadingButtonController controller) async {
 class LoadingButton extends StatefulWidget {
   const LoadingButton({
     super.key,
-    required this.onPressed,
+    this.onPressed,
     this.text,
     required this.btnController,
     this.color,
     this.secondaryColor,
+    this.disabledColor,
     this.width,
     this.child,
     this.elevation,
     this.resetDuration,
     this.animateOnTap,
+    this.resetDurationInMilliSeconds,
+    this.onPressedNoAsync,
   });
 
   final AsyncCallBack? onPressed;
+  final VoidCallback? onPressedNoAsync;
   final RoundedLoadingButtonController btnController;
   final String? text;
   final bool? animateOnTap;
   final Color? color;
   final Color? secondaryColor;
+  final Color? disabledColor;
   final double? width;
   final double? elevation;
   final int? resetDuration;
+  final int? resetDurationInMilliSeconds;
 
   final Widget? child;
 
@@ -53,18 +59,23 @@ class _LoadingButtonState extends State<LoadingButton> {
       valueColor: widget.secondaryColor ?? Colors.white,
       errorColor: Colors.redAccent,
       successColor: Colors.green.shade900,
-      onPressed: widget.onPressed != null
-          ? () async => await widget.onPressed!()
-          : null,
+      onPressed: widget.onPressedNoAsync != null
+          ? () => widget.onPressedNoAsync!()
+          : widget.onPressed != null
+              ? () async => await widget.onPressed!()
+              : null,
       controller: widget.btnController,
       width: widget.width ?? MediaQuery.of(context).size.width,
       height: 48,
       borderRadius: 16,
       resetAfterDuration: true,
-      resetDuration: Duration(seconds: widget.resetDuration ?? 3),
-      disabledColor: widget.color != null
-          ? widget.color!.withOpacity(0.5)
-          : Colors.grey.shade400,
+      resetDuration: widget.resetDurationInMilliSeconds != null
+          ? Duration(milliseconds: widget.resetDurationInMilliSeconds!)
+          : Duration(seconds: widget.resetDuration ?? 3),
+      disabledColor: widget.disabledColor ??
+          (widget.color != null
+              ? widget.color!.withOpacity(0.5)
+              : Colors.grey.shade400),
       child: widget.child != null
           ? widget.child!
           : widget.text != null

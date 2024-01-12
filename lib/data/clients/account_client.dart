@@ -50,9 +50,7 @@ class AccountClient {
       return true;
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
-      if (kDebugMode) {
-        print("Exception when calling DefaultApi->resetPassword: $error\n");
-      }
+      debugPrint("Exception when calling DefaultApi->resetPassword: $error\n");
       throw Failure(message: error);
     }
   }
@@ -74,10 +72,8 @@ class AccountClient {
       return response.data!.accountId;
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
-      if (kDebugMode) {
-        print(
-            "Exception when calling DefaultApi->forgetAccountPassword: $error\n");
-      }
+      debugPrint(
+          "Exception when calling DefaultApi->forgetAccountPassword: $error\n");
       throw Failure(message: error);
     }
   }
@@ -112,9 +108,7 @@ class AccountClient {
       );
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
-      if (kDebugMode) {
-        print("Exception when calling DefaultApi->verifyToken: $error\n");
-      }
+      debugPrint("Exception when calling DefaultApi->verifyToken: $error\n");
       throw Failure(message: error);
     }
   }
@@ -139,10 +133,8 @@ class AccountClient {
       }
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
-      if (kDebugMode) {
-        print(
-            "Exception when calling DefaultApi->resendValidateToken: $error\n");
-      }
+      debugPrint(
+          "Exception when calling DefaultApi->resendValidateToken: $error\n");
       throw Failure(message: error);
     }
   }
@@ -192,9 +184,8 @@ class AccountClient {
       return true;
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
-      if (kDebugMode) {
-        print("Exception when calling DefaultApi->loginWithGoogle: $error\n");
-      }
+      debugPrint(
+          "Exception when calling DefaultApi->loginWithGoogle: $error\n");
       throw Failure(message: error);
     }
   }
@@ -247,9 +238,7 @@ class AccountClient {
       return true;
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
-      if (kDebugMode) {
-        print("Exception when calling DefaultApi->login: $error\n");
-      }
+      debugPrint("Exception when calling DefaultApi->login: $error\n");
       throw Failure(message: error);
     }
   }
@@ -271,10 +260,8 @@ class AccountClient {
       return response.data!.isAccountValidate;
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
-      if (kDebugMode) {
-        print(
-            "Exception when calling DefaultApi->isAccountValidated: $error\n");
-      }
+      debugPrint(
+          "Exception when calling DefaultApi->isAccountValidated: $error\n");
       throw Failure(message: error);
     }
   }
@@ -301,9 +288,8 @@ class AccountClient {
       return Account.fromApi(response.data!.account);
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
-      if (kDebugMode) {
-        print("Exception when calling DefaultApi->validateAccount: $error\n");
-      }
+      debugPrint(
+          "Exception when calling DefaultApi->validateAccount: $error\n");
       throw Failure(message: error);
     }
   }
@@ -334,9 +320,7 @@ class AccountClient {
       return Account.fromApi(apiAccount);
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
-      if (kDebugMode) {
-        print("Exception when calling DefaultApi->createAccount: $error\n");
-      }
+      debugPrint("Exception when calling DefaultApi->createAccount: $error\n");
       throw Failure(message: error);
     }
   }
@@ -373,9 +357,7 @@ class AccountClient {
       return Account.fromApi(apiAccount);
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
-      if (kDebugMode) {
-        print("Exception when calling DefaultApi->updateAccount: $error\n");
-      }
+      debugPrint("Exception when calling DefaultApi->updateAccount: $error\n");
       throw Failure(message: error);
     }
   }
@@ -403,9 +385,7 @@ class AccountClient {
       return true;
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
-      if (kDebugMode) {
-        print("Exception when calling DefaultApi->deleteAccount: $error\n");
-      }
+      debugPrint("Exception when calling DefaultApi->deleteAccount: $error\n");
       throw Failure(message: error);
     }
   }
@@ -459,9 +439,8 @@ class AccountClient {
       return Account.fromApi(apiAccount);
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
-      if (kDebugMode) {
-        print("Exception when calling DefaultApi->getAccountByEmail: $error\n");
-      }
+      debugPrint(
+          "Exception when calling DefaultApi->getAccountByEmail: $error\n");
       throw Failure(message: error);
     }
   }

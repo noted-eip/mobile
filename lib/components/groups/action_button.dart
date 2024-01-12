@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -164,8 +165,8 @@ class _GroupActionButtonState extends ConsumerState<GroupActionButton> {
                 );
               }
             },
-            child: const Text(
-              "Add Members +",
+            child: Text(
+              "${"dialog.add_members".tr()} +",
               textAlign: TextAlign.start,
             ),
           ),

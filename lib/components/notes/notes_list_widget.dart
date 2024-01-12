@@ -107,9 +107,6 @@ class _NotesListState extends ConsumerState<NotesList> {
           notes.where((note) => note.groupId == groupId).toList();
     }
 
-    // créer une liste de expension panel  avec comme enfant une liste de notes et comme clé l'id du groupe
-    // List<ExpansionPanel> expansionPanels = [];
-
     List<Widget> expansionTiles = [];
 
     for (var groupId in groupIds) {
@@ -163,75 +160,6 @@ class _NotesListState extends ConsumerState<NotesList> {
         ),
       );
     }
-
-    // Widget builList(List<Note> notes, bool isRefresh) {
-    //   List<String> groupIds = notes.map((note) => note.groupId).toSet().toList();
-
-    //   notes.sort((a, b) => a.groupId.compareTo(b.groupId));
-    //   // créer une map avec comme clé l'id du groupe et comme valeur la liste des notes
-    //   Map<String, List<Note>> notesByGroup = {};
-
-    //   for (var groupId in groupIds) {
-    //     notesByGroup[groupId] =
-    //         notes.where((note) => note.groupId == groupId).toList();
-    //   }
-
-    //   // créer une liste de expension panel  avec comme enfant une liste de notes et comme clé l'id du groupe
-    //   // List<ExpansionPanel> expansionPanels = [];
-
-    //   List<Widget> expansionTiles = [];
-
-    //   for (var groupId in groupIds) {
-    //     AsyncValue<Group?> groupFromApi =
-    //         ref.read(groupProvider(notesByGroup[groupId]![0].groupId));
-    //     isExpandedList.add(false);
-    //     expansionTiles.add(
-    //       Padding(
-    //         padding: const EdgeInsets.only(bottom: 16),
-    //         child: ExpansionTile(
-    //           initiallyExpanded: true,
-    //           tilePadding: const EdgeInsets.all(12),
-    //           collapsedBackgroundColor: Colors.grey.shade900,
-    //           backgroundColor: Colors.grey.shade100,
-    //           collapsedTextColor: Colors.white,
-    //           textColor: Colors.grey.shade900,
-    //           iconColor: Colors.grey.shade900,
-    //           collapsedIconColor: Colors.white,
-    //           collapsedShape: RoundedRectangleBorder(
-    //             borderRadius: BorderRadius.circular(16),
-    //           ),
-    //           shape: RoundedRectangleBorder(
-    //             borderRadius: BorderRadius.circular(16),
-    //           ),
-    //           title: Text(
-    //             groupFromApi.when(
-    //               data: (group) => group!.data.name,
-    //               loading: () => '',
-    //               error: (error, stackTrace) => '',
-    //             ),
-    //           ),
-    //           children: [
-    //             for (var note in notesByGroup[groupId]!)
-    //               Padding(
-    //                 padding: const EdgeInsets.only(bottom: 16),
-    //                 child: NoteCard(
-    //                   note: note,
-    //                   baseColor: Colors.white,
-    //                   onTap: () {
-    //                     ref.read(trackerProvider).trackPage(TrackPage.noteDetail);
-    //                     Navigator.pushNamed(context, '/note-detail',
-    //                         arguments: Tuple2(note.id, note.groupId));
-    //                   },
-    //                 ),
-    //               ),
-    //           ],
-    //           onExpansionChanged: (value) => setState(() {
-    //             isExpandedList[groupIds.indexOf(groupId)] = value;
-    //           }),
-    //         ),
-    //       ),
-    //     );
-    //   }
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -336,66 +264,6 @@ class _NotesListState extends ConsumerState<NotesList> {
         ],
       ),
     );
-
-    // return Container(
-    //   margin: const EdgeInsets.only(bottom: 16),
-    //   child: Column(
-    //     crossAxisAlignment: CrossAxisAlignment.start,
-    //     mainAxisAlignment: MainAxisAlignment.start,
-    //     children: [
-    //       if (widget.title != null) widget.title!,
-    //       if (widget.title != null) const SizedBox(height: 16),
-    //       if (isRefresh)
-    //         Expanded(
-    //           child: RefreshIndicator(
-    //             displacement: 0,
-    //             onRefresh: () async {
-    //               ref.invalidate(notesProvider);
-    //             },
-    //             child: ListView.builder(
-    //               padding: EdgeInsets.zero,
-    //               itemBuilder: (context, index) {
-    //                 Note note = notes[index];
-    //                 return Padding(
-    //                   padding: const EdgeInsets.only(bottom: 16),
-    //                   child: NoteCard(
-    //                     note: note,
-    //                     baseColor: Colors.white,
-    //                     onTap: () {
-    //                       Navigator.pushNamed(context, '/note-detail',
-    //                           arguments: Tuple2(note.id, note.groupId));
-    //                     },
-    //                   ),
-    //                 );
-    //               },
-    //               itemCount: notes.length,
-    //             ),
-    //           ),
-    //         ),
-    //       if (!isRefresh)
-    //         Expanded(
-    //           child: ListView.builder(
-    //             padding: EdgeInsets.zero,
-    //             itemBuilder: (context, index) {
-    //               Note note = notes[index];
-    //               return Padding(
-    //                 padding: const EdgeInsets.only(bottom: 16),
-    //                 child: NoteCard(
-    //                   note: note,
-    //                   baseColor: Colors.white,
-    //                   onTap: () {
-    //                     Navigator.pushNamed(context, '/note-detail',
-    //                         arguments: Tuple2(note.id, note.groupId));
-    //                   },
-    //                 ),
-    //               );
-    //             },
-    //             itemCount: notes.length,
-    //           ),
-    //         ),
-    //     ],
-    //   ),
-    // );
   }
 
   @override
@@ -444,9 +312,7 @@ class _NotesListState extends ConsumerState<NotesList> {
           child: data.isEmpty
               ? SafeArea(
                   top: false,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  child: ListView(
                     children: [
                       const SizedBox(height: 32),
                       Lottie.asset(

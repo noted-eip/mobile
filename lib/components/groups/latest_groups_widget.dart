@@ -159,8 +159,8 @@ class _LatestsGroupsState extends ConsumerState<LatestsGroups> {
             ],
           );
         },
-        error: (error, stack) => const Center(
-          child: Text("Erreur"),
+        error: (error, stack) => Center(
+          child: Text(error.toString()),
         ),
       ),
     );

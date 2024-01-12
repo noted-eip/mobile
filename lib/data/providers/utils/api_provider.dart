@@ -27,7 +27,6 @@ final apiProvider = Provider<DefaultApi>((ref) {
   // );
 
   // TODO: revoir les timeout
-  //TODO : mettre un message pop up error reseau
 
   var dio = Dio(
     BaseOptions(

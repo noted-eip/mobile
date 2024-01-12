@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -65,12 +66,12 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage>
       context: context,
       builder: ((context) {
         return CustomAlertDialog(
-          title: "Quitter le groupe",
-          content: "Êtes-vous sûr de vouloir quitter ce groupe ?",
+          title: "pop-up.leave-group.title".tr(),
+          content: "pop-up.leave-group.description".tr(),
           onConfirm: () async {
             await deleteGroupMember(userTkn, userId, groupId, true);
           },
-          confirmText: "Quitter",
+          confirmText: "pop-up.leave-group.button".tr(),
         );
       }),
     );
@@ -112,8 +113,9 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage>
       context: context,
       builder: ((context) {
         return CustomAlertDialog(
-          title: "Delete member",
-          content: "Are you sure you want to delete this member ?",
+          title: "pop-up.delete-member.title".tr(),
+          content: "pop-up.delete-member.description".tr(),
+          confirmText: "pop-up.delete-member.button".tr(),
           onConfirm: () async {
             await deleteGroupMember(userTkn, userId, groupId, false);
           },
@@ -132,7 +134,7 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage>
       if (mounted) {
         Navigator.pop(context, true);
         CustomToast.show(
-          message: "Le groupe a été supprimé avec succès",
+          message: "group-detail.delete-success".tr(),
           type: ToastType.success,
           context: context,
           gravity: ToastGravity.BOTTOM,

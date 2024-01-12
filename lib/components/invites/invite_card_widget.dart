@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -47,7 +48,7 @@ class _InviteCardState extends ConsumerState<InviteCard> {
       ref.invalidate(groupsProvider);
       if (mounted) {
         CustomToast.show(
-          message: "Invitation acceptée",
+          message: "invites.accepted".tr(),
           type: ToastType.success,
           context: context,
           gravity: ToastGravity.BOTTOM,
@@ -81,7 +82,7 @@ class _InviteCardState extends ConsumerState<InviteCard> {
           .denyInvite(inviteId: inviteId, groupId: groupId);
       if (mounted) {
         CustomToast.show(
-          message: "Invite declined",
+          message: "invites.declined".tr(),
           type: ToastType.success,
           context: context,
           gravity: ToastGravity.BOTTOM,
@@ -114,7 +115,7 @@ class _InviteCardState extends ConsumerState<InviteCard> {
           .revokeInvite(inviteId: inviteId, groupId: groupId);
       if (mounted) {
         CustomToast.show(
-          message: "Invite revoked",
+          message: "invites.revoked".tr(),
           type: ToastType.success,
           context: context,
           gravity: ToastGravity.BOTTOM,
@@ -171,9 +172,9 @@ class _InviteCardState extends ConsumerState<InviteCard> {
         if (group == null) {
           setState(() {
             groupAlive = false;
-            titleWidget = const Text(
-              "Invalid invite !",
-              style: TextStyle(color: Colors.white),
+            titleWidget = Text(
+              "invites.invality".tr(),
+              style: const TextStyle(color: Colors.white),
             );
           });
 
@@ -216,11 +217,11 @@ class _InviteCardState extends ConsumerState<InviteCard> {
         setState(() {
           if (widget.isSentInvite) {
             titleWidget = Text(
-              "To: ${account.data.email}",
+              "${"invites.to".tr()}${account.data.email}",
               style: const TextStyle(color: Colors.white, fontSize: 14),
             );
           } else {
-            titleWidget = Text("From: ${account.data.email}",
+            titleWidget = Text("${"invites.from".tr()}${account.data.email}",
                 style: const TextStyle(color: Colors.white, fontSize: 14));
           }
         });
@@ -255,10 +256,10 @@ class _InviteCardState extends ConsumerState<InviteCard> {
       }
       setState(() {
         if (!isPendingGroupInvites) {
-          subtitleWidget = Text("To: ${account.data.email}",
+          subtitleWidget = Text("${"invites.to".tr()}${account.data.email}",
               style: const TextStyle(color: Colors.white, fontSize: 12));
         } else {
-          subtitleWidget = Text("From: ${account.data.email}",
+          subtitleWidget = Text("${"invites.from".tr()}${account.data.email}",
               style: const TextStyle(color: Colors.white, fontSize: 12));
         }
       });

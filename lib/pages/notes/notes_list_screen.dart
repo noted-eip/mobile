@@ -1,6 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
@@ -44,7 +43,6 @@ class _LatestsFilesListState extends ConsumerState<LatestsFilesList> {
 
   @override
   Widget build(BuildContext context) {
-    // final AsyncValue<List<Note>?> notes = ref.watch(notesProvider);
     final AsyncValue<List<V1Note>?> notes = ref.watch(notesProvider);
     final AsyncValue<List<Group>?> groupslist = ref.watch(groupsProvider);
 

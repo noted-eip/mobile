@@ -31,16 +31,11 @@ final workspaceIdProvider = FutureProvider<String>((ref) async {
   final grouplist =
       await ref.watch(groupClientProvider).listGroups(accountId: account.id);
 
-  print(grouplist);
-
   var workspace = grouplist
       ?.firstWhere((element) =>
           element.data.workspaceAccountId != null &&
           element.data.workspaceAccountId != "")
       .data;
-
-  print(workspace?.name);
-  print(workspace?.workspaceAccountId);
 
   return workspace?.id ?? "";
 });
@@ -49,7 +44,7 @@ final latestGroupsProvider = FutureProvider<List<Group>?>((ref) async {
   final account = ref.watch(userProvider);
   final grouplist = await ref
       .watch(groupClientProvider)
-      .listGroups(accountId: account.id, offset: 0, limit: 2);
+      .listGroups(accountId: account.id, offset: 0, limit: 5);
 
   return grouplist;
 });

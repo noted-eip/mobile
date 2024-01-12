@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/components/invites/invite_card_widget.dart';
@@ -63,10 +64,10 @@ class _ListInvitesWidgetState extends ConsumerState<ListInvitesWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          "Invitations en attente",
+        Text(
+          "invites.pending".tr(),
           textAlign: TextAlign.start,
-          style: TextStyle(
+          style: const TextStyle(
               color: Colors.black, fontSize: 24, fontWeight: FontWeight.bold),
         ),
         const SizedBox(
@@ -84,8 +85,12 @@ class _ListInvitesWidgetState extends ConsumerState<ListInvitesWidget> {
                       invalidateProvider();
                     },
                     child: ListView(
-                      children: const [
-                        Center(child: Text("Aucunes invitations trouvées")),
+                      children: [
+                        Center(
+                          child: Text(
+                            "invites.empty".tr(),
+                          ),
+                        ),
                       ],
                     ),
                   );
@@ -117,7 +122,7 @@ class _ListInvitesWidgetState extends ConsumerState<ListInvitesWidget> {
                 );
               }),
               error: ((error, stackTrace) {
-                return const Center(child: Text("Erreur"));
+                return Center(child: Text(error.toString()));
               }),
               loading: () => ListView.builder(
                 itemCount: 2,
@@ -141,51 +146,12 @@ class _ListInvitesWidgetState extends ConsumerState<ListInvitesWidget> {
                       invalidateProvider();
                     },
                     child: ListView(
-                      children: const [
-                        Center(child: Text("Aucunes invitations trouvées")),
-                      ],
-                    ),
-                  );
-                }
-
-                return RefreshIndicator(
-                  displacement: 0,
-                  onRefresh: () async {},
-                  child: ListView.builder(
-                    itemCount: data.length,
-                    itemBuilder: (context, index) {
-                      return Container(
-                          margin: const EdgeInsets.only(bottom: 16),
-                          child: CustomSlide(
-                            title: "Invite",
-                            subtitle: data[index].id,
-                            actions: const [],
-                          ));
-                    },
-                  ),
-                );
-              }),
-              error: ((error, stackTrace) {
-                return const Center(child: Text("Erreur"));
-              }),
-              loading: () => const Center(
-                child: Text("Chargement ...."),
-              ),
-            ),
-          ),
-        if (widget.isSender != null && !widget.isSender!)
-          Expanded(
-            child: pendingReceiveInvites.when(
-              data: ((data) {
-                if (data == null || data.isEmpty) {
-                  return RefreshIndicator(
-                    displacement: 0,
-                    onRefresh: () async {
-                      invalidateProvider();
-                    },
-                    child: ListView(
-                      children: const [
-                        Center(child: Text("Aucunes invitations trouvées")),
+                      children: [
+                        Center(
+                          child: Text(
+                            "invites.empty".tr(),
+                          ),
+                        ),
                       ],
                     ),
                   );
@@ -210,11 +176,56 @@ class _ListInvitesWidgetState extends ConsumerState<ListInvitesWidget> {
                 );
               }),
               error: ((error, stackTrace) {
-                return const Center(child: Text("Erreur"));
+                return Center(child: Text(error.toString()));
               }),
               loading: () => const Center(
-                child: Text("Chargement ...."),
+                child: CircularProgressIndicator(),
               ),
+            ),
+          ),
+        if (widget.isSender != null && !widget.isSender!)
+          Expanded(
+            child: pendingReceiveInvites.when(
+              data: ((data) {
+                if (data == null || data.isEmpty) {
+                  return RefreshIndicator(
+                    displacement: 0,
+                    onRefresh: () async {
+                      invalidateProvider();
+                    },
+                    child: ListView(
+                      children: [
+                        Center(
+                          child: Text(
+                            "invites.empty".tr(),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                return RefreshIndicator(
+                  displacement: 0,
+                  onRefresh: () async {},
+                  child: ListView.builder(
+                    itemCount: data.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        child: CustomSlide(
+                          title: "Invite",
+                          subtitle: data[index].id,
+                          actions: const [],
+                        ),
+                      );
+                    },
+                  ),
+                );
+              }),
+              error: (error, stackTrace) =>
+                  Center(child: Text(error.toString())),
+              loading: () => const Center(child: CircularProgressIndicator()),
             ),
           ),
       ],

@@ -19,9 +19,8 @@ class _AddNoteCardState extends State<AddNoteCard> {
         color: NotedColors.primary,
         onTap: () {},
         actions: null,
-        //TODO : add traduction
         titleWidget: Text(
-          "Ajouter une nouvelle note".tr(),
+          "note.add".tr(),
           style: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16.0,

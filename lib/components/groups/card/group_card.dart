@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:noted_mobile/utils/color.dart';
 import 'package:noted_mobile/utils/constant.dart';
@@ -96,7 +97,9 @@ class GroupCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text(
-                      groupName!.capitalize(),
+                      groupName == "My Workspace"
+                          ? "menu.workspace".tr()
+                          : groupName!.capitalize(),
                       textAlign: TextAlign.start,
                       softWrap: true,
                       overflow: TextOverflow.ellipsis,

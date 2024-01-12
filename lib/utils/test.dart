@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/data/providers/account_provider.dart';
@@ -23,14 +21,14 @@ class _TestPageState extends ConsumerState<TestPage> {
             var messenger = ScaffoldMessenger.of(context);
             try {
               var response = await value();
-              print(response);
+
+              debugPrint(response.toString());
             } catch (e) {
               messenger.showSnackBar(
                 SnackBar(
                   content: Text(e.toString()),
                 ),
               );
-              print(e);
             }
           },
           child: Text(key),

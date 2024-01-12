@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
@@ -41,9 +42,7 @@ class NoteClient {
       return response.data!.note;
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
-      if (kDebugMode) {
-        print("Exception when calling DefaultApi->createNote: $error\n");
-      }
+      debugPrint("Exception when calling DefaultApi->createNote: $error\n");
       throw Failure(message: error);
     }
   }
@@ -64,9 +63,7 @@ class NoteClient {
       }
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
-      if (kDebugMode) {
-        print("Exception when calling DefaultApi->deleteNote: $error\n");
-      }
+      debugPrint("Exception when calling DefaultApi->deleteNote: $error\n");
       throw Failure(message: error);
     }
   }
@@ -94,9 +91,7 @@ class NoteClient {
       return response.data!.note;
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
-      if (kDebugMode) {
-        print("Exception when calling DefaultApi->updateNote: $error\n");
-      }
+      debugPrint("Exception when calling DefaultApi->updateNote: $error\n");
       throw Failure(message: error);
     }
   }
@@ -147,9 +142,9 @@ class NoteClient {
       return response.data!.notes!.toList();
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
-      if (kDebugMode) {
-        print("Exception when calling DefaultApi->listGroupNotes: $error\n");
-      }
+
+      debugPrint("Exception when calling DefaultApi->listGroupNotes: $error\n");
+
       throw Failure(message: error);
     }
   }
@@ -172,9 +167,9 @@ class NoteClient {
       return response.data!.notes!.toList();
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
-      if (kDebugMode) {
-        print("Exception when calling DefaultApi->listNotes: $error\n");
-      }
+
+      debugPrint("Exception when calling DefaultApi->listNotes: $error\n");
+
       throw Failure(message: error);
     }
   }
@@ -199,9 +194,10 @@ class NoteClient {
       return response.data!.summary;
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
-      if (kDebugMode) {
-        print("Exception when calling DefaultApi->summaryGenerator: $error\n");
-      }
+
+      debugPrint(
+          "Exception when calling DefaultApi->summaryGenerator: $error\n");
+
       throw Failure(message: error);
     }
   }
@@ -229,10 +225,10 @@ class NoteClient {
       return response.data!.widgets.toList();
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
-      if (kDebugMode) {
-        print(
-            "Exception when calling DefaultApi->recommendationGenerator: $error\n");
-      }
+
+      debugPrint(
+          "Exception when calling DefaultApi->recommendationGenerator: $error\n");
+
       throw Failure(message: error);
     }
   }
@@ -257,9 +253,10 @@ class NoteClient {
       return response.data!.quizs!.toList();
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
-      if (kDebugMode) {
-        print("Exception when calling DefaultApi->listNoteQuizzes: $error\n");
-      }
+
+      debugPrint(
+          "Exception when calling DefaultApi->listNoteQuizzes: $error\n");
+
       throw Failure(message: error);
     }
   }
@@ -284,9 +281,9 @@ class NoteClient {
       return response.data!.quiz!;
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
-      if (kDebugMode) {
-        print("Exception when calling DefaultApi->quizzGenerator: $error\n");
-      }
+
+      debugPrint("Exception when calling DefaultApi->quizzGenerator: $error\n");
+
       throw Failure(message: error);
     }
   }
@@ -316,9 +313,9 @@ class NoteClient {
       }
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
-      if (kDebugMode) {
-        print("Exception when calling DefaultApi->removeComment: $error\n");
-      }
+
+      debugPrint("Exception when calling DefaultApi->removeComment: $error\n");
+
       throw Failure(message: error);
     }
   }
@@ -357,9 +354,9 @@ class NoteClient {
       return response.data?.comment;
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
-      if (kDebugMode) {
-        print("Exception when calling DefaultApi->addComment: $error\n");
-      }
+
+      debugPrint("Exception when calling DefaultApi->addComment: $error\n");
+
       throw Failure(message: error);
     }
   }
@@ -381,16 +378,16 @@ class NoteClient {
           });
 
       if (response.statusCode != 200 || response.data == null) {
-        throw Failure(message: response.statusMessage ?? 'Error');
+        throw Failure(message: response.statusMessage ?? 'Error hh');
       }
 
       return response.data!.comments!.toList();
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
-      if (kDebugMode) {
-        print("Exception when calling DefaultApi->listComments: $error\n");
-      }
-      throw Failure(message: error);
+
+      debugPrint("Exception when calling DefaultApi->listComments: $error\n");
+
+      throw Failure(message: error.toString());
     }
   }
 
@@ -409,7 +406,7 @@ class NoteClient {
         );
 
         if (note == null) {
-          throw Failure(message: 'Note not found');
+          throw Failure(message: "note.not-found".tr());
         }
 
         block = note.blocks!.toList();
@@ -434,10 +431,10 @@ class NoteClient {
       return blockWithComments;
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
-      if (kDebugMode) {
-        print(
-            "Exception when calling DefaultApi->listBlockWithComments: $error\n");
-      }
+
+      debugPrint(
+          "Exception when calling DefaultApi->listBlockWithComments: $error\n");
+
       throw Failure(message: error);
     }
   }

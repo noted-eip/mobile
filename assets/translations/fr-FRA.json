@@ -35,6 +35,12 @@
             "hint" : "Entrez votre mot de passe",
             "validator" : "Veuillez entrer votre mot de passe"
         },
+        "confirmPassword" : {
+            "label" : "Confirmez le mot de passe",
+            "hint" : "Entrez votre mot de passe",
+            "validator" : "Veuillez entrer votre mot de passe",
+            "validator2" : "Les mots de passe ne correspondent pas"
+        },
         "button" : "S'inscrire",
         "other" : "Ou inscrivez-vous avec",
         "signin" : "Vous avez déjà un compte ?",
@@ -65,6 +71,8 @@
                 "description": "Nous vous avons envoyé un nouveau code de vérification à votre adresse email.",
                 "button": "Ok"
             },
+            "error": "Erreur",
+            "error-message": "Le code de vérification est incorrect !",
             "button": "Vérifier"
         }
     },
@@ -143,36 +151,44 @@
         "close": "Fermer",
         "delete-account": "Supprimer le compte"
     },
-    "group-detail": {
-        "title": "Détails du Groupe",
-        "description": "Description",
-        "created-on": "Créé le",
-        "members": "Membres",
-        "notes": "Notes",
-        "activities": "Activités",
-        "edit-group": "Modifier le groupe",
-        "delete-group": "Supprimer le groupe",
-        "leave-group": "Quitter le groupe",
-        "edit-group-modal" : {
-            "title": "Modifier le groupe",
-            "name-label": "Nom du groupe",
-            "name-hint": "Entrez le nom du groupe",
-            "description-label": "Description du groupe",
-            "description-hint": "Entrez une description du groupe",
-            "button": "Enregistrer",
-            "close": "Fermer"
-        }
-    },
     "note-detail": {
         "quiz": "Quiz",
         "recommandations": "Recommandations",
-        "summary": "Résumé"
-    },
-    "invites": {
-        "title": "Invitations",
-        "sent-invites": "Envoyées",
-        "received-invites": "Reçues",
-        "empty": "Aucune invitation trouvée !"
+        "summary": "Résumé",
+        "100words": {
+            "base" : "La note doit contenir au moins 100 mots pour générer ",
+            "quiz" : "un quiz.",
+            "recommandations" : "des recommandations.",
+            "summary" : "un résumé."
+        },
+        "error": {
+            "summary": "Une erreur s'est produite lors de la génération du résumé !",
+            "quiz": "Une erreur s'est produite lors de la génération du quiz !",
+            "recommandations": "Une erreur s'est produite lors de la génération des recommandations !",
+            "recommandations-empty": "Aucune recommandation n'a été générée.\nContinuer d'écrire pour générer une recommandation"
+        },
+        "empty": "La note est vide !",
+        "quiz-content": {
+            "empty": "Aucuns quiz n'a été généré pour cette note !",
+            "success": "Nouveau Quiz généré avec succès !",
+            "error": "Une erreur s'est produite lors de la génération du quiz !",
+            "create": "Créer un quiz",
+            "inProgress": "Génération du quiz en cours ..."
+        },
+        "quiz-word": {
+            "perfect": "Parfait !",
+            "good": "Vous êtes sur la bonne voie !",
+            "bad": "Réésaiyez !",
+            "default": "Bien essayé !",
+            "you": "Vous avez ",
+            "good-answers": " bonnes réponses !",
+            "quit": "Quitter",
+            "empty": "Pas de questions trouvées !",
+            "good-answer": "Bonne réponse !",
+            "bad-answer": "Mauvaise réponse, la bonne réponse est : ",
+            "next": "Suivant",
+            "verify": "Vérifier"
+        }
     },
     "pop-up": {
         "delete-group": {
@@ -200,6 +216,14 @@
             "description": "Êtes-vous sûr de vouloir supprimer ce membre ?",
             "button": "Supprimer",
             "cancel": "Annuler"
+        },
+        "delete-note": 
+        {
+            "title": "Supprimer la note",
+            "description": "Êtes-vous sûr de vouloir supprimer cette note ?",
+            "button": "Supprimer",
+            "cancel": "Annuler",
+            "success": "La note a été supprimée avec succès !"
         }
     },
     "close": "Fermer",
@@ -213,5 +237,115 @@
         "password-no-match" : "Les mots de passe ne correspondent pas", 
         "code-empty" : "Veuillez entrer un code",
         "code-length" : "Le code doit contenir 4 caractères"
-    }
+    },
+    "error": {
+        "cancel": "L'opération a été annulée",
+        "connectionTimeout": "Délai de connexion dépassé",
+        "connectionError": "Erreur de connexion, veuillez vérifier votre connexion Internet",
+        "receiveTimeout": "Délai de réception dépassé",
+        "sendTimeout": "Délai d'envoi dépassé",
+        "default": "Quelque chose s'est mal passé. Veuillez réessayer plus tard."
+    },
+    "note": {
+        "not-found": "Note introuvable !",
+        "comments": "Commentaires",
+        "no-comments": "Aucun commentaire trouvé !",
+        "add": "Ajouter une note", 
+        "error": "Une erreur s'est produite !", 
+        "unknown": "Note Inconnue",
+        "lang": "Langue",
+        "block": {
+            "title": "Commentaires",
+            "empty": "Aucun commentaire trouvé !",
+            "delete": "Supprimer",
+            "add-comment": "Ajouter un commentaire"
+        },
+        "inProgress": "Mise à jour en cours ...",
+        "delete": "Supprimer"
+    },
+    "alert": {
+        "cancel": "Annuler",
+        "confirm": "Supprimer",
+        "internet" : {
+            "title": "Pas de connexion Internet",
+            "description": "Les fonctionnalités de l'application sont\nlimitées sans connexion internet."
+        }
+    },
+    "dialog": {
+        "add-members": "Ajouter des membres",
+        "add": "Ajouter",
+        "cancel": "Annuler",
+        "edit-role": "Modifier le rôle",
+        "promote-member": "Promouvoir ce membre en tant qu'administrateur ?",
+        "promote": "Promouvoir",
+        "promote-success": "Le membre a été promu avec succès !"
+    },
+    "member": {
+        "admin": "Administrateur",
+        "member": "Membre"
+    },
+    "group-detail": {
+        "title": "Détails du Groupe",
+        "description": "Description",
+        "created-on": "Créé le",
+        "members": "Membres",
+        "notes": "Notes",
+        "activities": "Activités",
+        "edit-group": "Modifier le groupe",
+        "edit": "Modifier",
+        "delete-group": "Supprimer le groupe",
+        "delete": "Supprimer",
+        "delete-confirm": "Êtes-vous sûr de vouloir supprimer ce groupe ?",
+        "delete-success": "Le groupe a été supprimé avec succès !",
+        "leave-group": "Quitter le groupe",
+        "leave": "Quitter",
+        "leave-confirm": "Êtes-vous sûr de vouloir quitter ce groupe ?",
+        "save": "Enregistrer",
+        "edit-group-modal" : {
+            "title": "Modifier le groupe",
+            "name-label": "Nom du groupe",
+            "name-hint": "Entrez le nom du groupe",
+            "description-label": "Description du groupe",
+            "description-hint": "Entrez une description du groupe",
+            "button": "Enregistrer",
+            "close": "Fermer"
+        },
+        "no-members": "Aucun membre trouvé !",
+        "tab": {
+            "notes": "Notes",
+            "members": "Membres",
+            "activities": "Activités"
+        },
+        "activity": {
+            "empty": "Aucune activité trouvée !",
+            "add-note": " a créé une note ",
+            "add-member": " a rejoint le groupe.",
+            "remove-member": " a quitté le groupe.",
+            "unknown": "Erreur"
+        }
+    },
+     "invites": {
+        "title": "Invitations",
+        "sent-invites": "Envoyées",
+        "received-invites": "Reçues",
+        "empty": "Aucune invitation trouvée !",
+        "accepted": "Invitation acceptée !",
+        "declined": "Invitation refusée !",
+        "revoked": "Invitation révoquée !",
+        "invality": "Invitation invalide !",
+        "pending": "Invitations en attente",
+        "to": "A: ",
+        "from": "De: ",
+        "not-registred": "L'utilisateur n'est pas enregistré !"
+    },
+    "change-password": {
+        "title": "Créer un nouveau mot de passe",
+        "description": "Entrez votre nouveau mot de passe.",
+        "success": "Le mot de passe a été changé avec succès !",
+        "error": "Le mot de passe n'a pas pu être changé !",
+        "button": "Changer le mot de passe",
+        "remember": "Vous vous souvenez de votre mot de passe ?",
+        "signin": "Se connecter"
+    },
+    "workspace-description": "Bienvenue dans votre espace de travail ! Voici un endroit o"
 }

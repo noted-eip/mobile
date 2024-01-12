@@ -7,6 +7,7 @@ import 'package:noted_mobile/components/common/loading_button.dart';
 import 'package:noted_mobile/data/clients/tracker_client.dart';
 import 'package:noted_mobile/data/providers/account_provider.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
+import 'package:noted_mobile/data/services/api_execption.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
@@ -205,13 +206,15 @@ class ForgotPasswordVerificationPageState
         Navigator.pushNamed(context, '/change-password', arguments: resetToken);
       }
     } on DioException catch (e) {
+      String error = NotedException.fromDioException(e).toString();
+
       if (e.response!.statusCode == 400) {
         if (mounted) {
           showDialog(
             context: context,
             builder: (BuildContext context) {
-              return ThemeHelper().alartDialog(
-                  "Error", "Verification code is invalid.", context);
+              return ThemeHelper().alartDialog("forgot.step2.error".tr(),
+                  "forgot.step2.error-message".tr(), context);
             },
           );
         }
@@ -221,7 +224,7 @@ class ForgotPasswordVerificationPageState
             context: context,
             builder: (BuildContext context) {
               return ThemeHelper()
-                  .alartDialog("Error", "Something went wrong.", context);
+                  .alartDialog("forgot.step2.error".tr(), error, context);
             },
           );
         }

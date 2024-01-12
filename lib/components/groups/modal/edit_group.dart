@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -93,7 +94,7 @@ class _EditGroupModalState extends ConsumerState<EditGroupModal> {
             child: GroupInfosInput(
               titleController: _titleController,
               descriptionController: _descriptionController,
-              title: "Modifier le Groupe",
+              title: "group-detail.edit-group".tr(),
               formKey: _formKey,
             ),
           ),
@@ -104,7 +105,7 @@ class _EditGroupModalState extends ConsumerState<EditGroupModal> {
                 await editGroup();
               }
             },
-            text: "Enregistrer",
+            text: "group-detail.save".tr(),
           ),
         ],
       ),

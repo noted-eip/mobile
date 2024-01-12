@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -59,34 +60,25 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
                   const SizedBox(height: 32),
                   Container(
                     alignment: Alignment.topLeft,
-                    child: const Column(
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Create a New Password',
-                          style: TextStyle(
+                          'change-password.title'.tr(),
+                          style: const TextStyle(
                               fontSize: 35,
                               fontWeight: FontWeight.bold,
                               color: Colors.black54),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         Text(
-                          'Enter a new password for your account.',
-                          style: TextStyle(
+                          'change-password.description'.tr(),
+                          style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.black54),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Text(
-                          'Password must be at least 8 characters long.',
-                          style: TextStyle(
-                            color: Colors.black38,
-                          ),
                         ),
                       ],
                     ),
@@ -103,7 +95,8 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
                             obscureText: _obscureText[0],
                             decoration: ThemeHelper()
                                 .textInputDecoration(
-                                    'Password', 'Enter your password')
+                                    'signup.password.label'.tr(),
+                                    'signup.password.hint'.tr())
                                 .copyWith(
                                   prefixIcon: const Icon(
                                       Icons.lock_outline_rounded,
@@ -126,7 +119,7 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
                                 ),
                             validator: (val) {
                               if (val!.isEmpty) {
-                                return 'Please enter your password';
+                                return 'signup.password.validator'.tr();
                               }
                               return null;
                             },
@@ -139,8 +132,9 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
                             controller: confirmPasswordController,
                             obscureText: _obscureText[1],
                             decoration: ThemeHelper()
-                                .textInputDecoration('Confirm Password',
-                                    'Confirm your new password')
+                                .textInputDecoration(
+                                    'signup.confirmPassword.label'.tr(),
+                                    'signup.confirmPassword.hint'.tr())
                                 .copyWith(
                                   prefixIcon: const Icon(
                                       Icons.lock_outline_rounded,
@@ -163,10 +157,10 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
                                 ),
                             validator: (val) {
                               if (val!.isEmpty) {
-                                return 'Please confirm your password';
+                                return 'signup.confirmPassword.validator'.tr();
                               }
                               if (val != passwordController.text) {
-                                return 'Password does not match';
+                                return 'signup.confirmPassword.validator2'.tr();
                               }
                               return null;
                             },
@@ -186,7 +180,7 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
 
                               if (res && mounted) {
                                 CustomToast.show(
-                                  message: 'Password Changed',
+                                  message: 'change-password.success'.tr(),
                                   type: ToastType.success,
                                   context: context,
                                   gravity: ToastGravity.BOTTOM,
@@ -201,7 +195,7 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
                               } else {
                                 if (mounted) {
                                   CustomToast.show(
-                                    message: 'Password Change Failed',
+                                    message: 'change-password.error'.tr(),
                                     type: ToastType.error,
                                     context: context,
                                     gravity: ToastGravity.BOTTOM,
@@ -215,15 +209,15 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
                               resetButton(btnController);
                             }
                           },
-                          text: "Change Password",
+                          text: "change-password.button".tr(),
                         ),
                         const SizedBox(height: 30.0),
                         Text.rich(
                           TextSpan(
                             children: [
-                              const TextSpan(text: "Remember your password? "),
+                              TextSpan(text: "change-password.remember".tr()),
                               TextSpan(
-                                text: 'Login',
+                                text: 'change-password.signin'.tr(),
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () {
                                     ref

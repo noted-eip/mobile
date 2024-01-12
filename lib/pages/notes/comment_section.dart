@@ -1,8 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/data/providers/note_provider.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
+import 'package:noted_mobile/data/providers/utils/periodic_function_executor.dart';
 import 'package:noted_mobile/utils/color.dart';
 import 'package:openapi/openapi.dart';
 import 'package:tuple/tuple.dart';
@@ -35,6 +37,15 @@ class _CommentSectionState extends ConsumerState<CommentSection> {
 
   bool _isButtonDisabled = true;
 
+  late bool internetStatus;
+
+  PeriodicFunctionExecutor periodicFunctionExecutor =
+      PeriodicFunctionExecutor();
+
+  void refreshCommentList() {
+    ref.invalidate(noteComments(Tuple3(groupId, noteId, widget.blockId)));
+  }
+
   @override
   void initState() {
     super.initState();
@@ -42,12 +53,18 @@ class _CommentSectionState extends ConsumerState<CommentSection> {
     noteId = ref.read(noteIdProvider);
     userId = ref.read(userProvider).id;
 
+    periodicFunctionExecutor.start(
+      refreshCommentList,
+      const Duration(seconds: 5),
+    );
+
     commentController.addListener(_checkText);
   }
 
   @override
   void dispose() {
     commentController.dispose();
+    periodicFunctionExecutor.stop();
     super.dispose();
   }
 
@@ -61,10 +78,11 @@ class _CommentSectionState extends ConsumerState<CommentSection> {
   Widget build(BuildContext context) {
     AsyncValue<List<BlockComment>?> comments =
         ref.watch(noteComments(Tuple3(groupId, noteId, widget.blockId)));
+
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
-        title: const Text('Commentaires de block'),
+        title: Text('note.block.title'.tr()),
       ),
       body: SafeArea(
         child: Column(
@@ -87,8 +105,8 @@ class _CommentSectionState extends ConsumerState<CommentSection> {
                     );
                   } else {
                     if (data.isEmpty) {
-                      return const Center(
-                        child: Text('No comments'),
+                      return Center(
+                        child: Text('note.block.empty'.tr()),
                       );
                     }
 
@@ -123,9 +141,9 @@ class _CommentSectionState extends ConsumerState<CommentSection> {
                                             noteComments(Tuple3(groupId, noteId,
                                                 widget.blockId))));
                                   },
-                                  child: const Text(
-                                    "Delete",
-                                    style: TextStyle(color: Colors.red),
+                                  child: Text(
+                                    "note.block.delete".tr(),
+                                    style: const TextStyle(color: Colors.red),
                                   ),
                                 )
                               ],
@@ -223,8 +241,8 @@ class _CommentSectionState extends ConsumerState<CommentSection> {
                 loading: () => const Center(
                   child: CircularProgressIndicator(),
                 ),
-                error: (error, stack) => const Center(
-                  child: Text('Error'),
+                error: (error, stack) => Center(
+                  child: Text(error.toString()),
                 ),
               ),
             ),
@@ -289,7 +307,7 @@ class _CommentSectionState extends ConsumerState<CommentSection> {
                       ),
                     ),
                   ),
-                  hintText: "Comment",
+                  hintText: "note.block.add-comment".tr(),
                 ),
               ),
             ),

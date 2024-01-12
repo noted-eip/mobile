@@ -69,20 +69,4 @@ class NotedValidator {
     }
     return null;
   }
-
-  // static String? validateTitle(String? value) {
-  //   print("validateTitle");
-  //   if (value == null || value.isEmpty) {
-  //     return 'Title is required';
-  //   }
-  //   return null;
-  // }
-
-  // static String? validateContent(String? value) {
-  //   print("validateContent");
-  //   if (value == null || value.isEmpty) {
-  //     return 'Content is required';
-  //   }
-  //   return null;
-  // }
 }

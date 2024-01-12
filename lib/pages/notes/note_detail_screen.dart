@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/data/providers/note_provider.dart';
@@ -22,8 +23,8 @@ class _NoteDetailState extends ConsumerState<NoteDetail> {
       body: note.when(
         data: (data) {
           if (data == null) {
-            return const Center(
-              child: Text("No data"),
+            return Center(
+              child: Text("note-detail.empty".tr()),
             );
           }
           return NotedEditor(

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/data/providers/group_provider.dart';
@@ -23,14 +24,14 @@ class _GroupActivitiesState extends ConsumerState<GroupActivities> {
     return activites.when(
         data: ((data) {
           if (data == null) {
-            return const Center(
-              child: Text("Pas d'activitées"),
+            return Center(
+              child: Text("group-detail.activity.empty".tr()),
             );
           }
 
           if (data.isEmpty) {
-            return const Center(
-              child: Text("Pas d'activitées"),
+            return Center(
+              child: Text("group-detail.activity.empty".tr()),
             );
           }
 

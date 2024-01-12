@@ -73,6 +73,10 @@ dependencies:
   lottie: ^2.7.0
   google_fonts: ^4.0.4
   flutter_keyboard_visibility: ^5.4.1
+  internet_popup: ^1.0.8+5
+  app_settings: ^5.1.1
+  loading_animation_widget: ^1.2.0+4
+  internet_connection_checker_plus: ^1.0.1
 
 dev_dependencies:
   flutter_test:

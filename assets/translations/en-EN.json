@@ -1,57 +1,63 @@
 {
-    "signin" : {
-        "title" : "Sign in to your account",
-        "email" : {
-            "label" : "Email",
-            "hint" : "Enter your email address",
+    "signin": {
+        "title": "Sign in to your account",
+        "email": {
+            "label": "Email",
+            "hint": "Enter your email address",
             "validator": "Please enter a valid email address"
         },
-        "password" : {
-            "label" : "Password",
-            "hint" : "Enter your password",
-            "validator" : "Please enter your password"
+        "password": {
+            "label": "Password",
+            "hint": "Enter your password",
+            "validator": "Please enter your password"
         },
-        "forgot" : "Forgot password?",
-        "button" : "Sign in",
-        "other" : "Or sign in with",
-        "signup" : "Don't have an account?",
-        "signupButton" : "Sign up"
+        "forgot": "Forgot password?",
+        "button": "Sign in",
+        "other": "Or sign in with",
+        "signup": "Don't have an account?",
+        "signupButton": "Sign up"
     },
-    "signup" : {
-        "title" : "Create your account",
-        "name" : {
-            "label" : "Name",
-            "hint" : "Enter your name",
+    "signup": {
+        "title": "Create your account",
+        "name": {
+            "label": "Name",
+            "hint": "Enter your name",
             "validator": "Please enter a name"
         },
-        "email" : {
-            "label" : "Email",
-            "hint" : "Enter your email address",
+        "email": {
+            "label": "Email",
+            "hint": "Enter your email address",
             "validator": "Please enter a valid email address"
         },
-        "password" : {
-            "label" : "Password",
-            "hint" : "Enter your password",
-            "validator" : "Please enter your password"
+        "password": {
+            "label": "Password",
+            "hint": "Enter your password",
+            "validator": "Please enter your password"
         },
-        "button" : "Sign up",
-        "other" : "Or sign up with",
-        "signin" : "Already have an account?",
-        "signinButton" : "Sign in"
+        "confirmPassword": {
+            "label": "Confirm password",
+            "hint": "Enter your password",
+            "validator": "Please enter your password",
+            "validator2": "Passwords do not match"
+        },
+        "button": "Sign up",
+        "other": "Or sign up with",
+        "signin": "Already have an account?",
+        "signinButton": "Sign in"
     },
-    "forgot" : {
+    "forgot": {
         "step1": {
-            "title" : "Forgot Password?",
-            "description" : "Enter your email address associated with your account.",
-            "description2" : "We will send you a verification code to reset your password.",
-            "email" : {
-                "label" : "Email",
-                "hint" : "Enter your email address",
+            "title": "Forgot password?",
+            "description": "Enter your email address associated with your account.",
+            "description2": "We will send you a verification code to reset your password.",
+            "email": {
+                "label": "Email",
+                "hint": "Enter your email address",
                 "validator": "Please enter a valid email address"
             },
-            "button" : "Send",
-            "remember" : "Remember your password?",
-            "signin" : "Sign in"
+            "button": "Send",
+            "remember": "Remember your password?",
+            "signin": "Sign in"
         },
         "step2": {
             "title": "Verification Code",
@@ -60,10 +66,12 @@
             "validator": "Please enter a valid code",
             "resend": "Resend",
             "resend-pop-up": {
-                "title": "Sent Successfully",
-                "description": "We have sent a new verification code to your email address.",
+                "title": "Sent successfully",
+                "description": "We have sent you a new verification code to your email address.",
                 "button": "Ok"
             },
+            "error": "Error",
+            "error-message": "The verification code is incorrect!",
             "button": "Verify"
         }
     },
@@ -75,11 +83,11 @@
         "profile": "Profile",
         "logout": "Logout"
     },
-    "home" : {
-        "hello" : "Hello,",
-        "start" : "Let's start writing our story!",
-        "lastest-groups" : "Latest groups",
-        "lastest-notes" : "Latest notes",
+    "home": {
+        "hello": "Hello,",
+        "start": "Let's start writing our story!",
+        "lastest-groups": "Latest groups",
+        "lastest-notes": "Latest notes",
         "see-more": "See more...",
         "start-w-group": "Start with a group",
         "create-group": "Create a group",
@@ -89,7 +97,7 @@
         "error": "An error occurred!",
         "title": "My Groups",
         "search": "Search...",
-        "empty": "No group found!",
+        "empty": "No groups found!",
         "create-group-modal": {
             "title": "Create a group",
             "name-label": "Group name",
@@ -113,7 +121,7 @@
     "my-notes": {
         "title": "My Notes",
         "search": "Search...",
-        "empty": "No note found!",
+        "empty": "No notes found!",
         "create-note-modal": {
             "title": "Create a note",
             "name-label": "Note name",
@@ -123,7 +131,6 @@
             "group-empty": "Please select a group",
             "button": "Create"
         }
-
     },
     "profil": {
         "title": "My Profile",
@@ -131,16 +138,146 @@
         "name": "Name",
         "name-hint": "Enter your name",
         "name-empty": "Name cannot be empty",
-        "name-length": "Name must be at least 4 characters long",
+        "name-length": "Name must be at least 4 characters",
         "email": "Email",
         "email-hint": "Enter your email address",
         "password": "Password",
-        "password-length": "Password must be at least 4 characters long",
+        "password-length": "Password must be at least 4 characters",
         "password-no-match": "Passwords do not match",
         "confirm-password": "Confirm password",
         "button": "Save",
         "close": "Close",
         "delete-account": "Delete account"
+    },
+    "note-detail": {
+        "quiz": "Quiz",
+        "recommendations": "Recommendations",
+        "summary": "Summary",
+        "100words": {
+            "base": "The note must contain at least 100 words to generate ",
+            "quiz": "a quiz.",
+            "recommendations": "recommendations.",
+            "summary": "a summary."
+        },
+        "error": {
+            "summary": "An error occurred while generating the summary!",
+            "quiz": "An error occurred while generating the quiz!",
+            "recommendations": "An error occurred while generating recommendations!",
+            "recommendations-empty": "No recommendations were generated.\nContinue writing to generate a recommendation"
+        },
+        "empty": "The note is empty!",
+        "quiz-content": {
+            "empty": "No quizzes were generated for this note!",
+            "success": "New Quiz generated successfully!",
+            "error": "An error occurred while generating the quiz!",
+            "create": "Create a quiz",
+            "inProgress": "Quiz generation in progress..."
+        },
+        "quiz-word": {
+            "perfect": "Perfect!",
+            "good": "You're on the right track!",
+            "bad": "Try again!",
+            "default": "Well tried!",
+            "you": "You have ",
+            "good-answers": " good answers!",
+            "quit": "Quit",
+            "empty": "No questions found!",
+            "good-answer": "Good answer!",
+            "bad-answer": "Wrong answer, the correct answer is: ",
+            "next": "Next",
+            "verify": "Verify"
+        }
+    },
+    "pop-up": {
+        "delete-group": {
+            "title": "Delete group",
+            "description": "Are you sure you want to delete this group?",
+            "button": "Delete",
+            "cancel": "Cancel"
+        },
+        "leave-group": {
+            "title": "Leave group",
+            "description": "Are you sure you want to leave this group?",
+            "button": "Leave",
+            "cancel": "Cancel"
+        },
+        "edit-member": {
+            "title": "Edit member role",
+            "description": "Are you sure you want to change this member's role?",
+            "button": "Promote",
+            "cancel": "Cancel"
+        },
+        "delete-member": {
+            "title": "Delete member",
+            "description": "Are you sure you want to delete this member?",
+            "button": "Delete",
+            "cancel": "Cancel"
+        },
+        "delete-note": {
+            "title": "Delete note",
+            "description": "Are you sure you want to delete this note?",
+            "button": "Delete",
+            "cancel": "Cancel",
+            "success": "Note deleted successfully!"
+        }
+    },
+    "close": "Close",
+    "validator": {
+        "name-empty": "Please enter a name",
+        "name-length": "Name must be between 4 and 20 characters",
+        "email-empty": "Please enter an email address",
+        "email-valid": "Please enter a valid email address",
+        "password-empty": "Please enter a password",
+        "password-length": "Password must be between 4 and 20 characters",
+        "password-no-match": "Passwords do not match",
+        "code-empty": "Please enter a code",
+        "code-length": "Code must be 4 characters"
+    },
+    "error": {
+        "cancel": "Operation canceled",
+        "connectionTimeout": "Connection timeout",
+        "connectionError": "Connection error, please check your internet connection",
+        "receiveTimeout": "Receive timeout",
+        "sendTimeout": "Send timeout",
+        "default": "Something went wrong. Please try again later."
+    },
+    "note": {
+        "not-found": "Note not found!",
+        "comments": "Comments",
+        "no-comments": "No comments found!",
+        "add": "Add a note",
+        "error": "An error occurred!",
+        "unknown": "Unknown Note",
+        "lang": "Language",
+        "block": {
+            "title": "Comments",
+            "empty": "No comments found!",
+            "delete": "Delete",
+            "add-comment": "Add a comment"
+        },
+        "inProgress": "Updating in progress...",
+        "delete": "Delete"
+    },
+    "alert": {
+        "cancel": "Cancel",
+        "confirm": "Delete",
+        "internet": {
+            "title": "No Internet Connection",
+            "description": "App features are\nlimited without an internet connection."
+        }
+    },
+    "dialog": {
+        "add-members": "Add members",
+        "add": "Add",
+        "cancel": "Cancel",
+        "edit-role": "Edit role",
+        "promote-member": "Promote this member to administrator?",
+        "promote": "Promote",
+        "promote-success": "Member promoted successfully!"
+    },
+    "member": {
+        "admin": "Administrator",
+        "member": "Member"
     },
     "group-detail": {
         "title": "Group Details",
@@ -150,9 +287,16 @@
         "notes": "Notes",
         "activities": "Activities",
         "edit-group": "Edit group",
+        "edit": "Edit",
         "delete-group": "Delete group",
+        "delete": "Delete",
+        "delete-confirm": "Are you sure you want to delete this group?",
+        "delete-success": "Group deleted successfully!",
         "leave-group": "Leave group",
-        "edit-group-modal" : {
+        "leave": "Leave",
+        "leave-confirm": "Are you sure you want to leave this group?",
+        "save": "Save",
+        "edit-group-modal": {
             "title": "Edit group",
             "name-label": "Group name",
             "name-hint": "Enter the group name",
@@ -160,57 +304,42 @@
             "description-hint": "Enter a group description",
             "button": "Save",
             "close": "Close"
+        },
+        "no-members": "No members found!",
+        "tab": {
+            "notes": "Notes",
+            "members": "Members",
+            "activities": "Activities"
+        },
+        "activity": {
+            "empty": "No activities found!",
+            "add-note": " created a note ",
+            "add-member": " joined the group.",
+            "remove-member": " left the group.",
+            "unknown": "Error"
         }
-    },
-    "note-detail": {
-        "quiz": "Quiz",
-        "recommendations": "Recommendations",
-        "summary": "Summary"
     },
     "invites": {
         "title": "Invitations",
         "sent-invites": "Sent",
         "received-invites": "Received",
-        "empty": "No invitation found!"
+        "empty": "No invitations found!",
+        "accepted": "Invitation accepted!",
+        "declined": "Invitation declined!",
+        "revoked": "Invitation revoked!",
+        "invalid": "Invalid invitation!",
+        "pending": "Pending invitations",
+        "to": "To: ",
+        "from": "From: ",
+        "not-registered": "User is not registered!"
     },
-    "pop-up": {
-        "delete-group": {
-            "title": "Delete Group",
-            "description": "Are you sure you want to delete this group?",
-            "button": "Delete",
-            "cancel": "Cancel"
-        },
-        "leave-group": {
-            "title": "Leave Group",
-            "description": "Are you sure you want to leave this group?",
-            "button": "Leave",
-            "cancel": "Cancel"
-        },
-        "edit-member": 
-        {
-            "title": "Edit Member Role",
-            "description": "Are you sure you want to change the role of this member?",
-            "button": "Promote",
-            "cancel": "Cancel"
-        },
-        "delete-member": 
-        {
-            "title": "Delete Member",
-            "description": "Are you sure you want to delete this member?",
-            "button": "Delete",
-            "cancel": "Cancel"
-        }
-    },
-    "close": "Close",
-    "validator": {
-        "name-empty" : "Please enter a name",
-        "name-length" : "Name must be between 4 and 20 characters",
-        "email-empty" : "Please enter an email address",
-        "email-valid" : "Please enter a valid email address",
-        "password-empty" : "Please enter a password",
-        "password-length" : "Password must be between 4 and 20 characters",
-        "password-no-match" : "Passwords do not match", 
-        "code-empty" : "Please enter a code",
-        "code-length" : "Code must be 4 characters long"
+    "change-password": {
+        "title": "Create a new password",
+        "description": "Enter your new password.",
+        "success": "Password changed successfully!",
+        "error": "Password could not be changed!",
+        "button": "Change password",
+        "remember": "Remember your password?",
+        "signin": "Sign in"
     }
 }

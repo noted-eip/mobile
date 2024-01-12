@@ -24,11 +24,10 @@ class HomeInfos extends ConsumerWidget {
                   const TextSpan(
                     text: '\n',
                   ),
-                  TextSpan(
-                      text: user.name == ''
-                          ? 'Name !\n'
-                          : '${user.name.capitalize()} !\n',
-                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                  if (user.name != '')
+                    TextSpan(
+                        text: '${user.name.capitalize()} !\n',
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
                   TextSpan(
                     text: 'home.start'.tr(),
                     style: const TextStyle(color: Colors.grey),

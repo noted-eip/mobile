@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/components/common/custom_slide.dart';
@@ -62,13 +63,13 @@ class _GroupActivityCardState extends ConsumerState<GroupActivityCard> {
 
     switch (type) {
       case GroupActivityType.addNote:
-        return " a ajouté la note ";
+        return "group-detail.activity.add-note".tr();
       case GroupActivityType.addMember:
-        return " a rejoint le groupe";
+        return "group-detail.activity.add-member".tr();
       case GroupActivityType.removeMember:
-        return " a quitté le groupe";
+        return "group-detail.activity.remove-member".tr();
       default:
-        return "Erreur";
+        return "group-detail.activity.unknown".tr();
     }
   }
 

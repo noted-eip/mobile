@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:easy_localization_loader/easy_localization_loader.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -7,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/components/common/new_custom_drawer.dart';
+import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:noted_mobile/data/services/api_helper.dart';
 import 'package:noted_mobile/data/services/dio_singleton.dart';
 import 'package:noted_mobile/firebase_options.dart';
@@ -25,7 +28,7 @@ import 'package:noted_mobile/pages/notifications/notification_page.dart';
 import 'package:noted_mobile/pages/home/splash_screen.dart';
 import 'package:noted_mobile/utils/language.dart';
 import 'package:noted_mobile/utils/noted_theme.dart';
-import 'dart:async';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 
 void main() async {
   init();
@@ -55,19 +58,49 @@ void main() async {
     fallbackLocale: const Locale('fr', 'FRA'),
     startLocale: savedLanguage,
     assetLoader: JsonAssetLoader(),
-    child: const ProviderScope(child: MyApp()),
+    child: const ProviderScope(child: _EagerInitialization(child: MyApp())),
   ));
 }
 
-class MyApp extends StatefulWidget {
+class _EagerInitialization extends ConsumerWidget {
+  const _EagerInitialization({required this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(internetStatusProvider);
+    return child;
+  }
+}
+
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  ConsumerState<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends ConsumerState<MyApp> {
   final Color _primaryColor = Colors.grey;
+  late StreamSubscription<InternetConnectionStatus> _subscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _subscription =
+        InternetConnectionCheckerPlus().onStatusChange.listen((status) {
+      setState(() {
+        ref.read(internetStatusProvider.notifier).state =
+            status == InternetConnectionStatus.connected;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -57,13 +57,10 @@ class _BaseContainerState extends ConsumerState<BaseContainer> {
                     color: widget.secondaryColor ?? Colors.grey.shade900,
                   ),
                   onPressed: () {
-                    print("try to open drawer");
                     if (widget.openDrawer != null && !widget.openDrawer! ||
                         Navigator.canPop(context)) {
-                      print("pop");
                       Navigator.pop(context, false);
                     } else {
-                      print("open drawer");
                       final bool hasDrawer = ref
                           .read(mainScreenProvider)
                           .scaffoldKey
@@ -71,14 +68,12 @@ class _BaseContainerState extends ConsumerState<BaseContainer> {
                           .hasDrawer;
 
                       if (hasDrawer) {
-                        print("open drawer from base container");
                         ref
                             .read(mainScreenProvider)
                             .scaffoldKey
                             .currentState!
                             .openDrawer();
                       } else {
-                        print("open drawer from scaffold");
                         Scaffold.of(context).openDrawer();
                       }
                     }
@@ -94,11 +89,8 @@ class _BaseContainerState extends ConsumerState<BaseContainer> {
                         onPressed: (() {
                           if (widget.openEndDrawer != null &&
                               !widget.openEndDrawer!) {
-                            print("push to notif");
                             Navigator.pushNamed(context, "/notif");
                           } else {
-                            print("open end drawer");
-
                             final bool hasDrawer = ref
                                 .read(mainScreenProvider)
                                 .scaffoldKey
@@ -106,7 +98,6 @@ class _BaseContainerState extends ConsumerState<BaseContainer> {
                                 .hasEndDrawer;
 
                             if (hasDrawer) {
-                              print("open end drawer from base container");
                               ScaffoldState? scaffoldState = ref
                                   .read(mainScreenProvider)
                                   .scaffoldKey

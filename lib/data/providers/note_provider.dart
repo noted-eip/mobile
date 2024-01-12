@@ -61,8 +61,8 @@ final groupNotesProvider =
   return notelist;
 });
 
-final noteProvider =
-    FutureProvider.family<V1Note?, Tuple2<String, String>>((ref, infos) async {
+final noteProvider = FutureProvider.family
+    .autoDispose<V1Note?, Tuple2<String, String>>((ref, infos) async {
   final account = ref.watch(userProvider);
   final note = await ref.watch(noteClientProvider).getNote(
         noteId: infos.item1,

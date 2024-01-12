@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -40,9 +41,9 @@ class _GroupMembersListState extends ConsumerState<GroupMembersList> {
     return await showDialog(
       context: context,
       builder: ((context) => CustomAlertDialog(
-            title: "Edit Role",
-            content: "Promote this user to admin ?",
-            confirmText: "Promote",
+            title: "dialog.edit-role".tr(),
+            content: "dialog.promote-member".tr(),
+            confirmText: "dialog.promote".tr(),
             onConfirm: () async {
               await editGroupMemberRole(userTkn, accountId, groupId, true);
             },
@@ -67,7 +68,7 @@ class _GroupMembersListState extends ConsumerState<GroupMembersList> {
 
       if (mounted) {
         CustomToast.show(
-          message: "Role updated successfully !",
+          message: "dialog.promote-success".tr(),
           type: ToastType.success,
           context: context,
           gravity: ToastGravity.BOTTOM,
@@ -95,8 +96,8 @@ class _GroupMembersListState extends ConsumerState<GroupMembersList> {
     final user = ref.read(userProvider);
 
     if (widget.members == null) {
-      return const Center(
-        child: Text("Pas de membres trouvés"),
+      return Center(
+        child: Text("group-detail.no-members".tr()),
       );
     } else {
       return Container(

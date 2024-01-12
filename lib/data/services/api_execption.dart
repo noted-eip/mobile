@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class NotedException implements Exception {
   String message = "";
@@ -6,33 +7,30 @@ class NotedException implements Exception {
   NotedException.fromDioException(DioException dioException) {
     switch (dioException.type) {
       case DioExceptionType.cancel:
-        message = "Request to API server was cancelled"; // TODO: add traduction
+        message = "error.cancel".tr();
         break;
       case DioExceptionType.connectionTimeout:
-        message = "Connection timeout with API server"; // TODO: add traduction
+        message = "error.connectionTimeout".tr();
         break;
       case DioExceptionType.connectionError:
-        message =
-            "Connection to API server failed due to internet connection"; // TODO: add traduction
+        message = "error.connectionError".tr();
         break;
       case DioExceptionType.receiveTimeout:
-        message =
-            "Receive timeout in connection with API server"; // TODO: add traduction
+        message = "error.receiveTimeout".tr();
         break;
       case DioExceptionType.unknown:
         message = _handleError(
             dioException.response!.statusCode!, dioException.response?.data);
         break;
       case DioExceptionType.sendTimeout:
-        message =
-            "Send timeout in connection with API server"; // TODO: add traduction
+        message = "error.sendTimeout".tr();
         break;
       case DioExceptionType.badResponse:
         message = _handleError(
             dioException.response!.statusCode!, dioException.response?.data);
         break;
       default:
-        message = "Something went wrong"; // TODO: add traduction
+        message = "error.default".tr();
         break;
     }
   }

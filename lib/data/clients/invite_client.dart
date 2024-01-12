@@ -41,9 +41,9 @@ class InviteClient {
       return Invite.fromApi(response.data!.invite);
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
-      if (kDebugMode) {
-        print("Exception when calling DefaultApi->sendInvite: $error\n");
-      }
+
+      debugPrint("Exception when calling DefaultApi->sendInvite: $error\n");
+
       throw Failure(message: error);
     }
   }
@@ -66,7 +66,7 @@ class InviteClient {
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
       if (kDebugMode) {
-        print("Exception when calling DefaultApi->getInvite: $error\n");
+        debugPrint("Exception when calling DefaultApi->getInvite: $error\n");
       }
       throw Failure(message: error);
     }
@@ -98,7 +98,7 @@ class InviteClient {
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
       if (kDebugMode) {
-        print("Exception when calling DefaultApi->listInvites: $error\n");
+        debugPrint("Exception when calling DefaultApi->listInvites: $error\n");
       }
       throw Failure(message: error);
     }
@@ -124,7 +124,7 @@ class InviteClient {
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
       if (kDebugMode) {
-        print("Exception when calling DefaultApi->acceptInvite: $error\n");
+        debugPrint("Exception when calling DefaultApi->acceptInvite: $error\n");
       }
       throw Failure(message: error);
     }
@@ -147,7 +147,7 @@ class InviteClient {
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
       if (kDebugMode) {
-        print("Exception when calling DefaultApi->denyInvite: $error\n");
+        debugPrint("Exception when calling DefaultApi->denyInvite: $error\n");
       }
       throw Failure(message: error);
     }
@@ -170,7 +170,7 @@ class InviteClient {
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
       if (kDebugMode) {
-        print("Exception when calling DefaultApi->revokeInvite: $error\n");
+        debugPrint("Exception when calling DefaultApi->revokeInvite: $error\n");
       }
       throw Failure(message: error);
     }

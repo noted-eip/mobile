@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -53,7 +54,7 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> {
               widget.onCancel!();
             }
           },
-          child: Text(widget.cancelText ?? "Annuler"),
+          child: Text(widget.cancelText ?? "alert.cancel".tr()),
         ),
         TextButton(
           onPressed: () {
@@ -63,7 +64,7 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> {
           style: ButtonStyle(
             foregroundColor: MaterialStateProperty.all(Colors.red),
           ),
-          child: Text(widget.confirmText ?? "Supprimer"),
+          child: Text(widget.confirmText ?? "alert.confirm".tr()),
         ),
       ],
     );

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:noted_mobile/utils/format_helper.dart';
 import 'package:openapi/openapi.dart';
@@ -142,7 +143,7 @@ class GroupInfos extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Description",
+                Text("group-detail.description".tr(),
                     style: TextStyle(
                         color: Colors.grey.shade900,
                         fontSize: 24,

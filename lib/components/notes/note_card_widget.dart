@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/components/common/custom_slide.dart';
@@ -67,7 +68,7 @@ class _NoteCardState extends ConsumerState<NoteCard> {
             data: (note) {
               if (note == null) {
                 return Text(
-                  'Error',
+                  'note.error'.tr(),
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
                         color: widget.baseColor ?? Colors.black,
                       ),
@@ -75,7 +76,7 @@ class _NoteCardState extends ConsumerState<NoteCard> {
               }
               if (note.data.name == "") {
                 return Text(
-                  'Unknown',
+                  'note.unknown'.tr(),
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
                         color: widget.baseColor ?? Colors.black,
                       ),
@@ -101,7 +102,7 @@ class _NoteCardState extends ConsumerState<NoteCard> {
               ),
             ),
             error: (error, stack) => Text(
-              'Error',
+              'note.error'.tr(),
               style: Theme.of(context).textTheme.titleMedium!.copyWith(
                     color: widget.baseColor ?? Colors.black,
                   ),

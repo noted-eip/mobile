@@ -13,3 +13,5 @@ final analyticsProvider =
 final trackerProvider = Provider<TrackerService>((ref) {
   return TrackerService(ref: ref);
 });
+
+final internetStatusProvider = StateProvider<bool>((ref) => true);

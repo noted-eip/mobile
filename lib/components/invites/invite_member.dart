@@ -91,7 +91,7 @@ class _InviteFieldState extends ConsumerState<InviteField> {
                 isLoading = false;
                 isEmailValid = false;
               });
-              return "This email is not registered";
+              return "invites.not-registered".tr();
             } else {
               setState(() {
                 suffixIcon = const Icon(Icons.check, color: Colors.green);
@@ -108,7 +108,7 @@ class _InviteFieldState extends ConsumerState<InviteField> {
               isLoading = false;
               isEmailValid = false;
             });
-            return "This email is not registered";
+            return "invites.not-registered".tr();
           }
         },
         waitForMs: 2000,
@@ -139,7 +139,7 @@ class _InviteFieldState extends ConsumerState<InviteField> {
         checkEmail();
 
         if (isLoading) {
-          return "Verification de l'Email, veuiller patienter...";
+          return "";
         }
         return null;
       },

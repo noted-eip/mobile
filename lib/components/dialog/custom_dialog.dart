@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:noted_mobile/components/invites/invite_member.dart';
@@ -27,13 +28,10 @@ class _CustomDialogWidgetState extends State<CustomDialogWidget> {
       return Material(
         color: Colors.black38,
         child: CupertinoAlertDialog(
-          title: const Text("Add Members"),
+          title: Text("dialog.add_members".tr()),
           content: InviteField(
             controller: controller,
             onEmailCheck: (isValid, newRecipientId) {
-              print(
-                  "onEmailCheck, isValid : $isValid, newRecipientId : $newRecipientId");
-
               setState(() {
                 isEmailValid = isValid;
                 this.newRecipientId = newRecipientId;
@@ -45,7 +43,7 @@ class _CustomDialogWidgetState extends State<CustomDialogWidget> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Text("Cancel"),
+              child: Text("dialog.cancel".tr()),
             ),
             CupertinoDialogAction(
               onPressed: isEmailValid
@@ -55,20 +53,17 @@ class _CustomDialogWidgetState extends State<CustomDialogWidget> {
                       Navigator.pop(context);
                     }
                   : null,
-              child: const Text("Add"),
+              child: Text("dialog.add".tr()),
             ),
           ],
         ),
       );
     } else {
       return AlertDialog(
-        title: const Text("Add Members"),
+        title: Text("dialog.add_members".tr()),
         content: InviteField(
           controller: controller,
           onEmailCheck: (isValid, newRecipientId) {
-            print(
-                "onEmailCheck, isValid : $isValid, newRecipientId : $newRecipientId");
-
             setState(() {
               isEmailValid = isValid;
               this.newRecipientId = newRecipientId;
@@ -80,7 +75,7 @@ class _CustomDialogWidgetState extends State<CustomDialogWidget> {
             onPressed: () {
               Navigator.pop(context);
             },
-            child: const Text("Cancel"),
+            child: Text("dialog.cancel".tr()),
           ),
           TextButton(
             onPressed: isEmailValid
@@ -90,7 +85,7 @@ class _CustomDialogWidgetState extends State<CustomDialogWidget> {
                     Navigator.pop(context);
                   }
                 : null,
-            child: const Text("Add"),
+            child: Text("dialog.add".tr()),
           ),
         ],
       );

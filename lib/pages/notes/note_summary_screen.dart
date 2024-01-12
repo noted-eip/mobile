@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -18,9 +19,9 @@ class _SummaryScreenState extends State<SummaryScreen> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          const Text(
-            "Résumé de la note",
-            style: TextStyle(fontSize: 24),
+          Text(
+            "note-detail.summary".tr(),
+            style: const TextStyle(fontSize: 24),
           ),
           const SizedBox(height: 40),
           MarkdownBody(

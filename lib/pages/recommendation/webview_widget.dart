@@ -19,7 +19,6 @@ class _WebViewExampleState extends State<WebViewExample> {
   void initState() {
     super.initState();
 
-    // #docregion platform_features
     late final PlatformWebViewControllerCreationParams params;
     if (WebViewPlatform.instance is WebKitWebViewPlatform) {
       params = WebKitWebViewControllerCreationParams(
@@ -32,7 +31,6 @@ class _WebViewExampleState extends State<WebViewExample> {
 
     final WebViewController controller =
         WebViewController.fromPlatformCreationParams(params);
-    // #enddocregion platform_features
 
     controller
       ..setJavaScriptMode(JavaScriptMode.unrestricted)

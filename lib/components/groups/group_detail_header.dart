@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/components/common/loading_button.dart';
@@ -32,7 +33,9 @@ class _GroupDetailHeaderState extends ConsumerState<GroupDetailHeader> {
         Expanded(
           flex: 1,
           child: AutoSizeText(
-            widget.group.name.capitalize(),
+            widget.group.name == "My Workspace"
+                ? "menu.workspace".tr()
+                : widget.group.name.capitalize(),
             overflow: TextOverflow.ellipsis,
           ),
         ),

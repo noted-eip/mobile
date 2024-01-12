@@ -279,9 +279,9 @@ class _NoteInfosInputState extends ConsumerState<NoteInfosInput> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 5),
                         color: Colors.white,
-                        child: const Text(
-                          "Langue",
-                          style: TextStyle(
+                        child: Text(
+                          "note.lang".tr(),
+                          style: const TextStyle(
                             color: NotedColors.primary,
                             fontSize: 12,
                           ),

@@ -1,5 +1,6 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:dio/dio.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/data/models/group/group.dart';
@@ -124,6 +125,10 @@ class GroupClient {
         return [];
       }
 
+      // sort by modifiedAt desc
+
+      apiGroups.toList().sort((a, b) => b.modifiedAt!.compareTo(a.modifiedAt!));
+
       return apiGroups.map((e) => Group.fromApi(e)).toList();
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
@@ -179,9 +184,9 @@ class GroupClient {
       return response.data!.member;
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
-      if (kDebugMode) {
-        print("Exception when calling DefaultApi->getGroupMember: $error\n");
-      }
+
+      debugPrint("Exception when calling DefaultApi->getGroupMember: $error\n");
+
       throw Failure(message: error);
     }
   }
@@ -196,7 +201,7 @@ class GroupClient {
         groupId: groupId, memberId: memberId, token: token);
 
     if (member == null) {
-      throw Failure(message: "Membre non trouvé"); // TODO: add traduction
+      throw Failure(message: "group-detail.no-members".tr());
     }
 
     V1GroupMember updatedMember = member.rebuild((p0) => p0..isAdmin = isAdmin);
@@ -216,9 +221,8 @@ class GroupClient {
       return response.data!.member;
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
-      if (kDebugMode) {
-        print("Exception when calling DefaultApi->updateGroupMember: $error\n");
-      }
+      debugPrint(
+          "Exception when calling DefaultApi->updateGroupMember: $error\n");
       throw Failure(message: error);
     }
   }
@@ -243,9 +247,8 @@ class GroupClient {
       }
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
-      if (kDebugMode) {
-        print("Exception when calling DefaultApi->deleteGroupMember: $error\n");
-      }
+      debugPrint(
+          "Exception when calling DefaultApi->deleteGroupMember: $error\n");
       throw Failure(message: error);
     }
   }
@@ -271,10 +274,8 @@ class GroupClient {
       return response.data!.activities.toList();
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
-      if (kDebugMode) {
-        print(
-            "Exception when calling DefaultApi->getGroupsActivities: $error\n");
-      }
+      debugPrint(
+          "Exception when calling DefaultApi->getGroupsActivities: $error\n");
       throw Failure(message: error);
     }
   }

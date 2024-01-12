@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/components/common/custom_alerte.dart';
@@ -94,7 +95,7 @@ class _GroupHeaderMenuState extends ConsumerState<GroupHeaderMenu> {
                           width: 10,
                         ),
                         Text(
-                          "Modifier",
+                          "group-detail.edit".tr(),
                           style: TextStyle(
                             color: Colors.grey.shade900,
                             fontSize: 16,
@@ -113,9 +114,8 @@ class _GroupHeaderMenuState extends ConsumerState<GroupHeaderMenu> {
                         context: context,
                         builder: ((context) {
                           return CustomAlertDialog(
-                            title: "Supprimer le Groupe",
-                            content:
-                                "Êtes-vous sûr de vouloir supprimer ce groupe ?",
+                            title: "group-detail.delete-group".tr(),
+                            content: "group-detail.delete-confirm".tr(),
                             onConfirm: () async {
                               await widget.deleteGroup();
                             },
@@ -141,7 +141,7 @@ class _GroupHeaderMenuState extends ConsumerState<GroupHeaderMenu> {
                           width: 10,
                         ),
                         Text(
-                          "Supprimer",
+                          "group-detail.delete".tr(),
                           style: TextStyle(
                             color: Colors.grey.shade900,
                             fontSize: 16,
@@ -159,13 +159,12 @@ class _GroupHeaderMenuState extends ConsumerState<GroupHeaderMenu> {
                       context: context,
                       builder: ((context) {
                         return CustomAlertDialog(
-                          title: "Quitter le Groupe",
-                          content:
-                              "Êtes-vous sûr de vouloir quitter ce groupe ?",
+                          title: "group-detail.leave-group".tr(),
+                          content: "group-detail.leave-confirm".tr(),
                           onConfirm: () async {
                             await widget.leaveGroup();
                           },
-                          confirmText: "Quitter",
+                          confirmText: "group-detail.leave".tr(),
                         );
                       }),
                     );
@@ -188,11 +187,12 @@ class _GroupHeaderMenuState extends ConsumerState<GroupHeaderMenu> {
                         width: 10,
                       ),
                       Text(
-                        "Quitter",
+                        "group-detail.leave".tr(),
                         style: TextStyle(
-                            color: Colors.grey.shade900,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold),
+                          color: Colors.grey.shade900,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),

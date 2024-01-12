@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -9,14 +7,10 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:noted_mobile/components/common/custom_modal.dart';
 import 'package:noted_mobile/components/common/custom_toast.dart';
 import 'package:noted_mobile/components/common/loading_button.dart';
-import 'package:noted_mobile/components/dialog/custom_dialog.dart';
 import 'package:noted_mobile/components/groups/group_info_input.dart';
-import 'package:noted_mobile/components/invites/invite_member.dart';
 import 'package:noted_mobile/data/models/group/group.dart';
-import 'package:noted_mobile/data/models/invite/invite.dart';
 import 'package:noted_mobile/data/notifiers/user_notifier.dart';
 import 'package:noted_mobile/data/providers/group_provider.dart';
-import 'package:noted_mobile/data/providers/invite_provider.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:noted_mobile/utils/string_extension.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
@@ -44,7 +38,6 @@ class _CreateGroupModalState extends ConsumerState<CreateGroupModal> {
   List<Tuple2<String, String>> members = [];
 
   Future<void> createGroup(UserNotifier user) async {
-    var saveContext = context;
     if (_formKey.currentState!.validate()) {
       try {
         Group? group = await ref.read(groupClientProvider).createGroup(

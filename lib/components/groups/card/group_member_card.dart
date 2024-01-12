@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/components/common/custom_slide.dart';
@@ -50,7 +51,6 @@ class _GroupMemberCardState extends ConsumerState<GroupMemberCard> {
         color: Colors.blueGrey.shade800,
         onTap: () {},
         actions: widget.actions,
-        //TODO : add traduction
         titleWidget: Text(
           account.data.email,
           maxLines: 2,
@@ -60,10 +60,11 @@ class _GroupMemberCardState extends ConsumerState<GroupMemberCard> {
             color: Colors.white,
           ),
         ),
-
         withWidget: true,
         subtitleWidget: Text(
-          widget.memberData.isAdmin ? "Admin" : "Utilisateur",
+          widget.memberData.isAdmin
+              ? "member.admin".tr()
+              : "member.member".tr(),
           maxLines: 2,
           style: const TextStyle(
             fontWeight: FontWeight.bold,
@@ -71,7 +72,6 @@ class _GroupMemberCardState extends ConsumerState<GroupMemberCard> {
             color: Colors.white,
           ),
         ),
-
         avatarWidget: Container(
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.2),

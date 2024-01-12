@@ -1,8 +1,12 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:noted_mobile/components/common/loading_button.dart';
+import 'package:noted_mobile/utils/color.dart';
 import 'package:noted_mobile/utils/constant.dart';
 import 'package:openapi/openapi.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:tuple/tuple.dart';
 
 class QuizzPage extends ConsumerStatefulWidget {
@@ -92,13 +96,13 @@ class _QuizzPageState extends ConsumerState<QuizzPage> {
     PageController controller = PageController();
     String getFinishText() {
       if (nbRightAnswer == nbQuestion) {
-        return "Parfait !";
+        return "note-detail.quiz-word.perfect".tr();
       } else if (nbRightAnswer == 0) {
-        return "Réésaie !";
+        return "note-detail.quiz-word.bad".tr();
       } else if (nbRightAnswer < nbQuestion / 2) {
-        return "Tu peux mieux faire !";
+        return "note-detail.quiz-word.good".tr();
       } else {
-        return "Bien joué !";
+        return "note-detail.quiz-word.default".tr();
       }
     }
 
@@ -112,7 +116,8 @@ class _QuizzPageState extends ConsumerState<QuizzPage> {
             children: [
               Image.asset("images/illustration.png"),
               const Spacer(),
-              Text("Vous avez $nbRightAnswer / $nbQuestion bonnes réponses !",
+              Text(
+                  "${"note-detail.quiz-word.you".tr()}$nbRightAnswer / $nbQuestion${"note-detail.quiz-word.good-answers".tr()}",
                   style: const TextStyle(fontSize: 20)),
               const SizedBox(height: 20),
               RatingBarIndicator(
@@ -129,13 +134,14 @@ class _QuizzPageState extends ConsumerState<QuizzPage> {
               const SizedBox(height: 20),
               Text(getFinishText(), style: const TextStyle(fontSize: 18)),
               const Spacer(),
-              ElevatedButton(
-                onPressed: () {
-                  // ref.invalidate(quizzListProvider(widget.infos));
-
+              LoadingButton(
+                animateOnTap: false,
+                onPressedNoAsync: () {
                   Navigator.pop(context);
                 },
-                child: const Text("Quitter"),
+                btnController: RoundedLoadingButtonController(),
+                text: "note-detail.quiz-word.quit".tr(),
+                color: NotedColors.primary,
               ),
             ],
           );
@@ -146,7 +152,9 @@ class _QuizzPageState extends ConsumerState<QuizzPage> {
 
         return Column(
           children: [
-            Text(widget.quiz.questions![index].question ?? "Pas de question",
+            Text(
+                widget.quiz.questions![index].question ??
+                    "note-detail.quiz-word.empty".tr(),
                 style: const TextStyle(fontSize: 20)),
             const SizedBox(height: 20),
             Expanded(
@@ -196,8 +204,8 @@ class _QuizzPageState extends ConsumerState<QuizzPage> {
             if (isVerified)
               Text(
                 isValid
-                    ? "Bonne réponse"
-                    : "Mauvaise Réponse, la bonne réponse est : ${currentSolutions.join(", ")}",
+                    ? "note-detail.quiz-word.good-answer".tr()
+                    : "${"note-detail.quiz-word.bad-answer".tr()}${currentSolutions.join(", ")}",
                 style: TextStyle(
                   color: isValid ? Colors.green : Colors.red,
                 ),
@@ -205,8 +213,10 @@ class _QuizzPageState extends ConsumerState<QuizzPage> {
             const SizedBox(height: 20),
             Text("Question ${index + 1} / ${widget.quiz.questions!.length}"),
             const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
+            LoadingButton(
+              animateOnTap: false,
+              resetDuration: 1,
+              onPressedNoAsync: () {
                 if (nbQuestion == 0) {
                   setNbQuestion(widget.quiz.questions!.length);
                 }
@@ -214,7 +224,7 @@ class _QuizzPageState extends ConsumerState<QuizzPage> {
                 if (isVerified) {
                   controller.nextPage(
                       duration: const Duration(milliseconds: 500),
-                      curve: Curves.easeIn);
+                      curve: Curves.easeInCubic);
                   setState(() {
                     isVerified = false;
                     isValid = false;
@@ -234,12 +244,11 @@ class _QuizzPageState extends ConsumerState<QuizzPage> {
                       solutions: currentSolutions.toList());
                 }
               },
-              child: Text(
-                isVerified ? "Suivant" : "Vérifier",
-                style: TextStyle(
-                  color: isVerified ? Colors.white : Colors.black,
-                ),
-              ),
+              btnController: RoundedLoadingButtonController(),
+              text: isVerified
+                  ? "note-detail.quiz-word.next".tr()
+                  : "note-detail.quiz-word.verify".tr(),
+              color: NotedColors.secondary,
             ),
           ],
         );

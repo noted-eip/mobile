@@ -205,7 +205,7 @@ class _CustomParagraphComponentState extends State<CustomParagraphComponent>
                             ),
                           );
                         },
-                        child: const Text("Comment"))
+                        child: const Text("Commenter"))
                   ],
                   builder: (BuildContext context, Animation<double> animation) {
                     return Material(

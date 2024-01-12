@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -35,15 +36,15 @@ class _GroupTabBarState extends ConsumerState<GroupTabBar> {
           TabBar(
             controller: widget.controller,
             indicatorColor: Colors.grey.shade900,
-            tabs: const [
+            tabs: [
               Tab(
-                text: "Notes",
+                text: "group-detail.tab.notes".tr(),
               ),
               Tab(
-                text: "Membres",
+                text: "group-detail.tab.members".tr(),
               ),
               Tab(
-                text: "Activitées",
+                text: "group-detail.tab.activities".tr(),
               ),
             ],
           ),
