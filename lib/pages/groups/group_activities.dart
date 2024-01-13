@@ -21,36 +21,39 @@ class _GroupActivitiesState extends ConsumerState<GroupActivities> {
     final AsyncValue<List<V1GroupActivity>?> activites =
         ref.watch(groupActivitiesProvider(widget.groupId));
 
-    return activites.when(
-        data: ((data) {
-          if (data == null) {
-            return Center(
-              child: Text("group-detail.activity.empty".tr()),
-            );
-          }
+    return activites.when(data: ((data) {
+      if (data == null) {
+        return Center(
+          child: Text("group-detail.activity.empty".tr()),
+        );
+      }
 
-          if (data.isEmpty) {
-            return Center(
-              child: Text("group-detail.activity.empty".tr()),
-            );
-          }
+      if (data.isEmpty) {
+        return Center(
+          child: Text("group-detail.activity.empty".tr()),
+        );
+      }
 
-          return ListView.builder(
-            shrinkWrap: true,
-            padding: EdgeInsets.zero,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: data.length,
-            itemBuilder: (context, index) {
-              return GroupActivityCard(
-                  groupActivity: data[index], groupId: widget.groupId);
-            },
-          );
-        }),
-        error: ((error, stackTrace) => Center(child: Text(error.toString()))),
-        loading: () {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        });
+      return ListView.builder(
+        shrinkWrap: true,
+        padding: EdgeInsets.zero,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: data.length,
+        itemBuilder: (context, index) {
+          return GroupActivityCard(
+              groupActivity: data[index], groupId: widget.groupId);
+        },
+      );
+    }), error: ((error, stackTrace) {
+      return Center(
+          child: Text(
+        error.toString(),
+        style: Theme.of(context).textTheme.bodyLarge,
+      ));
+    }), loading: () {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    });
   }
 }

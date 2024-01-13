@@ -1,19 +1,13 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'dart:async';
-
-import 'package:noted_mobile/components/common/custom_toast.dart';
-import 'package:noted_mobile/components/common/loading_button.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:noted_mobile/data/models/account/account.dart';
-import 'package:noted_mobile/data/models/invite/invite.dart';
 import 'package:noted_mobile/data/providers/account_provider.dart';
-import 'package:noted_mobile/data/providers/invite_provider.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
-import 'package:noted_mobile/utils/string_extension.dart';
+import 'package:noted_mobile/utils/color.dart';
+import 'package:noted_mobile/utils/debounce.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
-import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 typedef BoolCallback = void Function(bool isValidEmailAdress, String? userId);
 
@@ -33,7 +27,6 @@ class InviteField extends ConsumerStatefulWidget {
 
 class _InviteFieldState extends ConsumerState<InviteField> {
   Widget suffixIcon = const SizedBox();
-  Timer? debounceTimer;
   bool isLoading = false;
   bool isEmailValid = false;
 
@@ -47,11 +40,6 @@ class _InviteFieldState extends ConsumerState<InviteField> {
   void dispose() {
     widget.controller.removeListener(checkEmail);
     super.dispose();
-  }
-
-  void debouncing({required Function() fn, int waitForMs = 500}) {
-    debounceTimer?.cancel();
-    debounceTimer = Timer(Duration(milliseconds: waitForMs), fn);
   }
 
   void checkEmail() {
@@ -69,13 +57,56 @@ class _InviteFieldState extends ConsumerState<InviteField> {
       });
     } else {
       setState(() {
-        suffixIcon = const CircularProgressIndicator.adaptive();
+        suffixIcon = LoadingAnimationWidget.flickr(
+            leftDotColor: NotedColors.primary,
+            rightDotColor: NotedColors.tertiary,
+            size: 16);
         isLoading = true;
         isEmailValid = false;
       });
 
-      debouncing(
-        fn: () async {
+      Debouncer().run(
+        () async {
+          final user = ref.read(userProvider);
+          final email = widget.controller.text.toLowerCase();
+
+          try {
+            Account? account = await ref
+                .read(accountClientProvider)
+                .getAccountByEmail(email: email, token: user.token);
+
+            if (account == null) {
+              setState(() {
+                suffixIcon = const Icon(Icons.close, color: Colors.red);
+                widget.onEmailCheck(false, "");
+                isLoading = false;
+                isEmailValid = false;
+              });
+              return "invites.not-registered".tr();
+            } else {
+              setState(() {
+                suffixIcon = const Icon(Icons.check, color: Colors.green);
+                widget.onEmailCheck(true, account.data.id);
+                isEmailValid = true;
+                isLoading = false;
+              });
+              return null;
+            }
+          } catch (e) {
+            setState(() {
+              suffixIcon = const Icon(Icons.close, color: Colors.red);
+              widget.onEmailCheck(false, null);
+              isLoading = false;
+              isEmailValid = false;
+            });
+            return "invites.not-registered".tr();
+          }
+        },
+        waitForMs: 2000,
+      );
+
+      Debouncer().run(
+        () async {
           final user = ref.read(userProvider);
           final email = widget.controller.text.toLowerCase();
 
@@ -143,120 +174,6 @@ class _InviteFieldState extends ConsumerState<InviteField> {
         }
         return null;
       },
-    );
-  }
-}
-
-class InviteMemberWidget extends ConsumerStatefulWidget {
-  const InviteMemberWidget({
-    required this.formKey,
-    required this.controller,
-    required this.groupId,
-    super.key,
-  });
-
-  final GlobalKey<FormState> formKey;
-  final TextEditingController controller;
-  final String groupId;
-
-  @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _InviteMemberState();
-}
-
-class _InviteMemberState extends ConsumerState<InviteMemberWidget> {
-  bool isValidEmailAdress = false;
-  String? recipientId;
-  final RoundedLoadingButtonController btnController =
-      RoundedLoadingButtonController();
-
-  void sendInvite() async {
-    if (recipientId == null || !isValidEmailAdress) {
-      btnController.error();
-      Timer(const Duration(seconds: 2), () {
-        btnController.reset();
-      });
-      return;
-    }
-
-    try {
-      Invite? invite = await ref.read(inviteClientProvider).sendInvite(
-            groupId: widget.groupId,
-            recipientId: recipientId!,
-          );
-
-      if (invite != null) {
-        btnController.success();
-        Timer(const Duration(seconds: 2), () {
-          btnController.reset();
-        });
-        widget.controller.clear();
-        ref.invalidate(groupInvitesProvider(widget.groupId));
-      } else {
-        btnController.error();
-        Timer(const Duration(seconds: 2), () {
-          btnController.reset();
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        CustomToast.show(
-          message: e.toString().capitalize(),
-          type: ToastType.error,
-          context: context,
-          gravity: ToastGravity.BOTTOM,
-        );
-      }
-      btnController.error();
-      Timer(const Duration(seconds: 2), () {
-        btnController.reset();
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          "my-groups.create-group-modal.invite-title".tr(),
-          style: const TextStyle(
-              color: Colors.black, fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(
-          height: 32,
-        ),
-        Expanded(
-          child: Form(
-            key: widget.formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                InviteField(
-                  controller: widget.controller,
-                  onEmailCheck: (isValid, newRecipientId) {
-                    setState(() {
-                      isValidEmailAdress = isValid;
-                      recipientId = newRecipientId;
-                    });
-                  },
-                ),
-                LoadingButton(
-                  btnController: btnController,
-                  color: isValidEmailAdress
-                      ? Colors.grey.shade900
-                      : Colors.grey.shade400,
-                  animateOnTap: isValidEmailAdress ? true : false,
-                  width: double.infinity,
-                  onPressed: () async => isValidEmailAdress
-                      ? sendInvite()
-                      : widget.formKey.currentState!.validate(),
-                  text: "Envoyer l'invitation",
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

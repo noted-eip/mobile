@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +28,7 @@ class ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
 
   Future<void> resetPassword(
       String email, RoundedLoadingButtonController btnController) async {
+    var saveContext = context;
     if (_formKey.currentState!.validate()) {
       try {
         final accountId = await ref
@@ -46,19 +46,17 @@ class ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
             arguments: accountId,
           );
         }
-      } on DioException catch (e) {
-        if (e.response != null) {
-          final error = e.response!.data['error'];
-          if (mounted) {
-            CustomToast.show(
-              message: error.toString(),
-              type: ToastType.error,
-              context: context,
-              gravity: ToastGravity.BOTTOM,
-            );
-          }
+      } catch (e) {
+        btnController.error();
+
+        if (saveContext.mounted) {
+          CustomToast.show(
+            message: e.toString(),
+            type: ToastType.error,
+            context: saveContext,
+            gravity: ToastGravity.TOP,
+          );
         }
-        rethrow;
       }
     } else {
       btnController.error();
@@ -156,6 +154,7 @@ class ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                             onEditingComplete: () async {
                               FocusScope.of(context).unfocus();
                               btnController.start();
+
                               await resetPassword(
                                   email.text.trim(), btnController);
                             },

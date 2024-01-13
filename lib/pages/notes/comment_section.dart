@@ -92,6 +92,8 @@ class _CommentSectionState extends ConsumerState<CommentSection> {
               padding: const EdgeInsets.all(16.0),
               child: Text(
                 widget.blockContent,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             ),

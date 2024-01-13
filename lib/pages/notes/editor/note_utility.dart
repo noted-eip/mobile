@@ -196,6 +196,60 @@ DocumentNode getNodeFromBlock(V1Block block) {
 
   switch (block.type) {
     case V1BlockType.hEADING1:
+      return ParagraphNode(
+        id: block.id != '' ? block.id : UniqueKey().toString(),
+        text: AttributedText(text: text, spans: spans),
+        metadata: {
+          'blockType': header1Attribution,
+        },
+      );
+    case V1BlockType.hEADING2:
+      return ParagraphNode(
+        id: block.id != '' ? block.id : UniqueKey().toString(),
+        text: AttributedText(text: text, spans: spans),
+        metadata: {
+          'blockType': header2Attribution,
+        },
+      );
+    case V1BlockType.hEADING3:
+      return ParagraphNode(
+        id: block.id != '' ? block.id : UniqueKey().toString(),
+        text: AttributedText(text: text, spans: spans),
+        metadata: {
+          'blockType': header3Attribution,
+        },
+      );
+    case V1BlockType.BULLET_POINT:
+      return ListItemNode.unordered(
+        id: block.id != '' ? block.id : UniqueKey().toString(),
+        text: AttributedText(text: text, spans: spans),
+      );
+
+    case V1BlockType.NUMBER_POINT:
+      return ListItemNode.ordered(
+        id: block.id != '' ? block.id : UniqueKey().toString(),
+        text: AttributedText(text: text, spans: spans),
+      );
+
+    default:
+      return ParagraphNode(
+        id: block.id != '' ? block.id : UniqueKey().toString(),
+        text: AttributedText(text: text, spans: spans),
+      );
+  }
+}
+
+DocumentNode getNodeFromBlockReadOnly(V1Block block) {
+  String text = getBlockTextFromV1Block(block);
+
+  AttributedSpans? spans = getAttributedSpanFromBlock(block);
+
+  print("Block = $block");
+  print("getNodeFromBlock: ${block.id}");
+  print("getNodeFromBlock: ${block.styles}");
+
+  switch (block.type) {
+    case V1BlockType.hEADING1:
       return CustomParagraphNode(
         id: block.id != '' ? block.id : UniqueKey().toString(),
         text: AttributedText(text: text, spans: spans),
@@ -239,12 +293,17 @@ DocumentNode getNodeFromBlock(V1Block block) {
   }
 }
 
-MutableDocument createInitialDocument(V1Note note) {
+MutableDocument createInitialDocument(
+    {required V1Note note, bool readOnly = false}) {
   List<DocumentNode>? nodes = [];
 
   if (note.blocks != null) {
     note.blocks!.asMap().forEach((key, block) {
-      nodes.add(getNodeFromBlock(block));
+      if (readOnly) {
+        nodes.add(getNodeFromBlockReadOnly(block));
+      } else {
+        nodes.add(getNodeFromBlock(block));
+      }
     });
   }
 

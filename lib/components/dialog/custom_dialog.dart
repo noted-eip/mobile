@@ -11,7 +11,7 @@ class CustomDialogWidget extends StatefulWidget {
     Key? key,
   }) : super(key: key);
 
-  final Function(String) onSubmited;
+  final Function(String userId) onSubmited;
 
   @override
   State<CustomDialogWidget> createState() => _CustomDialogWidgetState();

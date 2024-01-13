@@ -50,84 +50,11 @@ class _CreateGroupModalState extends ConsumerState<CreateGroupModal> {
           ref.invalidate(groupsProvider);
           ref.invalidate(latestGroupsProvider);
 
-          // setState(() {
-          //   groupId = group.data.id;
-          //   InviteMemberWidget(
-          //     controller: controller,
-          //     formKey: roleformKey,
-          //     groupId: groupId,
-          //   );
-          // });
-
-          // for (var i = 0; i < members.length; i++) {
-          // try {
-          //   Invite? invite = await ref.read(inviteClientProvider).sendInvite(
-          //         groupId: groupId,
-          //         recipientId: members[i].item2,
-          //       );
-
-          //   if (invite != null) {
-          //     btnController.success();
-          //     ref.invalidate(groupInvitesProvider(group.data.id));
-          //   } else {
-          //     btnController.error();
-          //   }
-          // } catch (e) {
-          //   //TODO : handle Error
-          //   // TODO: handle invite member if already in List
-
-          //   // if (mounted) {
-          //   //   CustomToast.show(
-          //   //     message: "Failed to send invite to ${members[i].item1}",
-          //   //     // message: e.toString().capitalize(),
-          //   //     type: ToastType.error,
-          //   //     context: saveContext,
-          //   //     gravity: ToastGravity.BOTTOM,
-          //   //     duration: 5,
-          //   //   );
-          //   // }
-          //   // btnController.error();
-          // }
-          // }
-
           if (mounted) {
             Navigator.pop(context, true);
             Navigator.pushNamed(context, "/group-detail",
                 arguments: group.data.id);
           }
-
-          // try {
-          //   Invite? invite = await ref.read(inviteClientProvider).sendInvite(
-          //         groupId: groupId,
-          //         recipientId: recipientId!,
-          //       );
-
-          //   if (invite != null) {
-          //     btnController.success();
-
-          //     ref.invalidate(groupInvitesProvider(group.data.id));
-          //   } else {
-          //     btnController.error();
-
-          //   }
-          // } catch (e) {
-          //   if (mounted) {
-          //     CustomToast.show(
-          //       message: e.toString().capitalize(),
-          //       type: ToastType.error,
-          //       context: context,
-          //       gravity: ToastGravity.BOTTOM,
-          //     );
-          //   }
-          //   btnController.error();
-          // }
-
-          // Future.delayed(const Duration(seconds: 1), () {
-          //   pageController.nextPage(
-          //       duration: const Duration(milliseconds: 300),
-          //       curve: Curves.easeIn);
-
-          // });
         }
       } catch (e) {
         if (kDebugMode) {
@@ -175,32 +102,6 @@ class _CreateGroupModalState extends ConsumerState<CreateGroupModal> {
               title: "my-groups.create-group-modal.title".tr(),
             ),
           ),
-          // const SizedBox(
-          //   height: 32,
-          // ),
-          // Expanded(
-          //   child: ListView.builder(
-          //     shrinkWrap: true,
-          //     itemBuilder: (context, index) {
-          //       return ListTile(
-          //         title: Text(members[index].item1),
-          //         trailing: IconButton(
-          //           onPressed: () {
-          //             setState(() {
-          //               members.removeAt(index);
-          //             });
-          //           },
-          //           icon: const Icon(Icons.close),
-          //         ),
-          //       );
-          //     },
-          //     itemCount: members.length,
-          //   ),
-          // ),
-
-          // const SizedBox(
-          //   height: 32,
-          // ),
           LoadingButton(
             btnController: btnController,
             onPressed: () async => createGroup(user),

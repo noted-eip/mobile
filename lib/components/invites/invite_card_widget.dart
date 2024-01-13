@@ -11,8 +11,6 @@ import 'package:noted_mobile/data/providers/invite_provider.dart';
 import 'package:noted_mobile/utils/string_extension.dart';
 import 'package:shimmer/shimmer.dart';
 
-//TODO: Factorize the code for invitations and notifications
-
 class InviteCard extends ConsumerStatefulWidget {
   const InviteCard({
     required this.invite,

@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:noted_mobile/components/common/base_container.dart';
 import 'package:noted_mobile/components/common/custom_alerte.dart';
-import 'package:noted_mobile/components/common/custom_modal.dart';
 import 'package:noted_mobile/components/common/custom_toast.dart';
 import 'package:noted_mobile/components/groups/action_button.dart';
 import 'package:noted_mobile/components/groups/group_detail_header.dart';
@@ -13,7 +12,6 @@ import 'package:noted_mobile/components/groups/group_info_widget.dart';
 import 'package:noted_mobile/components/groups/group_member_list.dart';
 import 'package:noted_mobile/components/groups/tab_bar/group_tab_bar.dart';
 import 'package:noted_mobile/components/groups/tab_bar/workspace_tab_bar.dart';
-import 'package:noted_mobile/components/invites/invite_member.dart';
 import 'package:noted_mobile/components/notes/notes_list_widget.dart';
 import 'package:noted_mobile/data/models/invite/invite.dart';
 import 'package:noted_mobile/data/providers/group_provider.dart';
@@ -22,9 +20,6 @@ import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:noted_mobile/utils/string_extension.dart';
 import 'package:openapi/openapi.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
-
-//TODO: gérer les empty states sur les notes, les membres et les activités
-//TODO: gérer les errors states sur les notes, les membres et les activités
 
 class GroupDetailPage extends ConsumerStatefulWidget {
   const GroupDetailPage({super.key, this.groupId});
@@ -59,6 +54,8 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage>
   }
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  late OverlayEntry overlay;
 
   Future<void> leaveGroupDialog(
       String userTkn, String userId, String groupId, WidgetRef ref) async {
@@ -128,9 +125,6 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage>
     try {
       await ref.read(groupClientProvider).deleteGroup(groupId: groupId);
 
-      if (kDebugMode) {
-        print("Group deleted successfully");
-      }
       if (mounted) {
         Navigator.pop(context, true);
         CustomToast.show(
@@ -153,27 +147,6 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage>
         print(e.toString());
       }
     }
-  }
-
-  Future<void> inviteMemberModal(String tkn, String groupId) async {
-    TextEditingController controller = TextEditingController();
-    GlobalKey<FormState> roleformKey = GlobalKey<FormState>();
-
-    return await showModalBottomSheet(
-      backgroundColor: Colors.transparent,
-      context: context,
-      isScrollControlled: true,
-      builder: (context) {
-        return CustomModal(
-          height: 0.85,
-          child: InviteMemberWidget(
-            controller: controller,
-            formKey: roleformKey,
-            groupId: groupId,
-          ),
-        );
-      },
-    );
   }
 
   @override
@@ -217,25 +190,15 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage>
                   btnController.error();
                 }
               } catch (e) {
-                //TODO : handle Error
-                // TODO: handle invite member if already in List
-
-                // if (mounted) {
-                //   CustomToast.show(
-                //     message: "Failed to send invite to ${members[i].item1}",
-                //     // message: e.toString().capitalize(),
-                //     type: ToastType.error,
-                //     context: saveContext,
-                //     gravity: ToastGravity.BOTTOM,
-                //     duration: 5,
-                //   );
-                // }
-                // btnController.error();
+                if (mounted) {
+                  CustomToast.show(
+                    message: e.toString().capitalize(),
+                    type: ToastType.error,
+                    context: context,
+                    gravity: ToastGravity.TOP,
+                  );
+                }
               }
-              // await inviteMemberModal(
-              //   user.token,
-              //   groupId,
-              // );
             },
           );
         },
@@ -290,6 +253,7 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage>
                           group.workspaceAccountId!.isNotEmpty;
 
                       return Column(
+                        mainAxisSize: MainAxisSize.max,
                         children: [
                           GroupInfos(group: group),
                           const SizedBox(
@@ -319,12 +283,6 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage>
                                   ref,
                                 );
                               },
-                              inviteMember: () async {
-                                await inviteMemberModal(
-                                  user.token,
-                                  groupId,
-                                );
-                              },
                               group: group,
                             ),
                           ]
@@ -348,15 +306,15 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage>
                               children: [
                                 TabBar(
                                   indicatorColor: Colors.grey.shade900,
-                                  tabs: const [
+                                  tabs: [
                                     Tab(
-                                      text: "Notes",
+                                      text: "group-detail.tab.notes".tr(),
                                     ),
                                     Tab(
-                                      text: "Membres",
+                                      text: "group-detail.tab.members".tr(),
                                     ),
                                     Tab(
-                                      text: "Activitées",
+                                      text: "group-detail.tab.activities".tr(),
                                     ),
                                   ],
                                 ),

@@ -16,6 +16,8 @@ import 'package:openapi/openapi.dart';
 
 enum ActionButton { addNote, invite }
 
+typedef InviteMemberCallBack = Future<void> Function(String userId);
+
 class GroupActionButton extends ConsumerStatefulWidget {
   const GroupActionButton({
     Key? key,
@@ -29,7 +31,7 @@ class GroupActionButton extends ConsumerStatefulWidget {
   final bool isWorkspace;
   final V1Group group;
 
-  final Function(String)? inviteMember;
+  final InviteMemberCallBack? inviteMember;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -129,23 +131,16 @@ class _GroupActionButtonState extends ConsumerState<GroupActionButton> {
       builder: (context) {
         return CustomModal(
           height: 0.85,
-          // iconButton: IconButton(
-          //   icon: const Icon(Icons.add),
-          //   onPressed: () => widget.inviteMember?.call(),
-          // ),
           iconButton: TextButton(
             onPressed: () async {
               if (Platform.isIOS) {
                 await showCupertinoDialog(
                   context: context,
                   builder: (context) => CustomDialogWidget(
-                    onSubmited: (p0) {
-                      widget.inviteMember?.call(p0);
+                    onSubmited: (userId) async {
+                      await widget.inviteMember?.call(userId);
                       ref.invalidate(groupInvitesProvider(widget.group.id));
                       ref.invalidate(groupInvitesProvider);
-                      // setState(() {
-                      //   members.add(p0);
-                      // });
                     },
                   ),
                 );
@@ -153,13 +148,10 @@ class _GroupActionButtonState extends ConsumerState<GroupActionButton> {
                 await showDialog(
                   context: context,
                   builder: (context) => CustomDialogWidget(
-                    onSubmited: (p0) {
-                      widget.inviteMember?.call(p0);
+                    onSubmited: (userId) async {
+                      await widget.inviteMember?.call(userId);
                       ref.invalidate(groupInvitesProvider(widget.group.id));
                       ref.invalidate(groupInvitesProvider);
-                      // setState(() {
-                      //   members.add(p0);
-                      // });
                     },
                   ),
                 );

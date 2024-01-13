@@ -9,8 +9,6 @@ import 'package:noted_mobile/data/providers/invite_provider.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:openapi/openapi.dart';
 
-//TODO: gérer l'affichage des invites dans un group -> l'user doit pouvoir voir les invites qu'il a envoyé
-
 class ListInvitesWidget extends ConsumerStatefulWidget {
   const ListInvitesWidget({
     this.group,

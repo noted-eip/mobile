@@ -1,13 +1,13 @@
-import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:noted_mobile/components/common/custom_toast.dart';
 import 'package:noted_mobile/components/common/loading_button.dart';
 import 'package:noted_mobile/data/clients/tracker_client.dart';
 import 'package:noted_mobile/data/providers/account_provider.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
-import 'package:noted_mobile/data/services/api_execption.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
@@ -173,10 +173,8 @@ class ForgotPasswordVerificationPageState
                             btnController: btnController,
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
-                                tokenVerification(
-                                  textEditingController.text,
-                                  accountId,
-                                );
+                                tokenVerification(textEditingController.text,
+                                    accountId, btnController);
                               } else {
                                 btnController.error();
                                 resetButton(btnController);
@@ -195,7 +193,8 @@ class ForgotPasswordVerificationPageState
         ));
   }
 
-  Future<void> tokenVerification(String token, String accountId) async {
+  Future<void> tokenVerification(String token, String accountId,
+      RoundedLoadingButtonController controller) async {
     try {
       final Tuple3? resetToken = await ref
           .read(accountClientProvider)
@@ -205,31 +204,17 @@ class ForgotPasswordVerificationPageState
         ref.read(trackerProvider).trackPage(TrackPage.changePassword);
         Navigator.pushNamed(context, '/change-password', arguments: resetToken);
       }
-    } on DioException catch (e) {
-      String error = NotedException.fromDioException(e).toString();
-
-      if (e.response!.statusCode == 400) {
-        if (mounted) {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return ThemeHelper().alartDialog("forgot.step2.error".tr(),
-                  "forgot.step2.error-message".tr(), context);
-            },
-          );
-        }
-      } else {
-        if (mounted) {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return ThemeHelper()
-                  .alartDialog("forgot.step2.error".tr(), error, context);
-            },
-          );
-        }
+    } catch (e) {
+      if (mounted) {
+        controller.error();
+        resetButton(controller);
+        CustomToast.show(
+          message: e.toString(),
+          type: ToastType.error,
+          context: context,
+          gravity: ToastGravity.TOP,
+        );
       }
-      rethrow;
     }
   }
 }

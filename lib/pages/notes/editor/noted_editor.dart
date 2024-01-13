@@ -27,8 +27,6 @@ import 'package:openapi/openapi.dart';
 import 'package:super_editor/super_editor.dart';
 import 'package:tuple/tuple.dart';
 
-enum SampleItem { itemOne, itemTwo, itemThree }
-
 class NotedEditor extends ConsumerStatefulWidget {
   const NotedEditor({
     Key? key,
@@ -47,6 +45,7 @@ class NotedEditor extends ConsumerStatefulWidget {
 
 class _NotedEditorState extends ConsumerState<NotedEditor> {
   late MutableDocument _doc;
+  late MutableDocument _docReadOnly;
 
   final GlobalKey _docLayoutKey = GlobalKey();
 
@@ -60,7 +59,7 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
 
   OverlayEntry? _textFormatBarOverlayEntry;
 
-  final _overlayController = MagnifierAndToolbarController() //
+  final _overlayController = MagnifierAndToolbarController()
     ..screenPadding = const EdgeInsets.all(20.0);
 
   Timer? _timer;
@@ -72,7 +71,8 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
   }
 
   bool isUpdateInProgress = false;
-  bool? isUpdateFailed;
+
+  bool isReadOnly = false;
 
   void updateNote() {
     setState(() {
@@ -80,25 +80,7 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
     });
 
     _timer = Timer(const Duration(seconds: 5), () async {
-      // print("try update note");
-      // printDocument(_doc);
-
-      print("note before update : ${widget.note}");
-
-      // print("length: ${widget.note.blocks?.length}");
-      // widget.note.blocks?.forEach((p0) {
-      //   print(p0.id);
-      // });
-
       V1Note updatedNote = getV1NoteFromDoc(_doc, widget.note);
-
-      print("updated note : $updatedNote");
-
-      // print("note after update");
-      // print("length: ${updatedNote.blocks?.length}");
-      // updatedNote.blocks?.forEach((p0) {
-      //   print(p0.id);
-      // });
 
       try {
         V1Note? updatedNoteResponse =
@@ -109,30 +91,12 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
                 );
 
         if (updatedNoteResponse == null) {
-          print("note is null");
           return;
         }
 
-        print("updatedNote from response = ${updatedNoteResponse.toString()}");
-
         setState(() {
           isUpdateInProgress = false;
-          isUpdateFailed = false;
         });
-
-        Future.delayed(const Duration(seconds: 2), () {
-          setState(() {
-            isUpdateFailed = null;
-          });
-        });
-
-        // print("note updated");
-
-        // print("length: ${updatedNoteResponse.blocks?.length}");
-
-        // for (var element in _doc.nodes) {
-        //   print("element: ${element.id}");
-        // }
 
         for (var i = 0; i < _doc.nodes.length; i++) {
           DocumentNode oldNode = _doc.nodes[i];
@@ -165,21 +129,9 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
 
         ref.invalidate(noteProvider(widget.infos));
       } catch (e) {
-        print("catch failed to update note");
         setState(() {
           isUpdateInProgress = false;
-          isUpdateFailed = true;
         });
-
-        Future.delayed(const Duration(seconds: 2), () {
-          setState(() {
-            isUpdateFailed = null;
-          });
-        });
-
-        if (kDebugMode) {
-          print("Failed to update Note, Api response :${e.toString()}");
-        }
       }
     });
   }
@@ -190,7 +142,8 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
 
     _composer = DocumentComposer();
 
-    _doc = createInitialDocument(widget.note);
+    _doc = createInitialDocument(note: widget.note);
+    _docReadOnly = createInitialDocument(note: widget.note, readOnly: true);
 
     _doc.addListener(updateNote);
     _docEditor = DocumentEditor(document: _doc);
@@ -241,18 +194,6 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
 
   bool get _isMobile => _gestureMode != DocumentGestureMode.mouse;
 
-  TextInputSource get _inputSource {
-    switch (defaultTargetPlatform) {
-      case TargetPlatform.android:
-      case TargetPlatform.iOS:
-      case TargetPlatform.fuchsia:
-      case TargetPlatform.linux:
-      case TargetPlatform.macOS:
-      case TargetPlatform.windows:
-        return TextInputSource.ime;
-    }
-  }
-
   void _cut() {
     _docOps.cut();
     _overlayController.hideToolbar();
@@ -275,7 +216,6 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
   bool isLoadingRecommendation = false;
   bool isLoadingSummary = false;
   String? selectedAction;
-  SampleItem? selectedMenu;
   MenuController menuController = MenuController();
   bool allowToggle = true;
 
@@ -346,9 +286,12 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
                                 message: "note.inProgress".tr(),
                                 type: ToastType.warning,
                                 context: context,
-                                gravity: ToastGravity.BOTTOM,
+                                gravity: ToastGravity.TOP,
                               );
                               return;
+                            }
+                            if (userId != widget.note.authorAccountId) {
+                              ref.invalidate(noteProvider(widget.infos));
                             }
 
                             Navigator.of(context).pop();
@@ -371,18 +314,41 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
                                     leftDotColor: NotedColors.primary,
                                     rightDotColor: NotedColors.tertiary,
                                     size: 16)
-                                : isUpdateFailed == null
-                                    ? const SizedBox()
-                                    : isUpdateFailed!
-                                        ? const Icon(
-                                            Icons.error,
-                                            color: Colors.red,
-                                          )
-                                        : const Icon(
-                                            Icons.check,
-                                            color: Colors.green,
-                                          )),
-                        const SizedBox(width: 4),
+                                : null),
+                        if (widget.note.authorAccountId == userId)
+                          IconButton(
+                            onPressed: () {
+                              if (isUpdateInProgress) {
+                                CustomToast.show(
+                                  message: "note.inProgress".tr(),
+                                  type: ToastType.warning,
+                                  context: context,
+                                  gravity: ToastGravity.TOP,
+                                );
+                                return;
+                              }
+
+                              setState(() {
+                                isReadOnly = !isReadOnly;
+
+                                if (isReadOnly) {
+                                  _composer.selection = null;
+                                  V1Note updatedNote =
+                                      getV1NoteFromDoc(_doc, widget.note);
+                                  _docReadOnly = createInitialDocument(
+                                    note: updatedNote,
+                                    readOnly: true,
+                                  );
+                                }
+                              });
+                            },
+                            icon: Icon(
+                              isReadOnly
+                                  ? Icons.comment
+                                  : Icons.comments_disabled,
+                              color: NotedColors.primary,
+                            ),
+                          ),
                         PopupMenuButton(
                           shape: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.all(
@@ -769,9 +735,9 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
   Widget _buildEditor(BuildContext context, WidgetRef ref) {
     var userId = ref.read(userProvider).id;
 
-    if (userId != widget.note.authorAccountId) {
+    if (userId != widget.note.authorAccountId || isReadOnly) {
       return SuperReader(
-        document: _doc,
+        document: _docReadOnly,
         componentBuilders: [
           CustomParagraphComponentBuilder(),
           ...defaultComponentBuilders,
@@ -791,14 +757,14 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
           selectionColor: NotedColors.secondary.withOpacity(0.5)),
       stylesheet: defaultStylesheet,
       componentBuilders: [
-        CustomParagraphComponentBuilder(),
+        // CustomParagraphComponentBuilder(),
         ...defaultComponentBuilders,
       ],
       gestureMode: _gestureMode,
-      inputSource: _inputSource,
+      inputSource: TextInputSource.ime,
       keyboardActions: [
+        // ...notedCustomKeyboardActions,
         ...defaultKeyboardActions,
-        ...notedCustomKeyboardActions
       ],
       androidToolbarBuilder: (_) => AndroidTextEditingFloatingToolbar(
         onCutPressed: _cut,

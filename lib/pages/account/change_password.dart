@@ -183,7 +183,7 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
                                   message: 'change-password.success'.tr(),
                                   type: ToastType.success,
                                   context: context,
-                                  gravity: ToastGravity.BOTTOM,
+                                  gravity: ToastGravity.TOP,
                                 );
                                 btnController.success();
                                 resetButton(btnController);
@@ -193,14 +193,6 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
                                 Navigator.pushNamedAndRemoveUntil(
                                     context, '/login', (route) => false);
                               } else {
-                                if (mounted) {
-                                  CustomToast.show(
-                                    message: 'change-password.error'.tr(),
-                                    type: ToastType.error,
-                                    context: context,
-                                    gravity: ToastGravity.BOTTOM,
-                                  );
-                                }
                                 btnController.error();
                                 resetButton(btnController);
                               }
@@ -259,7 +251,18 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
           );
       return isSucces;
     } catch (e) {
+      if (mounted) {
+        CustomToast.show(
+          message: e.toString(),
+          type: ToastType.error,
+          context: context,
+          gravity: ToastGravity.TOP,
+        );
+      }
+
       return false;
     }
   }
 }
+
+// AZERTYUIOPAZERTYUIOPAZERTYUIOPAZERTYUIOPAZERTYUIOPAZERTYUIOP

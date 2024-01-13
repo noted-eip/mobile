@@ -41,10 +41,12 @@ class _GroupActivityCardState extends ConsumerState<GroupActivityCard> {
     return GroupActivityType.unknown;
   }
 
-  IconData getIcon(GroupActivityType type) {
+  IconData getIcon(GroupActivityType type, {String? title}) {
     switch (type) {
       case GroupActivityType.addNote:
-        return Icons.note_add;
+        return title != null && title.isEmpty
+            ? Icons.description
+            : Icons.note_add;
       case GroupActivityType.addMember:
         return Icons.person_add;
       case GroupActivityType.removeMember:
@@ -91,27 +93,43 @@ class _GroupActivityCardState extends ConsumerState<GroupActivityCard> {
     final userId = extractUserId(widget.groupActivity.event);
 
     final GroupActivityType type = getGroupActivityType(widget.groupActivity);
-    if (userId == null || noteId == null) {
+    if (userId == null && noteId == null || userId == null) {
       return _buildListTile(null, null, type);
     }
+    Tuple2<String, String>? infos;
+    AsyncValue<V1Note?>? note;
 
-    Tuple2<String, String> infos = Tuple2(
-      noteId,
-      widget.groupId,
-    );
+    if (noteId != null) {
+      infos = Tuple2(
+        noteId,
+        widget.groupId,
+      );
+      note = ref.watch(noteProvider(infos));
+    }
 
-    AsyncValue<V1Note?> note = ref.watch(noteProvider(infos));
     AsyncValue<Account?> user = ref.watch(accountProvider(userId));
 
     return user.when(
       data: (user) {
-        return note.when(
-          data: (note) {
-            return _buildListTile(user, note, type);
-          },
-          loading: () => _buildListTile(user, null, type),
-          error: (error, stack) => _buildListTile(user, null, type),
-        );
+        if (user == null) {
+          return _buildListTile(null, null, type);
+        }
+
+        if (note == null) {
+          return _buildListTile(user.data.name, null, type);
+        }
+
+        return note.when(data: (data) {
+          if (data == null) {
+            return _buildListTile(user.data.name, null, type);
+          }
+
+          return _buildListTile(user.data.name, data, type);
+        }, loading: () {
+          return _buildListTile(user.data.name, null, type);
+        }, error: (error, stack) {
+          return _buildListTile(user.data.name, null, type);
+        });
       },
       loading: () => Padding(
         padding: const EdgeInsets.only(bottom: 16.0),
@@ -147,24 +165,30 @@ class _GroupActivityCardState extends ConsumerState<GroupActivityCard> {
     );
   }
 
-  _buildListTile(Account? user, V1Note? note, GroupActivityType type) {
+  _buildListTile(String? userName, V1Note? note, GroupActivityType type) {
     String title = "";
+    IconData icon;
 
     if (type == GroupActivityType.addNote) {
-      if (user != null && note != null) {
+      if (userName != null && note != null) {
         title =
-            "${user.data.name}${getTitleFromEvent(widget.groupActivity.event)}${note.title}.";
+            "$userName${getTitleFromEvent(widget.groupActivity.event)}${note.title}.";
+        icon = getIcon(type, title: title);
+      } else {
+        icon = getIcon(type, title: title);
+        title = "group-detail.activity.unknown-note".tr();
       }
     } else if (type == GroupActivityType.addMember ||
         type == GroupActivityType.removeMember) {
-      if (user != null) {
-        title =
-            "${user.data.name}${getTitleFromEvent(widget.groupActivity.event)}";
+      if (userName != null) {
+        icon = getIcon(type, title: title);
+        title = "$userName${getTitleFromEvent(widget.groupActivity.event)}";
+      } else {
+        icon = getIcon(type, title: title);
+        title = "group-detail.activity.unknown-member".tr();
       }
-    }
-
-    if (title.isEmpty) {
-      return const SizedBox();
+    } else {
+      icon = getIcon(type, title: title);
     }
 
     return Padding(
@@ -196,7 +220,7 @@ class _GroupActivityCardState extends ConsumerState<GroupActivityCard> {
           height: 40,
           width: 40,
           child: Icon(
-            getIcon(type),
+            icon,
             color: Colors.white,
           ),
         ),

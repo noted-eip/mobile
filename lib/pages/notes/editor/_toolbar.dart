@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart' hide ListenableBuilder;
-import 'package:noted_mobile/pages/notes/editor/_custom_component.dart';
 import 'package:super_editor/super_editor.dart';
 
 /// Toolbar that provides document editing capabilities, like converting
@@ -63,31 +62,6 @@ class MyToolBar extends StatelessWidget {
     selection.isCollapsed
         ? commonOps.toggleComposerAttributions(attributions)
         : commonOps.toggleAttributionsOnSelection(attributions);
-  }
-
-  void _convertToTaskList() {
-    final selectedNode =
-        document.getNodeById(composer.selection!.extent.nodeId)! as TextNode;
-
-    docEditor.executeCommand(
-      ConvertParagraphToCustomParagraphCommand(
-        nodeId: selectedNode.id,
-        isCompleted: true,
-      ),
-    );
-
-// basic task list
-    // docEditor.executeCommand(
-    //   ConvertParagraphToTaskCommand(
-    //     nodeId: selectedNode.id,
-    //     isCompleted: true,
-    //   ),
-    // );
-
-    // ConvertParagraphToTaskCommand(
-    //   nodeId: selectedNode.id,
-    //   isCompleted: false,
-    // );
   }
 
   void _convertToHeader1() {
@@ -286,10 +260,6 @@ class MyToolBar extends StatelessWidget {
                                 color: _isStrikethroughActive
                                     ? Theme.of(context).primaryColor
                                     : null,
-                              ),
-                              IconButton(
-                                onPressed: _convertToTaskList,
-                                icon: const Icon(Icons.task),
                               ),
                               IconButton(
                                 onPressed: _convertToHeader1,

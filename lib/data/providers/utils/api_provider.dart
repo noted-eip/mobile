@@ -12,39 +12,14 @@ const String defaultLang = "en";
 const String kBaseUrl = "https://noted-rojasdiego.koyeb.app";
 
 final apiProvider = Provider<DefaultApi>((ref) {
-  // Map<String, String> headers = {
-  //   contentType: applicationJson,
-  //   accept: applicationJson,
-  //   defaultLang: defaultLang
-  // };
-
-  // var options = BaseOptions(
-  //   baseUrl: kBaseUrl,
-  //   headers: headers,
-  //   receiveTimeout: const Duration(seconds: 20),
-  //   sendTimeout: const Duration(seconds: 20),
-  //   connectTimeout: const Duration(seconds: 20),
-  // );
-
-  // TODO: revoir les timeout
-
   var dio = Dio(
     BaseOptions(
       baseUrl: kBaseUrl,
       // receiveTimeout: const Duration(seconds: 50),
+      // connectTimeout: const Duration(seconds: 50),
+      // sendTimeout: const Duration(seconds: 50),
     ),
   );
-
-  // var interceptor = [
-  //   PrettyDioLogger(
-  //     requestHeader: true,
-  //     requestBody: true,
-  //     responseHeader: true,
-  //   )
-  // ];
-  // if (!kReleaseMode) {
-  //   dio.interceptors.add(interceptor);
-  // }
 
   return Openapi(
     dio: dio,

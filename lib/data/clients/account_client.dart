@@ -405,6 +405,7 @@ class AccountClient {
 
       return Account.fromApi(apiAccount);
     } on DioException catch (e) {
+      debugPrint("Exception when calling DefaultApi->getAccountById: $e\n");
       //TODO: check if this is the right way to handle this
       return null;
       // String error = NotedException.fromDioException(e).toString();

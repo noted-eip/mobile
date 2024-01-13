@@ -87,7 +87,11 @@ class _CommentListState extends ConsumerState<CommentList> {
                       },
                       child: Card(
                         child: ListTile(
-                          title: Text(getBlockTextFromV1Block(data[index])),
+                          title: Text(
+                            getBlockTextFromV1Block(data[index]),
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ),
                     );

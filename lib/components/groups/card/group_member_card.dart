@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/components/common/custom_slide.dart';
 import 'package:noted_mobile/data/models/account/account.dart';
 import 'package:noted_mobile/data/providers/account_provider.dart';
+import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:openapi/openapi.dart';
 
 class GroupMemberCard extends ConsumerStatefulWidget {
@@ -22,6 +23,7 @@ class _GroupMemberCardState extends ConsumerState<GroupMemberCard> {
   @override
   Widget build(BuildContext context) {
     final account = ref.watch(accountProvider(widget.memberData.accountId));
+    final userEmail = ref.read(userProvider).email;
 
     return account.when(
       data: (account) {
@@ -31,7 +33,7 @@ class _GroupMemberCardState extends ConsumerState<GroupMemberCard> {
           );
         }
 
-        return _buildCard(account);
+        return _buildCard(account, userEmail);
       },
       loading: () => Container(
           margin: const EdgeInsets.only(bottom: 16),
@@ -42,13 +44,15 @@ class _GroupMemberCardState extends ConsumerState<GroupMemberCard> {
     );
   }
 
-  Widget _buildCard(Account account) {
+  Widget _buildCard(Account account, String userEmail) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
           color: Colors.red, borderRadius: BorderRadius.circular(16)),
       child: CustomSlide(
-        color: Colors.blueGrey.shade800,
+        color: account.data.email == userEmail
+            ? Colors.blueGrey.shade700
+            : Colors.blueGrey.shade900,
         onTap: () {},
         actions: widget.actions,
         titleWidget: Text(
@@ -76,6 +80,12 @@ class _GroupMemberCardState extends ConsumerState<GroupMemberCard> {
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.2),
               borderRadius: BorderRadius.circular(10),
+              border: account.data.email == userEmail
+                  ? Border.all(
+                      color: Colors.white.withOpacity(0.5),
+                      width: 1,
+                    )
+                  : null,
             ),
             height: 40,
             width: 40,

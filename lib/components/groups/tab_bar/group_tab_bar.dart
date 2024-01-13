@@ -13,14 +13,12 @@ class GroupTabBar extends ConsumerStatefulWidget {
     required this.controller,
     required this.leaveGroup,
     required this.deleteGroup,
-    required this.inviteMember,
     required this.group,
   }) : super(key: key);
 
   final void Function(String) deleteGroup;
   final void Function(String) leaveGroup;
 
-  final VoidCallback inviteMember;
   final V1Group group;
   final TabController controller;
   @override

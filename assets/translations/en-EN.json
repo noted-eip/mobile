@@ -147,16 +147,17 @@
         "confirm-password": "Confirm password",
         "button": "Save",
         "close": "Close",
-        "delete-account": "Delete account"
+        "delete-account": "Delete account",
+        "delete-account-description": "Are you sure you want to delete your account?"
     },
     "note-detail": {
         "quiz": "Quiz",
-        "recommendations": "Recommendations",
+        "recommandations": "Recommendations",
         "summary": "Summary",
         "100words": {
             "base": "The note must contain at least 100 words to generate ",
             "quiz": "a quiz.",
-            "recommendations": "recommendations.",
+            "recommandations": "recommendations.",
             "summary": "a summary."
         },
         "error": {
@@ -267,7 +268,7 @@
         }
     },
     "dialog": {
-        "add-members": "Add members",
+        "add_members": "Add members",
         "add": "Add",
         "cancel": "Cancel",
         "edit-role": "Edit role",
@@ -316,7 +317,9 @@
             "add-note": " created a note ",
             "add-member": " joined the group.",
             "remove-member": " left the group.",
-            "unknown": "Error"
+            "unknown": "Error",
+            "unknown-member": "Unknown member",
+            "unknown-note": "Deleted note"
         }
     },
     "invites": {
@@ -341,5 +344,7 @@
         "button": "Change password",
         "remember": "Remember your password?",
         "signin": "Sign in"
-    }
+    },
+     "workspace-description": "Welcome to your workspace! A space just for you.",
+     "go-back": "Go back"
 }

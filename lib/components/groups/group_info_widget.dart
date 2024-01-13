@@ -175,7 +175,9 @@ class GroupInfos extends StatelessWidget {
               height: 16,
             ),
             Text(
-              group!.description,
+              group!.name == "My Workspace"
+                  ? "workspace-description".tr()
+                  : group!.description,
               style: TextStyle(
                 color: Colors.grey.shade900,
                 fontSize: 18,

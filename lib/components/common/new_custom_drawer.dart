@@ -187,7 +187,7 @@ class _MenuScreenState extends ConsumerState<MenuScreen> {
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(30),
-                    border: Border.all(width: 5, color: Colors.white),
+                    border: Border.all(width: 1, color: NotedColors.primary),
                     color: Colors.white,
                     boxShadow: const [
                       BoxShadow(

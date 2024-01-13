@@ -9,10 +9,12 @@ import 'package:noted_mobile/components/common/custom_alerte.dart';
 import 'package:noted_mobile/components/common/custom_modal.dart';
 import 'package:noted_mobile/components/common/custom_toast.dart';
 import 'package:noted_mobile/components/common/loading_button.dart';
+import 'package:noted_mobile/components/common/new_custom_drawer.dart';
 import 'package:noted_mobile/data/clients/tracker_client.dart';
 import 'package:noted_mobile/data/models/account/account.dart';
 import 'package:noted_mobile/data/providers/account_provider.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
+import 'package:noted_mobile/utils/color.dart';
 import 'package:noted_mobile/utils/language.dart';
 import 'package:noted_mobile/utils/string_extension.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
@@ -32,14 +34,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   TextEditingController confirmPasswordController = TextEditingController();
   final RoundedLoadingButtonController _btnControllerSave =
       RoundedLoadingButtonController();
-  final RoundedLoadingButtonController _btnControllerDeleteAccount =
-      RoundedLoadingButtonController();
 
   bool isPasswordVisible = false;
   bool isConfirmPasswordVisible = false;
 
   bool isPasswordChanged = false;
   bool isNameChanged = false;
+
+  bool isLoading = false;
 
   void updateAccount() async {
     if (nameController.text != ref.read(userProvider).name &&
@@ -122,37 +124,39 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   }
 
   void deleteAccount() async {
-    var resDiag = await showDialog(
+    var resDiag = await showDialog<bool>(
       context: context,
       builder: ((context) {
         return CustomAlertDialog(
-          title: "Supprimer le compte",
-          content: "Êtes-vous sûr de vouloir supprimer votre compte ?",
+          title: "profil.delete-account".tr(),
+          content: "profil.delete-account-description".tr(),
           onConfirm: () async {
             try {
-              bool res = await ref.read(accountClientProvider).deleteAccount();
+              bool res = true;
 
-              if (res == true) {
-                _btnControllerDeleteAccount.success();
-              }
+              Future.delayed(const Duration(milliseconds: 2000), () {});
+              // bool res = await ref.read(accountClientProvider).deleteAccount();
+
+              if (res == true) {}
             } catch (e) {
-              _btnControllerDeleteAccount.error();
+              if (mounted) {
+                CustomToast.show(
+                  message: e.toString().capitalize(),
+                  type: ToastType.error,
+                  context: context,
+                  gravity: ToastGravity.BOTTOM,
+                );
+              }
             }
-          },
-          onCancel: () async {
-            _btnControllerDeleteAccount.reset();
           },
         );
       }),
     );
 
-    if (resDiag == false || resDiag == null) {
-      _btnControllerDeleteAccount.reset();
-    } else {
-      _btnControllerDeleteAccount.success();
-
+    if (resDiag != null && resDiag) {
       if (mounted) {
-        Future.delayed(const Duration(seconds: 2), () {
+        Future.delayed(const Duration(milliseconds: 500), () {
+          ref.read(mainScreenProvider).setItem(MyMenuItems.home);
           ref.read(trackerProvider).trackPage(TrackPage.login);
           Navigator.pushNamedAndRemoveUntil(context, '/login', (r) => false);
         });
@@ -165,8 +169,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     super.initState();
     nameController.text = ref.read(userProvider).name;
     emailController.text = ref.read(userProvider).email;
-
-    // saveLanguage = context.locale.languageCode;
   }
 
   bool isValid = false;
@@ -271,17 +273,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                             hintText: "profil.email-hint".tr(),
                                             prefixIcon: const Icon(Icons.email),
                                           ),
-                                          enabled: false, //isEditing,
+                                          enabled: false,
                                           controller: emailController,
-                                          //TODO : add email validation
-                                          // validator: (value) {
-                                          //   if (value!.isEmpty) {
-                                          //     return "Email cannot be empty";
-                                          //   } else if (!value.isEmail()) {
-                                          //     return "Email is not valid";
-                                          //   }
-                                          //   return null;
-                                          // },
                                         ),
                                         const SizedBox(
                                           height: 16,
@@ -450,25 +443,36 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(10),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 0, horizontal: 30),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(width: 5, color: Colors.white),
-                        color: Colors.grey.shade900,
+                        borderRadius: BorderRadius.circular(30),
+                        border:
+                            Border.all(width: 1, color: NotedColors.primary),
+                        color: Colors.white,
                         boxShadow: const [
                           BoxShadow(
-                            color: Colors.black26,
-                            blurRadius: 10,
+                            color: NotedColors.primary,
+                            blurRadius: 5,
                             offset: Offset(5, 5),
                           ),
                         ],
                       ),
-                      child: Icon(
-                        Icons.person,
-                        size: 80,
-                        color: Colors.grey.shade300,
+                      child: Text(
+                        ref
+                            .read(userProvider)
+                            .name
+                            .substring(0, 1)
+                            .toUpperCase(),
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 80.0,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
                   ],

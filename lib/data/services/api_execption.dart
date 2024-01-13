@@ -36,10 +36,17 @@ class NotedException implements Exception {
   }
 
   String _handleError(int statusCode, dynamic error) {
-    print("Error: $error");
     return error["error"];
   }
 
   @override
   String toString() => message;
 }
+
+// 'wrong password or email'
+// 'not found'
+// 'email: must be a valid email address.'
+// 'reset-token does not match'
+// 'token: cannot be blank.'
+// 'password: the length must be between 4 and 20.'
+// 'validation-token does not match'

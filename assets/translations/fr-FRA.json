@@ -149,7 +149,10 @@
         "confirm-password": "Confirmez le mot de passe",
         "button": "Enregistrer",
         "close": "Fermer",
-        "delete-account": "Supprimer le compte"
+        "delete-account": "Supprimer le compte",
+        "delete-account-description": "Êtes-vous sûr de vouloir supprimer votre compte ?"
+
+
     },
     "note-detail": {
         "quiz": "Quiz",
@@ -272,7 +275,7 @@
         }
     },
     "dialog": {
-        "add-members": "Ajouter des membres",
+        "add_members": "Ajouter des membres",
         "add": "Ajouter",
         "cancel": "Annuler",
         "edit-role": "Modifier le rôle",
@@ -321,7 +324,9 @@
             "add-note": " a créé une note ",
             "add-member": " a rejoint le groupe.",
             "remove-member": " a quitté le groupe.",
-            "unknown": "Erreur"
+            "unknown": "Erreur",
+            "unknown-member": "Membre inconnu",
+            "unknown-note": "Note supprimée"
         }
     },
      "invites": {
@@ -347,5 +352,6 @@
         "remember": "Vous vous souvenez de votre mot de passe ?",
         "signin": "Se connecter"
     },
-    "workspace-description": "Bienvenue dans votre espace de travail ! Voici un endroit o"
+    "workspace-description": "Un endroit rien que pour vous.",
+    "go-back": "Retour"
 }

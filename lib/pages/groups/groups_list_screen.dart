@@ -9,6 +9,7 @@ import 'package:noted_mobile/data/clients/tracker_client.dart';
 import 'package:noted_mobile/data/models/group/group.dart';
 import 'package:noted_mobile/data/providers/group_provider.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
+import 'package:noted_mobile/utils/debounce.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
 
 class GroupsListPage extends ConsumerStatefulWidget {
@@ -41,7 +42,12 @@ class _GroupsListPageState extends ConsumerState<GroupsListPage> {
               ),
               floatingLabelBehavior: FloatingLabelBehavior.always),
       onChanged: (value) {
-        ref.read(searchProvider.notifier).update((state) => value);
+        Debouncer().run(
+          () {
+            ref.read(searchProvider.notifier).update((state) => value);
+          },
+          waitForMs: 500,
+        );
       },
     );
   }
@@ -262,18 +268,27 @@ class _GroupsListPageState extends ConsumerState<GroupsListPage> {
                       sliver: SliverList(
                         delegate: SliverChildBuilderDelegate(
                           (context, index) {
-                            return Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                LottieBuilder.asset(
-                                  'assets/animations/error.json',
-                                  width: 200,
-                                  height: 200,
-                                ),
-                                Text(
-                                  "my-groups.error".tr(),
-                                ),
-                              ],
+                            return SizedBox(
+                              height: MediaQuery.of(context).size.height -
+                                  kToolbarHeight -
+                                  16 -
+                                  MediaQuery.of(context).padding.top -
+                                  MediaQuery.of(context).padding.bottom -
+                                  MediaQuery.of(context).viewPadding.top -
+                                  MediaQuery.of(context).viewPadding.bottom,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  LottieBuilder.asset(
+                                    'assets/animations/error.json',
+                                    height: 250,
+                                  ),
+                                  Text(
+                                    "my-groups.error".tr(),
+                                  ),
+                                ],
+                              ),
                             );
                           },
                           childCount: 1,

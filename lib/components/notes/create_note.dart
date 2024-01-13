@@ -1,5 +1,4 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -15,8 +14,6 @@ import 'package:noted_mobile/utils/string_extension.dart';
 import 'package:openapi/openapi.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:tuple/tuple.dart';
-
-//TODO: remove pageview , use default parameters for lang
 
 class CreateNoteModal extends ConsumerStatefulWidget {
   const CreateNoteModal({
@@ -78,14 +75,8 @@ class _CreateNoteModalState extends ConsumerState<CreateNoteModal> {
             ref.invalidate(notesProvider);
             ref.invalidate(groupNotesProvider(groupId));
           });
-        } else {
-          print("note is null");
         }
       } catch (e) {
-        print("catch failed to create note");
-        if (kDebugMode) {
-          print("Failed to create Note, Api response :${e.toString()}");
-        }
         if (mounted) {
           CustomToast.show(
             message: e.toString().capitalize(),
@@ -148,71 +139,5 @@ class _CreateNoteModalState extends ConsumerState<CreateNoteModal> {
         ],
       ),
     );
-
-    // var groupsList = ref.watch(groupsProvider);
-
-    // return groupsList.when(
-    //   data: (groupsList) {
-    //     if (groupsList == null || groupsList.isEmpty) {
-    //       return CustomModal(
-    //         height: 0.4,
-    //         onClose: (context) => Navigator.pop(context, false),
-    //         child: Column(
-    //           crossAxisAlignment: CrossAxisAlignment.stretch,
-    //           mainAxisSize: MainAxisSize.max,
-    //           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-    //           children: [
-    //             const Text(
-    //               "Error, please try again !",
-    //               style: TextStyle(fontSize: 24),
-    //             ),
-    //             FilledButton(
-    //               onPressed: () => retryFetchGroups(),
-    //               child: const Text("Retry"),
-    //             )
-    //           ],
-    //         ),
-    //       );
-    //     } else {
-    //       if (widget.group == null || groupId.isEmpty) {
-    //         setState(() {
-    //           groupId = groupsList.first.data.id;
-    //         });
-    //       }
-
-    //     }
-    //   },
-    //   loading: () => CustomModal(
-    //       height: 0.9,
-    //       onClose: (context) => Navigator.pop(context, false),
-    //       child: const Center(
-    //         child: CircularProgressIndicator(),
-    //       )),
-    //   error: (error, stackTrace) {
-    //     return CustomModal(
-    //       height: 0.4,
-    //       onClose: (context) => Navigator.pop(context, false),
-    //       child: Column(
-    //         crossAxisAlignment: CrossAxisAlignment.stretch,
-    //         mainAxisSize: MainAxisSize.max,
-    //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-    //         children: [
-    //           const Text(
-    //             "Error, please try again !",
-    //             style: TextStyle(fontSize: 24),
-    //           ),
-    //           FilledButton(
-    //             onPressed: () => retryFetchGroups(),
-    //             child: const Text("Retry"),
-    //           )
-    //         ],
-    //       ),
-    //     );
-    //   },
-    // );
   }
-
-  // retryFetchGroups() {
-  //   ref.invalidate(groupsProvider);
-  // }
 }

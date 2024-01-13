@@ -177,22 +177,6 @@ class _NotesListState extends ConsumerState<NotesList> {
                 children: expansionTiles,
               )),
             ),
-          // if (widget.isNotePage)
-          //   Expanded(
-          //     child: SingleChildScrollView(
-          //       child: ExpansionPanelList(
-          //         // expandedHeaderPadding: EdgeInsets.all(32),
-          //         // dividerColor: Colors.grey.shade900,
-          //         expansionCallback: (index, isExpanded) {
-          //           setState(() {
-          //             isExpandedList[index] = !isExpandedList[index];
-          //             // expansionPanels[index].isExpanded = !isExpanded;
-          //           });
-          //         },
-          //         children: expansionPanels,
-          //       ),
-          //     ),
-          //   ),
           if (!widget.isNotePage && isRefresh)
             Expanded(
               child: RefreshIndicator(
@@ -230,7 +214,6 @@ class _NotesListState extends ConsumerState<NotesList> {
                 padding: EdgeInsets.zero,
                 itemBuilder: (context, index) {
                   V1Note note = notes[index];
-                  // Note note = notes[index];
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 16),
                     child: NoteCard(
@@ -310,27 +293,22 @@ class _NotesListState extends ConsumerState<NotesList> {
             ref.invalidate(groupNotesProvider(groupId));
           },
           child: data.isEmpty
-              ? SafeArea(
-                  top: false,
-                  child: ListView(
-                    children: [
-                      const SizedBox(height: 32),
-                      Lottie.asset(
-                        'assets/animations/empty-box.json',
-                        height: 250,
+              ? ListView(
+                  children: [
+                    Lottie.asset(
+                      'assets/animations/empty-box.json',
+                      height: 250,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      "home.no-notes".tr(),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.grey.shade700,
+                        fontSize: 16,
                       ),
-                      const SizedBox(height: 16),
-                      Text(
-                        "home.no-notes".tr(),
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.grey.shade700,
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(height: 32),
-                    ],
-                  ),
+                    ),
+                  ],
                 )
               : ListView.builder(
                   padding: EdgeInsets.zero,
@@ -358,40 +336,5 @@ class _NotesListState extends ConsumerState<NotesList> {
       error: (error, stackTrace) => Text(error.toString()),
       loading: () => buildLoading(widget.isRefresh!),
     );
-
-    // return Column(
-    //   crossAxisAlignment: CrossAxisAlignment.start,
-    //   mainAxisAlignment: MainAxisAlignment.start,
-    //   children: [
-
-    //     if (!widget.isNotePage)
-    //       if (isRefresh)
-    //         Expanded(
-    //           child:
-    //         ),
-    //     if (!widget.isNotePage)
-    //       if (!isRefresh)
-    //         Expanded(
-    //           child: ListView.builder(
-    //             padding: EdgeInsets.zero,
-    //             itemBuilder: (context, index) {
-    //               Note note = notes[index];
-    //               return Padding(
-    //                 padding: const EdgeInsets.only(bottom: 16),
-    //                 child: NoteCard(
-    //                   note: note,
-    //                   baseColor: Colors.white,
-    //                   onTap: () {
-    //                     Navigator.pushNamed(context, '/note-detail',
-    //                         arguments: Tuple2(note.id, note.groupId));
-    //                   },
-    //                 ),
-    //               );
-    //             },
-    //             itemCount: notes.length,
-    //           ),
-    //         ),
-    //   ],
-    // );
   }
 }

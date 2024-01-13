@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lottie/lottie.dart';
 import 'package:noted_mobile/components/common/base_container.dart';
 import 'package:noted_mobile/components/invites/invite_card_widget.dart';
 import 'package:noted_mobile/data/models/invite/invite.dart';
@@ -38,7 +39,23 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
-              Center(child: Text("invites.empty".tr())),
+              Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  const SizedBox(
+                    height: 32,
+                  ),
+                  Lottie.asset(
+                    'assets/animations/empty-box.json',
+                    height: 250,
+                  ),
+                  const SizedBox(
+                    height: 32,
+                  ),
+                  Text("invites.empty".tr()),
+                ],
+              ),
             ],
           ),
         );
@@ -52,7 +69,23 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
-              Center(child: Text("invites.empty".tr())),
+              Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  const SizedBox(
+                    height: 32,
+                  ),
+                  Lottie.asset(
+                    'assets/animations/empty-box.json',
+                    height: 250,
+                  ),
+                  const SizedBox(
+                    height: 32,
+                  ),
+                  Text("invites.empty".tr()),
+                ],
+              ),
             ],
           ),
         );

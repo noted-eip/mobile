@@ -82,7 +82,7 @@ class CustomSlide extends StatelessWidget {
       return Container(
         height: 70,
         decoration: BoxDecoration(
-          color: Colors.grey.shade900,
+          color: Colors.grey.shade200,
           borderRadius: BorderRadius.circular(16),
           boxShadow: const [
             BoxShadow(
@@ -98,15 +98,15 @@ class CustomSlide extends StatelessWidget {
         ),
         child: ListTile(
           leading: Shimmer.fromColors(
-            baseColor: Colors.grey.shade800,
-            highlightColor: Colors.grey.shade600,
+            baseColor: Colors.grey.shade400,
+            highlightColor: Colors.grey.shade300,
             child: const CircleAvatar(
               backgroundColor: Colors.white,
             ),
           ),
           title: Shimmer.fromColors(
-            baseColor: Colors.grey.shade800,
-            highlightColor: Colors.grey.shade600,
+            baseColor: Colors.grey.shade400,
+            highlightColor: Colors.grey.shade300,
             child: Container(
               height: 18,
               width: 100,
@@ -117,8 +117,8 @@ class CustomSlide extends StatelessWidget {
             ),
           ),
           subtitle: Shimmer.fromColors(
-            baseColor: Colors.grey.shade800,
-            highlightColor: Colors.grey.shade600,
+            baseColor: Colors.grey.shade400,
+            highlightColor: Colors.grey.shade300,
             child: Container(
               height: 14,
               width: 100,

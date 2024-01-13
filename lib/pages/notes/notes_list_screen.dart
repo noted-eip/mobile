@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +13,7 @@ import 'package:noted_mobile/data/providers/group_provider.dart';
 import 'package:noted_mobile/data/providers/note_provider.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:noted_mobile/pages/groups/groups_list_screen.dart';
+import 'package:noted_mobile/utils/debounce.dart';
 import 'package:noted_mobile/utils/language.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
 import 'package:openapi/openapi.dart';
@@ -36,7 +39,12 @@ class _LatestsFilesListState extends ConsumerState<LatestsFilesList> {
               ),
               floatingLabelBehavior: FloatingLabelBehavior.always),
       onChanged: (value) {
-        ref.read(searchNoteProvider.notifier).update((state) => value);
+        Debouncer().run(
+          () {
+            ref.read(searchNoteProvider.notifier).update((state) => value);
+          },
+          waitForMs: 500,
+        );
       },
     );
   }
@@ -169,8 +177,98 @@ class _LatestsFilesListState extends ConsumerState<LatestsFilesList> {
                     ),
                   ),
                   notes.when(
-                    data: (data) {
-                      if (data == null || data.isEmpty) {
+                      data: (data) {
+                        if (data == null || data.isEmpty) {
+                          final media = MediaQuery.of(context);
+                          final bodyHeight = media.size.height -
+                              media.padding.top -
+                              16 -
+                              media.viewPadding.top -
+                              media.viewPadding.bottom -
+                              media.padding.bottom -
+                              kToolbarHeight;
+
+                          return SliverSafeArea(
+                            top: false,
+                            sliver: SliverFixedExtentList(
+                              itemExtent: bodyHeight,
+                              delegate: SliverChildBuilderDelegate(
+                                (BuildContext context, int index) {
+                                  return Material(
+                                    color: Colors.transparent,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Lottie.asset(
+                                          'assets/animations/empty-box.json',
+                                          height: 250,
+                                        ),
+                                        Text("my-notes.empty".tr(),
+                                            style:
+                                                const TextStyle(fontSize: 18)),
+                                      ],
+                                    ),
+                                  );
+                                },
+                                childCount: 1,
+                              ),
+                            ),
+                          );
+                        }
+
+                        return SliverSafeArea(
+                          top: false,
+                          minimum: const EdgeInsets.all(16),
+                          sliver: SliverList(
+                            delegate: SliverChildBuilderDelegate(
+                              (context, index) {
+                                final note = data[index];
+                                return Material(
+                                  color: Colors.transparent,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: NoteCard(
+                                      baseColor: Colors.white,
+                                      note: note,
+                                      onTap: () async {
+                                        ref
+                                            .read(trackerProvider)
+                                            .trackPage(TrackPage.noteDetail);
+                                        final res = await Navigator.pushNamed(
+                                            context, "/note-detail",
+                                            arguments:
+                                                Tuple2(note.id, note.groupId));
+
+                                        if (res == true) {
+                                          ref.invalidate(notesProvider);
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                );
+                              },
+                              childCount: data.length,
+                            ),
+                          ),
+                        );
+                      },
+                      loading: () => SliverSafeArea(
+                            top: false,
+                            minimum: const EdgeInsets.all(16),
+                            sliver: SliverList(
+                              delegate: SliverChildBuilderDelegate(
+                                (context, index) {
+                                  return const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: NoteCard.empty(),
+                                  );
+                                },
+                                childCount: 6,
+                              ),
+                            ),
+                          ),
+                      error: (error, stack) {
                         final media = MediaQuery.of(context);
                         final bodyHeight = media.size.height -
                             media.padding.top -
@@ -192,10 +290,10 @@ class _LatestsFilesListState extends ConsumerState<LatestsFilesList> {
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       Lottie.asset(
-                                        'assets/animations/empty-box.json',
+                                        'assets/animations/error.json',
                                         height: 250,
                                       ),
-                                      Text("my-notes.empty".tr(),
+                                      Text("my-groups.error".tr(),
                                           style: const TextStyle(fontSize: 18)),
                                     ],
                                   ),
@@ -205,73 +303,7 @@ class _LatestsFilesListState extends ConsumerState<LatestsFilesList> {
                             ),
                           ),
                         );
-                      }
-
-                      return SliverSafeArea(
-                        top: false,
-                        minimum: const EdgeInsets.all(16),
-                        sliver: SliverList(
-                          delegate: SliverChildBuilderDelegate(
-                            (context, index) {
-                              final note = data[index];
-                              return Material(
-                                color: Colors.transparent,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: NoteCard(
-                                    baseColor: Colors.white,
-                                    note: note,
-                                    onTap: () async {
-                                      ref
-                                          .read(trackerProvider)
-                                          .trackPage(TrackPage.noteDetail);
-                                      final res = await Navigator.pushNamed(
-                                          context, "/note-detail",
-                                          arguments:
-                                              Tuple2(note.id, note.groupId));
-
-                                      if (res == true) {
-                                        ref.invalidate(notesProvider);
-                                      }
-                                    },
-                                  ),
-                                ),
-                              );
-                            },
-                            childCount: data.length,
-                          ),
-                        ),
-                      );
-                    },
-                    loading: () => SliverSafeArea(
-                      top: false,
-                      minimum: const EdgeInsets.all(16),
-                      sliver: SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                            return const Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: NoteCard.empty(),
-                            );
-                          },
-                          childCount: 6,
-                        ),
-                      ),
-                    ),
-                    error: (error, stack) => SliverSafeArea(
-                      sliver: SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                            return const Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: NoteCard.empty(),
-                            );
-                          },
-                          childCount: 6,
-                        ),
-                      ),
-                    ),
-                  ),
+                      }),
                 ],
               ),
             ),
