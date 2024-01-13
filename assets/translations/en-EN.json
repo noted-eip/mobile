@@ -346,5 +346,15 @@
         "signin": "Sign in"
     },
      "workspace-description": "Welcome to your workspace! A space just for you.",
-     "go-back": "Go back"
+     "go-back": "Go back",
+     "translate-error": {
+        "wrongPasswordOrEmail": "Incorrect password or email!",
+        "notFound": "Not found!",
+        "emailMustBeValid": "Email must be valid!",
+        "resetTokenDoesNotMatch": "Verification code is incorrect!",
+        "tokenCannotBeBlank": "Verification code cannot be blank!",
+        "passwordLength": "Password must be between 4 and 20 characters!",
+        "validationTokenDoesNotMatch": "Verification code is incorrect!",
+        "alreadyExists": "Already exists!"
+    }
 }

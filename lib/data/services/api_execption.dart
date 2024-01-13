@@ -35,18 +35,37 @@ class NotedException implements Exception {
     }
   }
 
+  String? _translateError(String error) {
+    switch (error) {
+      case "wrong password or email":
+        return "translate-error.wrongPasswordOrEmail".tr();
+      case "not found":
+        return "translate-error.notFound".tr();
+      case "email: must be a valid email address.":
+        return "translate-error.emailMustBeValid".tr();
+      case "reset-token does not match":
+        return "translate-error.resetTokenDoesNotMatch".tr();
+      case "token: cannot be blank.":
+        return "translate-error.tokenCannotBeBlank".tr();
+      case "password: the length must be between 4 and 20.":
+        return "translate-error.passwordLength".tr();
+      case "validation-token does not match":
+        return "translate-error.validationTokenDoesNotMatch".tr();
+      case "already exists":
+        return "translate-error.alreadyExists".tr();
+      default:
+        if (error.contains("google")) {
+          return "translate-error.google".tr();
+        }
+
+        return null;
+    }
+  }
+
   String _handleError(int statusCode, dynamic error) {
-    return error["error"];
+    return _translateError(error["error"]) ?? error["error"];
   }
 
   @override
   String toString() => message;
 }
-
-// 'wrong password or email'
-// 'not found'
-// 'email: must be a valid email address.'
-// 'reset-token does not match'
-// 'token: cannot be blank.'
-// 'password: the length must be between 4 and 20.'
-// 'validation-token does not match'

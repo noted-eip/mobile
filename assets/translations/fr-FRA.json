@@ -353,5 +353,15 @@
         "signin": "Se connecter"
     },
     "workspace-description": "Un endroit rien que pour vous.",
-    "go-back": "Retour"
+    "go-back": "Retour",
+    "translate-error": {
+        "wrongPasswordOrEmail": "Le mot de passe ou l'adresse email est incorrect !",
+        "notFound": "Introuvable !",
+        "emailMustBeValid": "L'adresse email doit être valide !",
+        "resetTokenDoesNotMatch": "Le code de vérification est incorrect !",
+        "tokenCannotBeBlank": "Le code de vérification ne peut pas être vide !",
+        "passwordLength": "Le mot de passe doit contenir entre 4 et 20 caractères !",
+        "validationTokenDoesNotMatch": "Le code de vérification est incorrect !",
+        "alreadyExists": "Déja existant !"
+    }
 }
