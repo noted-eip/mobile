@@ -77,7 +77,6 @@ dependencies:
   loading_animation_widget: ^1.2.0+4
   internet_connection_checker_plus: ^1.0.1
   google_sign_in: ^6.1.6
-  webview_cookie_manager: ^2.0.6
 
 dev_dependencies:
   flutter_test:

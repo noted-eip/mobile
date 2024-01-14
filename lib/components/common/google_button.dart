@@ -78,8 +78,6 @@ class _GoogleButtonState extends ConsumerState<GoogleButton> {
               resetButton(_btnController);
             }
 
-            print(loginRes.toString());
-
             _btnController.success();
             await AccountHelper().disconnectGoogle();
 
@@ -93,7 +91,6 @@ class _GoogleButtonState extends ConsumerState<GoogleButton> {
             );
           }
         } catch (e) {
-          print(e.toString());
           if (!mounted) return;
           CustomToast.show(
             message: e.toString().capitalize(),

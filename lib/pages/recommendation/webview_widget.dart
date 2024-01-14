@@ -1,10 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
-import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 
 class NotedWebView extends StatefulWidget {
   const NotedWebView({super.key, required this.url});
@@ -21,12 +18,8 @@ class _NotedWebViewState extends State<NotedWebView> {
   String? getCodeFromUrl(String url) {
     var decoded = Uri.decodeFull(url);
 
-    print(decoded);
-
     RegExp regExp = RegExp(r'code=([^&]+)');
     RegExpMatch? match = regExp.firstMatch(decoded);
-
-    print("matched: ${match?.group(1)}");
 
     return match?.group(1);
   }
