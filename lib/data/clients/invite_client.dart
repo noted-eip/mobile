@@ -23,7 +23,7 @@ class InviteClient {
     required String groupId,
     required String recipientId,
   }) async {
-    final GroupsAPISendInviteRequest body = GroupsAPISendInviteRequest(
+    final GroupsAPISendInviteBody body = GroupsAPISendInviteBody(
       (body) => body..recipientAccountId = recipientId,
     );
 

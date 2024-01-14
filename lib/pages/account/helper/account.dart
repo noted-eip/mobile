@@ -31,8 +31,7 @@ class AccountHelper {
     if (code == null) {
       try {
         GoogleSignInAccount? gAccount = await _googleSignIn.signIn();
-        // GoogleSignInAccount? gAccount2 = await _googleSignIn.signIn();
-        // .onError((error, stackTrace) => null);
+
         if (gAccount == null) {
           return null;
         }
@@ -54,8 +53,6 @@ class AccountHelper {
         if (googleTokenResponse == null) {
           return null;
         }
-
-        print(googleTokenResponse);
 
         googleToken = googleTokenResponse;
       } catch (e) {
@@ -79,8 +76,8 @@ class AccountHelper {
   }
 
   Future<void> disconnectGoogle() async {
-    await _googleSignIn.signOut();
-    // await _googleSignIn.disconnect();
+    // await _googleSignIn.signOut();
+    await _googleSignIn.disconnect();
   }
 
   void handleNavigation({

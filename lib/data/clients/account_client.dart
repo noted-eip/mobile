@@ -21,20 +21,19 @@ class AccountClient {
 
   Future<String?> getAccesTokenGoogle({required String code}) async {
     try {
-      final V1AuthenticateGoogleRequest body = V1AuthenticateGoogleRequest(
-        (body) => body..clientAccessToken = code,
+      final V1GetAccessTokenGoogleRequest body = V1GetAccessTokenGoogleRequest(
+        (body) => body..code = code,
       );
 
-      final Response<V1AuthenticateGoogleResponse> response =
-          await ref.read(apiProvider).accountsAPIAuthenticateGoogle(body: body);
-
-      // var res = await ref.read(apiProvider).accountsAPIGetAccessTokenGoogle
+      final Response<V1GetAccessTokenGoogleResponse> response = await ref
+          .read(apiProvider)
+          .accountsAPIGetAccessTokenGoogle(body: body);
 
       if (response.statusCode != 200) {
         throw Failure(message: response.statusMessage ?? 'Error');
       }
 
-      return response.data?.token;
+      return response.data?.accessToken;
     } on DioException catch (e) {
       String error = NotedException.fromDioException(e).toString();
       debugPrint(
@@ -50,8 +49,8 @@ class AccountClient {
     String? resetToken,
     String? oldPaswword,
   }) async {
-    final AccountsAPIUpdateAccountPasswordRequest body =
-        AccountsAPIUpdateAccountPasswordRequest(
+    final AccountsAPIUpdateAccountPasswordBody body =
+        AccountsAPIUpdateAccountPasswordBody(
       (body) => body
         ..password = password
         ..token = resetToken

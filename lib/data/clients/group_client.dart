@@ -52,7 +52,7 @@ class GroupClient {
     required String groupDescription,
     required String groupId,
   }) async {
-    final GroupsAPIUpdateGroupRequest body = GroupsAPIUpdateGroupRequest(
+    final GroupsAPIUpdateGroupBody body = GroupsAPIUpdateGroupBody(
       (body) => body
         ..name = groupName
         ..description = groupDescription,

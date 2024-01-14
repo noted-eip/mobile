@@ -26,7 +26,7 @@ class NoteClient {
           .read(apiProvider)
           .notesAPICreateNote(
               groupId: groupId,
-              body: NotesAPICreateNoteRequest(
+              body: NotesAPICreateNoteBody(
                 ((body) => body
                   ..title = title
                   ..lang = lang),
@@ -332,8 +332,8 @@ class NoteClient {
     builder.authorId = authorId;
     builder.content = comment;
 
-    NotesAPICreateBlockCommentRequest body =
-        NotesAPICreateBlockCommentRequest((b) => b..comment = builder);
+    NotesAPICreateBlockCommentBody body =
+        NotesAPICreateBlockCommentBody((b) => b..comment = builder);
 
     try {
       final Response<V1CreateBlockCommentResponse> response = await ref

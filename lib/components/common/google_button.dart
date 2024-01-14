@@ -51,8 +51,6 @@ class _GoogleButtonState extends ConsumerState<GoogleButton> {
               return;
             }
 
-            print(code);
-
             LoginAction? loginRes =
                 await AccountHelper().loginWithGoogle(ref: ref, code: code);
 
@@ -61,10 +59,7 @@ class _GoogleButtonState extends ConsumerState<GoogleButton> {
               resetButton(_btnController);
             }
 
-            print(loginRes.toString());
-
             _btnController.success();
-            // await AccountHelper().disconnectGoogle();
 
             if (!mounted) return;
 
@@ -86,7 +81,7 @@ class _GoogleButtonState extends ConsumerState<GoogleButton> {
             print(loginRes.toString());
 
             _btnController.success();
-            // await AccountHelper().disconnectGoogle();
+            await AccountHelper().disconnectGoogle();
 
             if (!mounted) return;
 
@@ -100,12 +95,12 @@ class _GoogleButtonState extends ConsumerState<GoogleButton> {
         } catch (e) {
           print(e.toString());
           if (!mounted) return;
-          // CustomToast.show(
-          //   message: e.toString().capitalize(),
-          //   type: ToastType.error,
-          //   context: context,
-          //   gravity: ToastGravity.BOTTOM,
-          // );
+          CustomToast.show(
+            message: e.toString().capitalize(),
+            type: ToastType.error,
+            context: context,
+            gravity: ToastGravity.BOTTOM,
+          );
           _btnController.error();
           resetButton(_btnController);
         }

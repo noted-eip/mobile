@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
+import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 
 class NotedWebView extends StatefulWidget {
   const NotedWebView({super.key, required this.url});
@@ -46,49 +49,33 @@ class _NotedWebViewState extends State<NotedWebView> {
         WebViewController.fromPlatformCreationParams(params);
 
     controller
+      ..clearLocalStorage()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(Colors.red)
+      ..setBackgroundColor(Colors.white)
       ..setUserAgent("Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) "
           "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Mobile "
           "Safari/537.36")
       ..setNavigationDelegate(
         NavigationDelegate(
-          onProgress: (int progress) {
-            debugPrint('WebView is loading (progress : $progress%)');
-          },
+          onProgress: (int progress) {},
           onPageStarted: (String url) {
             if (url.startsWith(
                 "https://notes-are-noted.vercel.app/authenticate/google")) {
-              print(url);
               var code = getCodeFromUrl(url);
 
               Navigator.pop(context, code);
             }
-            // debugPrint('Page started loading: $url');
           },
-          onPageFinished: (String url) {
-            // debugPrint('Page finished loading: $url');
-          },
-          onWebResourceError: (WebResourceError error) {
-            debugPrint('''
-Page resource error:
-  code: ${error.errorCode}
-  description: ${error.description}
-  errorType: ${error.errorType}
-  isForMainFrame: ${error.isForMainFrame}
-          ''');
-          },
+          onPageFinished: (String url) {},
+          onWebResourceError: (WebResourceError error) {},
           onNavigationRequest: (NavigationRequest request) {
             if (request.url.startsWith('https://www.youtube.com/')) {
               debugPrint('blocking navigation to ${request.url}');
               return NavigationDecision.prevent;
             }
-            // debugPrint('allowing navigation to ${request.url}');
             return NavigationDecision.navigate;
           },
-          onUrlChange: (UrlChange change) {
-            // debugPrint('url change to ${change.url}');
-          },
+          onUrlChange: (UrlChange change) {},
         ),
       )
       ..addJavaScriptChannel(
@@ -104,10 +91,13 @@ Page resource error:
     // #docregion platform_features
     if (controller.platform is AndroidWebViewController) {
       AndroidWebViewController.enableDebugging(true);
+
       (controller.platform as AndroidWebViewController)
           .setMediaPlaybackRequiresUserGesture(false);
     }
     // #enddocregion platform_features
+
+    WebViewCookieManager().clearCookies();
 
     _controller = controller;
   }
@@ -115,12 +105,7 @@ Page resource error:
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: SafeArea(
-          child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: WebViewWidget(controller: _controller),
-      )),
+      body: SafeArea(child: WebViewWidget(controller: _controller)),
       floatingActionButton: closeButton(),
     );
   }
