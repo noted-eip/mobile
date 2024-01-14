@@ -15,10 +15,6 @@ V1Note getV1NoteFromDoc(Document doc, V1Note note) {
     blocks.add(getBlockFromNode(node));
   }
 
-  for (var p0 in blocks) {
-    print("style for block Id: ${p0.id}, ${p0.styles}");
-  }
-
   return note.rebuild((rebuild) {
     rebuild.blocks = ListBuilder<V1Block>(blocks);
   });
@@ -106,7 +102,7 @@ ListBuilder<BlockTextStyle>? getStylesFromNode(DocumentNode node) {
   if (styles.isEmpty) {
     return null;
   }
-  print("getStylesFromNode: ${styles.first.style?.name}");
+  // print("getStylesFromNode: ${styles.first.style?.name}");
 
   return styles;
 }
@@ -128,8 +124,6 @@ TextStyleStyle? getStyleFromAttribution(Attribution attribution) {
       return TextStyleStyle.ITALIC;
     case "underline":
       return TextStyleStyle.UNDERLINE;
-    // case "strikethrough":
-    //   return TextStyleStyle.;
     default:
       return null;
   }
@@ -160,8 +154,6 @@ Attribution getAttributionFromStyle(BlockTextStyle style) {
       return italicsAttribution;
     case TextStyleStyle.UNDERLINE:
       return underlineAttribution;
-    // case TextStyleStyle.STRIKETHROUGH:
-    //   return underlineAttribution;
     default:
       return boldAttribution;
   }
@@ -190,9 +182,9 @@ DocumentNode getNodeFromBlock(V1Block block) {
 
   AttributedSpans? spans = getAttributedSpanFromBlock(block);
 
-  print("Block = $block");
-  print("getNodeFromBlock: ${block.id}");
-  print("getNodeFromBlock: ${block.styles}");
+  // print("Block = $block");
+  // print("getNodeFromBlock: ${block.id}");
+  // print("getNodeFromBlock: ${block.styles}");
 
   switch (block.type) {
     case V1BlockType.hEADING1:

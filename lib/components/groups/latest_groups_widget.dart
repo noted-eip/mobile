@@ -130,30 +130,37 @@ class _LatestsGroupsState extends ConsumerState<LatestsGroups> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Shimmer.fromColors(
-                baseColor: Colors.grey.shade800,
-                highlightColor: Colors.grey.shade700,
-                child: Container(
-                  height: 22,
-                  width: 150,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade800,
-                    borderRadius: BorderRadius.circular(16),
+              Padding(
+                padding: const EdgeInsets.only(left: 16),
+                child: Shimmer.fromColors(
+                  baseColor: Colors.grey.shade300,
+                  highlightColor: Colors.grey.shade400,
+                  child: Container(
+                    height: 22,
+                    width: 150,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade800,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
                 ),
               ),
               Expanded(
-                child: GridView(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 1,
-                    childAspectRatio: 1,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 16),
+                  child: GridView(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 1,
+                      childAspectRatio: 1,
+                    ),
+                    scrollDirection: Axis.horizontal,
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: const [
+                      GroupCard.empty(),
+                      GroupCard.empty(),
+                    ],
                   ),
-                  scrollDirection: Axis.horizontal,
-                  physics: const NeverScrollableScrollPhysics(),
-                  children: const [
-                    GroupCard.empty(),
-                    GroupCard.empty(),
-                  ],
                 ),
               ),
             ],

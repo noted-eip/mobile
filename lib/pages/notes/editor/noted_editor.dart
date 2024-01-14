@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print
-
 import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -79,7 +77,9 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
       isUpdateInProgress = true;
     });
 
-    _timer = Timer(const Duration(seconds: 5), () async {
+    _resetTimer();
+
+    _timer = Timer(const Duration(seconds: 1), () async {
       V1Note updatedNote = getV1NoteFromDoc(_doc, widget.note);
 
       try {
@@ -112,7 +112,6 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
             oldNode: oldNode,
             newNode: newNode,
           );
-
           if (_composer.selection!.extent.nodeId == oldNode.id) {
             _composer.selection = DocumentSelection.collapsed(
               position: DocumentPosition(
@@ -123,9 +122,9 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
           }
         }
 
-        updatedNoteResponse.blocks?.forEach((p0) {
-          print(p0.id);
-        });
+        // updatedNoteResponse.blocks?.forEach((p0) {
+        //   print(p0.id);
+        // });
 
         ref.invalidate(noteProvider(widget.infos));
       } catch (e) {
@@ -490,7 +489,6 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
                       return CustomModal(
                         height: 1,
                         onClose: (context) {
-                          print("close");
                           ref.invalidate(quizzListProvider(widget.infos));
                           Navigator.pop(context);
                         },
@@ -820,7 +818,6 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
 
       return summary;
     } catch (e) {
-      print("catch failed to generate summary");
       return null;
     }
   }
@@ -831,10 +828,6 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
     V1Note note,
   ) async {
     try {
-      print("note : ${note.blocks?.length}");
-
-      print(note.blocks?.first.paragraph);
-
       List<V1Widget>? recommendations =
           await ref.read(noteClientProvider).recommendationGenerator(
                 noteId: widget.infos.item1,

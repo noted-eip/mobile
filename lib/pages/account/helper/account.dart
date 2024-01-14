@@ -24,40 +24,63 @@ class AccountHelper {
 
   Future<LoginAction?> loginWithGoogle({
     required WidgetRef ref,
+    String? code,
   }) async {
-    try {
-      GoogleSignInAccount? gAccount =
-          await _googleSignIn.signIn().onError((error, stackTrace) => null);
-      if (gAccount == null) {
-        return null;
-      }
-      String? googleToken = await gAccount.authHeaders
-          .then((value) => value['Authorization']?.substring(7));
+    String? googleToken;
 
-      if (googleToken == null) {
-        return null;
-      }
-
+    if (code == null) {
       try {
-        bool loginRes = await ref
-            .read(accountClientProvider)
-            .loginWithGoogle(googleToken: googleToken);
-
-        if (!loginRes) {
+        GoogleSignInAccount? gAccount = await _googleSignIn.signIn();
+        // GoogleSignInAccount? gAccount2 = await _googleSignIn.signIn();
+        // .onError((error, stackTrace) => null);
+        if (gAccount == null) {
           return null;
         }
+        googleToken = await gAccount.authHeaders
+            .then((value) => value['Authorization']?.substring(7));
 
-        return LoginAction.goHome;
+        if (googleToken == null) {
+          return null;
+        }
       } catch (error) {
         rethrow;
       }
-    } catch (error) {
+    } else {
+      try {
+        var googleTokenResponse = {};
+
+        if (googleTokenResponse['access_token'] == null) {
+          return null;
+        }
+
+        googleToken = googleTokenResponse['access_token'];
+      } catch (e) {
+        rethrow;
+      }
+    }
+
+    if (googleToken == null) {
+      return null;
+    }
+
+    try {
+      final loginRes = await ref.read(accountClientProvider).loginWithGoogle(
+            googleToken: googleToken,
+          );
+
+      if (loginRes) {
+        ref.read(trackerProvider).trackPage(TrackPage.home);
+      }
+
+      return LoginAction.goHome;
+    } catch (e) {
       rethrow;
     }
   }
 
   Future<void> disconnectGoogle() async {
-    await _googleSignIn.disconnect();
+    await _googleSignIn.signOut();
+    // await _googleSignIn.disconnect();
   }
 
   void handleNavigation({

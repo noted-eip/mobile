@@ -37,8 +37,8 @@ class GroupCard extends StatelessWidget {
 
     Widget buildEmptyCard() {
       return Shimmer.fromColors(
-        baseColor: Colors.grey.shade800,
-        highlightColor: Colors.grey.shade700,
+        baseColor: Colors.grey.shade300,
+        highlightColor: Colors.grey.shade400,
         child: Container(
           decoration: BoxDecoration(
             color: Colors.grey.shade900,

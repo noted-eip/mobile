@@ -3,17 +3,30 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
-class WebViewExample extends StatefulWidget {
-  const WebViewExample({super.key, required this.url});
+class NotedWebView extends StatefulWidget {
+  const NotedWebView({super.key, required this.url});
 
   final String url;
 
   @override
-  State<WebViewExample> createState() => _WebViewExampleState();
+  State<NotedWebView> createState() => _NotedWebViewState();
 }
 
-class _WebViewExampleState extends State<WebViewExample> {
+class _NotedWebViewState extends State<NotedWebView> {
   late final WebViewController _controller;
+
+  String? getCodeFromUrl(String url) {
+    var decoded = Uri.decodeFull(url);
+
+    print(decoded);
+
+    RegExp regExp = RegExp(r'code=([^&]+)');
+    RegExpMatch? match = regExp.firstMatch(decoded);
+
+    print("matched: ${match?.group(1)}");
+
+    return match?.group(1);
+  }
 
   @override
   void initState() {
@@ -34,17 +47,27 @@ class _WebViewExampleState extends State<WebViewExample> {
 
     controller
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(const Color(0x00000000))
+      ..setBackgroundColor(Colors.red)
+      ..setUserAgent("Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) "
+          "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Mobile "
+          "Safari/537.36")
       ..setNavigationDelegate(
         NavigationDelegate(
           onProgress: (int progress) {
             debugPrint('WebView is loading (progress : $progress%)');
           },
           onPageStarted: (String url) {
-            debugPrint('Page started loading: $url');
+            if (url.startsWith(
+                "https://notes-are-noted.vercel.app/authenticate/google")) {
+              print(url);
+              var code = getCodeFromUrl(url);
+
+              Navigator.pop(context, code);
+            }
+            // debugPrint('Page started loading: $url');
           },
           onPageFinished: (String url) {
-            debugPrint('Page finished loading: $url');
+            // debugPrint('Page finished loading: $url');
           },
           onWebResourceError: (WebResourceError error) {
             debugPrint('''
@@ -60,11 +83,11 @@ Page resource error:
               debugPrint('blocking navigation to ${request.url}');
               return NavigationDecision.prevent;
             }
-            debugPrint('allowing navigation to ${request.url}');
+            // debugPrint('allowing navigation to ${request.url}');
             return NavigationDecision.navigate;
           },
           onUrlChange: (UrlChange change) {
-            debugPrint('url change to ${change.url}');
+            // debugPrint('url change to ${change.url}');
           },
         ),
       )
@@ -92,8 +115,12 @@ Page resource error:
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(child: WebViewWidget(controller: _controller)),
+      backgroundColor: Colors.black,
+      body: SafeArea(
+          child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: WebViewWidget(controller: _controller),
+      )),
       floatingActionButton: closeButton(),
     );
   }

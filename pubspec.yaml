@@ -50,7 +50,6 @@ dependencies:
   tuple: ^2.0.1
   auto_size_text: ^3.0.0
   fluttertoast: ^8.1.2
-  google_sign_in: ^6.1.0
   firebase_analytics: ^10.4.4
   firebase_core: ^2.15.0
   firebase_crashlytics: ^3.3.5
@@ -77,6 +76,7 @@ dependencies:
   app_settings: ^5.1.1
   loading_animation_widget: ^1.2.0+4
   internet_connection_checker_plus: ^1.0.1
+  google_sign_in: ^6.1.6
 
 dev_dependencies:
   flutter_test:

@@ -1,10 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:noted_mobile/components/common/custom_modal.dart';
 import 'package:noted_mobile/components/common/custom_toast.dart';
 import 'package:noted_mobile/components/common/loading_button.dart';
 import 'package:noted_mobile/pages/account/helper/account.dart';
+import 'package:noted_mobile/pages/recommendation/webview_widget.dart';
+import 'package:noted_mobile/utils/constant.dart';
 import 'package:noted_mobile/utils/string_extension.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
@@ -26,33 +31,81 @@ class _GoogleButtonState extends ConsumerState<GoogleButton> {
       btnController: _btnController,
       onPressed: () async {
         try {
-          LoginAction? loginRes =
-              await AccountHelper().loginWithGoogle(ref: ref);
+          if (Platform.isAndroid) {
+            var code = await showModalBottomSheet<String?>(
+              isScrollControlled: true,
+              context: context,
+              builder: (context) {
+                return const CustomModal(
+                  height: 1,
+                  child: NotedWebView(
+                    url: kGoogleUrl,
+                  ),
+                );
+              },
+            );
 
-          if (loginRes == null) {
-            _btnController.error();
-            resetButton(_btnController);
+            if (code == null) {
+              _btnController.error();
+              resetButton(_btnController);
+              return;
+            }
+
+            print(code);
+
+            LoginAction? loginRes =
+                await AccountHelper().loginWithGoogle(ref: ref, code: code);
+
+            if (loginRes == null) {
+              _btnController.error();
+              resetButton(_btnController);
+            }
+
+            print(loginRes.toString());
+
+            _btnController.success();
+            // await AccountHelper().disconnectGoogle();
+
+            if (!mounted) return;
+
+            AccountHelper().handleNavigation(
+              action: loginRes,
+              context: context,
+              email: "",
+              password: "",
+            );
+          } else {
+            LoginAction? loginRes =
+                await AccountHelper().loginWithGoogle(ref: ref);
+
+            if (loginRes == null) {
+              _btnController.error();
+              resetButton(_btnController);
+            }
+
+            print(loginRes.toString());
+
+            _btnController.success();
+            // await AccountHelper().disconnectGoogle();
+
+            if (!mounted) return;
+
+            AccountHelper().handleNavigation(
+              action: loginRes,
+              context: context,
+              email: "",
+              password: "",
+            );
           }
-
-          _btnController.success();
-          await AccountHelper().disconnectGoogle();
-
-          if (!mounted) return;
-
-          AccountHelper().handleNavigation(
-            action: loginRes,
-            context: context,
-            email: "",
-            password: "",
-          );
         } catch (e) {
+          print(e.toString());
           if (!mounted) return;
-          CustomToast.show(
-            message: e.toString().capitalize(),
-            type: ToastType.error,
-            context: context,
-            gravity: ToastGravity.BOTTOM,
-          );
+          // CustomToast.show(
+          //   message: e.toString().capitalize(),
+          //   type: ToastType.error,
+          //   context: context,
+          //   gravity: ToastGravity.BOTTOM,
+          // );
           _btnController.error();
           resetButton(_btnController);
         }

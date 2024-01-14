@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:noted_mobile/pages/recommendation/webview_widget.dart';
 
 import 'package:flutter/material.dart';
@@ -57,6 +58,41 @@ class _WebsiteWidgetState extends State<WebsiteWidget> {
     return imgUrl;
   }
 
+  Future<String?> fetchData(String url) async {
+    try {
+      Dio dio = Dio();
+      Response response = await dio.get(url);
+
+      var data = response.data;
+
+      if (data.runtimeType == String) {
+        bool isError = false;
+
+        try {
+          await vg.loadPicture(
+            SvgStringLoader(data),
+            null,
+            onError: (error, stackTrace) {
+              isError = true;
+            },
+          );
+        } catch (e) {
+          isError = true;
+        }
+
+        if (isError) {
+          return null;
+        }
+
+        return data;
+      }
+
+      return response.data;
+    } catch (error) {
+      return null;
+    }
+  }
+
   Future<Widget?> getImageWidget() async {
     final String imageUrl = widget.widget.imageUrl!;
     final String decodedUrl = getImageUrl(imageUrl);
@@ -71,13 +107,17 @@ class _WebsiteWidgetState extends State<WebsiteWidget> {
         imageUrl.endsWith(".jpeg")) {
       return Image.network(imgUrl, fit: BoxFit.cover, height: 200);
     } else if (imageUrl.endsWith(".svg")) {
-      return SvgPicture.network(
-        imgUrl,
-        placeholderBuilder: (BuildContext context) =>
-            const CircularProgressIndicator(),
-        height: 200,
-        width: 200,
-      );
+      String? data = await fetchData(imgUrl);
+
+      if (data != null) {
+        return SvgPicture.string(
+          data,
+          height: 200,
+          width: 200,
+        );
+      }
+
+      return const SizedBox();
     }
 
     return const SizedBox();
@@ -90,7 +130,7 @@ class _WebsiteWidgetState extends State<WebsiteWidget> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => WebViewExample(
+            builder: (context) => NotedWebView(
               url: widget.widget.url,
             ),
           ),
