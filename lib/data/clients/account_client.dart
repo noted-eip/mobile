@@ -19,6 +19,30 @@ class AccountClient {
 
   // Password
 
+  Future<String?> getAccesTokenGoogle({required String code}) async {
+    try {
+      final V1AuthenticateGoogleRequest body = V1AuthenticateGoogleRequest(
+        (body) => body..clientAccessToken = code,
+      );
+
+      final Response<V1AuthenticateGoogleResponse> response =
+          await ref.read(apiProvider).accountsAPIAuthenticateGoogle(body: body);
+
+      // var res = await ref.read(apiProvider).accountsAPIGetAccessTokenGoogle
+
+      if (response.statusCode != 200) {
+        throw Failure(message: response.statusMessage ?? 'Error');
+      }
+
+      return response.data?.token;
+    } on DioException catch (e) {
+      String error = NotedException.fromDioException(e).toString();
+      debugPrint(
+          "Exception when calling DefaultApi->getAccesTokenGoogle: $error\n");
+      throw Failure(message: error);
+    }
+  }
+
   Future<bool> resetPassword({
     required String password,
     required String accountId,

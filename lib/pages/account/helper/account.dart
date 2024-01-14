@@ -47,20 +47,20 @@ class AccountHelper {
       }
     } else {
       try {
-        var googleTokenResponse = {};
+        String? googleTokenResponse = await ref
+            .read(accountClientProvider)
+            .getAccesTokenGoogle(code: code);
 
-        if (googleTokenResponse['access_token'] == null) {
+        if (googleTokenResponse == null) {
           return null;
         }
 
-        googleToken = googleTokenResponse['access_token'];
+        print(googleTokenResponse);
+
+        googleToken = googleTokenResponse;
       } catch (e) {
         rethrow;
       }
-    }
-
-    if (googleToken == null) {
-      return null;
     }
 
     try {
