@@ -34,11 +34,6 @@ class MyToolBar extends StatelessWidget {
       _doesSelectionHaveAttributions({underlineAttribution});
   void _toggleUnderline() => _toggleAttributions({underlineAttribution});
 
-  bool get _isStrikethroughActive =>
-      _doesSelectionHaveAttributions({strikethroughAttribution});
-  void _toggleStrikethrough() =>
-      _toggleAttributions({strikethroughAttribution});
-
   bool _doesSelectionHaveAttributions(Set<Attribution> attributions) {
     final selection = composer.selection;
     if (selection == null) {
@@ -70,29 +65,15 @@ class MyToolBar extends StatelessWidget {
     if (selectedNode is! TextNode) {
       return;
     }
-    NamedAttribution? currentBlockType =
-        selectedNode.metadata['blockType'] as NamedAttribution?;
 
     if (selectedNode is ListItemNode) {
       commonOps.convertToParagraph(
         newMetadata: {
-          'blockType': header3Attribution,
+          'blockType': header1Attribution,
         },
       );
     } else {
-      NamedAttribution? newBlockType;
-
-      if (currentBlockType == header1Attribution) {
-        newBlockType = header1Attribution;
-      } else if (currentBlockType == header2Attribution) {
-        newBlockType = header1Attribution;
-      } else if (currentBlockType == header3Attribution) {
-        newBlockType = header2Attribution;
-      } else {
-        newBlockType = header3Attribution;
-      }
-
-      selectedNode.putMetadataValue('blockType', newBlockType);
+      selectedNode.putMetadataValue('blockType', header1Attribution);
     }
   }
 
@@ -102,26 +83,45 @@ class MyToolBar extends StatelessWidget {
     if (selectedNode is! TextNode) {
       return;
     }
-    NamedAttribution? currentBlockType =
-        selectedNode.metadata['blockType'] as NamedAttribution?;
 
     if (selectedNode is ListItemNode) {
-      commonOps.convertToParagraph();
+      commonOps.convertToParagraph(
+        newMetadata: {
+          'blockType': header2Attribution,
+        },
+      );
     } else {
-      NamedAttribution? newBlockType;
+      selectedNode.putMetadataValue('blockType', header2Attribution);
+    }
+  }
 
-      if (currentBlockType == header1Attribution) {
-        newBlockType = header2Attribution;
-      } else if (currentBlockType == header2Attribution) {
-        newBlockType = header3Attribution;
-      }
+  void _convertToHeader3() {
+    final selectedNode =
+        document.getNodeById(composer.selection!.extent.nodeId);
+    if (selectedNode is! TextNode) {
+      return;
+    }
 
-      selectedNode.putMetadataValue('blockType', newBlockType);
+    if (selectedNode is ListItemNode) {
+      commonOps.convertToParagraph(
+        newMetadata: {
+          'blockType': header3Attribution,
+        },
+      );
+    } else {
+      selectedNode.putMetadataValue('blockType', header3Attribution);
     }
   }
 
   void _convertToParagraph() {
     commonOps.convertToParagraph();
+
+    final selectedNode =
+        document.getNodeById(composer.selection!.extent.nodeId)!;
+
+    if (selectedNode is TextNode) {
+      selectedNode.putMetadataValue('blockType', null);
+    }
   }
 
   void _convertToOrderedListItem() {
@@ -136,27 +136,6 @@ class MyToolBar extends StatelessWidget {
         document.getNodeById(composer.selection!.extent.nodeId)! as TextNode;
 
     commonOps.convertToListItem(ListItemType.unordered, selectedNode.text);
-  }
-
-  void _convertToBlockquote() {
-    final selectedNode =
-        document.getNodeById(composer.selection!.extent.nodeId)! as TextNode;
-
-    commonOps.convertToBlockquote(selectedNode.text);
-  }
-
-  void _convertToHr() {
-    final selectedNode =
-        document.getNodeById(composer.selection!.extent.nodeId)! as TextNode;
-
-    selectedNode.text = AttributedText(text: '--- ');
-    composer.selection = DocumentSelection.collapsed(
-      position: DocumentPosition(
-        nodeId: selectedNode.id,
-        nodePosition: const TextNodePosition(offset: 4),
-      ),
-    );
-    commonOps.convertParagraphByPatternMatching(selectedNode.id);
   }
 
   void _closeKeyboard() {
@@ -226,6 +205,54 @@ class MyToolBar extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
+                                onPressed: _convertToHeader1,
+                                icon: const Icon(Icons.title),
+                              ),
+                              IconButton(
+                                onPressed: _convertToHeader2,
+                                icon: const Icon(Icons.title),
+                                iconSize: 18,
+                              ),
+                              IconButton(
+                                onPressed: _convertToHeader3,
+                                icon: const Icon(Icons.title),
+                                iconSize: 16,
+                              ),
+                              IconButton(
+                                onPressed: isSingleNodeSelected &&
+                                        ((selectedNode is ParagraphNode &&
+                                                selectedNode.hasMetadataValue(
+                                                    'blockType')) ||
+                                            (selectedNode is TextNode &&
+                                                selectedNode is! ParagraphNode))
+                                    ? _convertToParagraph
+                                    : null,
+                                icon: const Icon(Icons.format_clear_outlined),
+                              ),
+                              IconButton(
+                                onPressed: isSingleNodeSelected &&
+                                        (selectedNode is TextNode &&
+                                                selectedNode is! ListItemNode ||
+                                            (selectedNode is ListItemNode &&
+                                                selectedNode.type !=
+                                                    ListItemType.ordered))
+                                    ? _convertToOrderedListItem
+                                    : null,
+                                icon: const Icon(
+                                    Icons.format_list_numbered_rounded),
+                              ),
+                              IconButton(
+                                onPressed: isSingleNodeSelected &&
+                                        (selectedNode is TextNode &&
+                                                selectedNode is! ListItemNode ||
+                                            (selectedNode is ListItemNode &&
+                                                selectedNode.type !=
+                                                    ListItemType.unordered))
+                                    ? _convertToUnorderedListItem
+                                    : null,
+                                icon: const Icon(Icons.format_list_bulleted),
+                              ),
+                              IconButton(
                                 onPressed: selectedNode is TextNode
                                     ? _toggleBold
                                     : null,
@@ -251,76 +278,6 @@ class MyToolBar extends StatelessWidget {
                                 color: _isUnderlineActive
                                     ? Theme.of(context).primaryColor
                                     : null,
-                              ),
-                              IconButton(
-                                onPressed: selectedNode is TextNode
-                                    ? _toggleStrikethrough
-                                    : null,
-                                icon: const Icon(Icons.strikethrough_s),
-                                color: _isStrikethroughActive
-                                    ? Theme.of(context).primaryColor
-                                    : null,
-                              ),
-                              IconButton(
-                                onPressed: _convertToHeader1,
-                                icon: const Icon(Icons.title),
-                              ),
-                              IconButton(
-                                onPressed: _convertToHeader2,
-                                icon: const Icon(Icons.title),
-                                iconSize: 18,
-                              ),
-                              IconButton(
-                                onPressed: isSingleNodeSelected &&
-                                        ((selectedNode is ParagraphNode &&
-                                                selectedNode.hasMetadataValue(
-                                                    'blockType')) ||
-                                            (selectedNode is TextNode &&
-                                                selectedNode is! ParagraphNode))
-                                    ? _convertToParagraph
-                                    : null,
-                                icon: const Icon(Icons.wrap_text),
-                              ),
-                              IconButton(
-                                onPressed: isSingleNodeSelected &&
-                                        (selectedNode is TextNode &&
-                                                selectedNode is! ListItemNode ||
-                                            (selectedNode is ListItemNode &&
-                                                selectedNode.type !=
-                                                    ListItemType.ordered))
-                                    ? _convertToOrderedListItem
-                                    : null,
-                                icon: const Icon(Icons.looks_one_rounded),
-                              ),
-                              IconButton(
-                                onPressed: isSingleNodeSelected &&
-                                        (selectedNode is TextNode &&
-                                                selectedNode is! ListItemNode ||
-                                            (selectedNode is ListItemNode &&
-                                                selectedNode.type !=
-                                                    ListItemType.unordered))
-                                    ? _convertToUnorderedListItem
-                                    : null,
-                                icon: const Icon(Icons.list),
-                              ),
-                              IconButton(
-                                onPressed: isSingleNodeSelected &&
-                                        selectedNode is TextNode &&
-                                        (selectedNode is! ParagraphNode ||
-                                            selectedNode.getMetadataValue(
-                                                    'blockType') !=
-                                                blockquoteAttribution)
-                                    ? _convertToBlockquote
-                                    : null,
-                                icon: const Icon(Icons.format_quote),
-                              ),
-                              IconButton(
-                                onPressed: isSingleNodeSelected &&
-                                        selectedNode is ParagraphNode &&
-                                        selectedNode.text.text.isEmpty
-                                    ? _convertToHr
-                                    : null,
-                                icon: const Icon(Icons.horizontal_rule),
                               ),
                             ],
                           );

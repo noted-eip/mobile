@@ -97,12 +97,34 @@ ListBuilder<BlockTextStyle>? getStylesFromNode(DocumentNode node) {
 
       styles.add(style);
     }
+  } else if (node is ParagraphNode) {
+    AttributedSpans spans = node.text.spans;
+
+    List<SpanMarker> spanMarkers = spans.markers.toList();
+
+    for (SpanMarker startMarker
+        in spanMarkers.where((m) => m.markerType == SpanMarkerType.start)) {
+      SpanMarker correspondingEndMarker = spanMarkers.firstWhere(
+        (m) =>
+            m.markerType == SpanMarkerType.end &&
+            m.attribution == startMarker.attribution &&
+            m.offset >= startMarker.offset,
+      );
+
+      var style = BlockTextStyle((builder) {
+        builder
+          ..style = getStyleFromAttribution(startMarker.attribution)
+          ..pos = getPosFromStartAndEnd(
+              startMarker.offset, correspondingEndMarker.offset);
+      });
+
+      styles.add(style);
+    }
   }
 
   if (styles.isEmpty) {
     return null;
   }
-  // print("getStylesFromNode: ${styles.first.style?.name}");
 
   return styles;
 }

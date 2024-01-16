@@ -79,7 +79,7 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
 
     _resetTimer();
 
-    _timer = Timer(const Duration(seconds: 1), () async {
+    _timer = Timer(const Duration(seconds: 2), () async {
       V1Note updatedNote = getV1NoteFromDoc(_doc, widget.note);
 
       try {
@@ -121,10 +121,6 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
             );
           }
         }
-
-        // updatedNoteResponse.blocks?.forEach((p0) {
-        //   print(p0.id);
-        // });
 
         ref.invalidate(noteProvider(widget.infos));
       } catch (e) {
@@ -737,9 +733,10 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
       return SuperReader(
         document: _docReadOnly,
         componentBuilders: [
-          CustomParagraphComponentBuilder(),
           ...defaultComponentBuilders,
+          CustomParagraphComponentBuilder(),
         ],
+        stylesheet: styleSheet,
       );
     }
 
@@ -753,15 +750,13 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
       ],
       selectionStyle: SelectionStyles(
           selectionColor: NotedColors.secondary.withOpacity(0.5)),
-      stylesheet: defaultStylesheet,
+      stylesheet: styleSheet,
       componentBuilders: [
-        // CustomParagraphComponentBuilder(),
         ...defaultComponentBuilders,
       ],
       gestureMode: _gestureMode,
       inputSource: TextInputSource.ime,
       keyboardActions: [
-        // ...notedCustomKeyboardActions,
         ...defaultKeyboardActions,
       ],
       androidToolbarBuilder: (_) => AndroidTextEditingFloatingToolbar(
@@ -883,3 +878,118 @@ class NotedEditorTextStyle {
     return "start: $start, end: $end, attribution: ${attribution.id}, node: ${node.id}";
   }
 }
+
+Stylesheet styleSheet = Stylesheet(
+  rules: [
+    StyleRule(
+      BlockSelector.all,
+      (doc, docNode) {
+        return {
+          "maxWidth": 640.0,
+          "padding": const CascadingPadding.symmetric(horizontal: 24),
+          "textStyle": const TextStyle(
+            color: NotedColors.primary,
+            fontSize: 18,
+            height: 1.4,
+          ),
+        };
+      },
+    ),
+    StyleRule(
+      const BlockSelector("header1"),
+      (doc, docNode) {
+        return {
+          "padding": const CascadingPadding.only(bottom: 40),
+          "textStyle": const TextStyle(
+            color: Colors.black,
+            fontSize: 38,
+            fontWeight: FontWeight.bold,
+          ),
+        };
+      },
+    ),
+    StyleRule(
+      const BlockSelector("header2"),
+      (doc, docNode) {
+        return {
+          "padding": const CascadingPadding.only(bottom: 32),
+          "textStyle": TextStyle(
+            color: Colors.grey.shade900,
+            fontSize: 26,
+            fontWeight: FontWeight.bold,
+          ),
+        };
+      },
+    ),
+    StyleRule(
+      const BlockSelector("header3"),
+      (doc, docNode) {
+        return {
+          "padding": const CascadingPadding.only(bottom: 28),
+          "textStyle": TextStyle(
+            color: Colors.grey.shade900,
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ),
+        };
+      },
+    ),
+    StyleRule(
+      const BlockSelector("listItem"),
+      (doc, docNode) {
+        return {
+          "padding": const CascadingPadding.only(bottom: 24),
+        };
+      },
+    ),
+    StyleRule(
+      const BlockSelector("paragraph").before("listItem"),
+      (doc, docNode) {
+        return {
+          "padding": const CascadingPadding.only(bottom: 24),
+        };
+      },
+    ),
+    StyleRule(
+      const BlockSelector("paragraph").before("header1"),
+      (doc, docNode) {
+        return {
+          "padding": const CascadingPadding.only(bottom: 24),
+        };
+      },
+    ),
+    StyleRule(
+      const BlockSelector("paragraph").before("header2"),
+      (doc, docNode) {
+        return {
+          "padding": const CascadingPadding.only(bottom: 24),
+        };
+      },
+    ),
+    StyleRule(
+      const BlockSelector("paragraph").before("header3"),
+      (doc, docNode) {
+        return {
+          "padding": const CascadingPadding.only(bottom: 24),
+        };
+      },
+    ),
+    // StyleRule(
+    //   const BlockSelector("header3").after("paragraph"),
+    //   (doc, docNode) {
+    //     return {
+    //       "padding": const CascadingPadding.only(bottom: 24),
+    //     };
+    //   },
+    // ),
+    StyleRule(
+      BlockSelector.all.last(),
+      (doc, docNode) {
+        return {
+          "padding": const CascadingPadding.only(bottom: 96),
+        };
+      },
+    ),
+  ],
+  inlineTextStyler: defaultInlineTextStyler,
+);
