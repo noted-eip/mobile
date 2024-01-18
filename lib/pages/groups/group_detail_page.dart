@@ -170,7 +170,10 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage>
           bool isWorkspace = group.workspaceAccountId != null &&
               group.workspaceAccountId!.isNotEmpty;
 
+          bool noMembers = group.members == null || group.members!.isEmpty;
+
           return GroupActionButton(
+            noMembers: noMembers,
             controller:
                 isWorkspace ? _tabControllerWorkspace : _tabControllerGroup,
             isWorkspace: isWorkspace,
@@ -294,7 +297,15 @@ class _GroupDetailPageState extends ConsumerState<GroupDetailPage>
                       );
                     }
                   }),
-                  error: ((error, stackTrace) => Text(error.toString())),
+                  error: ((error, stackTrace) => Column(
+                        children: [
+                          Text(error.toString()),
+                          FilledButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: Text("go-back".tr()),
+                          )
+                        ],
+                      )),
                   loading: () {
                     return Column(
                       children: [

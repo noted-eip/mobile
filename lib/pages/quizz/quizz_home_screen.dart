@@ -65,7 +65,7 @@ class _QuizzHomeScreenState extends ConsumerState<QuizzHomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              "Quizz",
+              "Quiz",
               style: Theme.of(context).textTheme.displayLarge,
             ),
             IconButton(

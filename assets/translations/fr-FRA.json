@@ -184,7 +184,7 @@
             "success": "Nouveau Quiz généré avec succès !",
             "error": "Une erreur s'est produite lors de la génération du quiz !",
             "create": "Créer un quiz",
-            "inProgress": "Génération du quiz en cours ..."
+            "inProgress": "Génération du quiz en cours"
         },
         "quiz-word": {
             "perfect": "Parfait !",
@@ -272,7 +272,8 @@
             "add-comment": "Ajouter un commentaire"
         },
         "inProgress": "Mise à jour en cours ...",
-        "delete": "Supprimer"
+        "delete": "Supprimer",
+        "updateFailed": "La mise à jour de la note a échoué !"
     },
     "alert": {
         "cancel": "Annuler",
@@ -372,6 +373,11 @@
         "passwordLength": "Le mot de passe doit contenir entre 4 et 20 caractères !",
         "validationTokenDoesNotMatch": "Le code de vérification est incorrect !",
         "alreadyExists": "Déja existant !",
-        "accountAlreadyValidate": "Le compte a déjà été validé !"
+        "accountAlreadyValidate": "Le compte a déjà été validé !",
+        "permissionDenied": "Permission refusée !", 
+        "lengthMustBeBetween1And64": "La longueur doit être comprise entre 1 et 64 !",
+        "default": "Quelque chose s'est mal passé. Veuillez réessayer plus tard.",
+        "accountCreatedWithGoogle": "Le compte a été créé avec Google, veuillez vous connecter avec Google !"
+
     }
 }

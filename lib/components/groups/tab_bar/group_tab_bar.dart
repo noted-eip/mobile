@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:noted_mobile/components/groups/group_member_list.dart';
 import 'package:noted_mobile/components/notes/notes_list_widget.dart';
+import 'package:noted_mobile/data/providers/group_provider.dart';
 import 'package:noted_mobile/pages/groups/group_activities.dart';
 import 'package:openapi/openapi.dart';
 
@@ -32,6 +33,11 @@ class _GroupTabBarState extends ConsumerState<GroupTabBar> {
       child: Column(
         children: [
           TabBar(
+            onTap: (value) {
+              if (value == 1) {
+                ref.invalidate(groupProvider(widget.group.id));
+              }
+            },
             controller: widget.controller,
             indicatorColor: Colors.grey.shade900,
             tabs: [

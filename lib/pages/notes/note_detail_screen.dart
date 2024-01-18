@@ -24,32 +24,19 @@ class _NoteDetailState extends ConsumerState<NoteDetail> {
         data: (data) {
           if (data == null) {
             return Scaffold(
-              appBar: AppBar(
-                centerTitle: true,
-                leading: const SizedBox(),
-                title: Text("note-detail.empty".tr()),
-              ),
+              appBar: AppBar(),
               body: Center(
-                child: FilledButton(
-                  onPressed: () async {
-                    await ref
-                        .read(noteClientProvider)
-                        .deleteNote(noteId: infos.item1, groupId: infos.item2);
-                    if (!mounted) {
-                      return;
-                    }
-                    ref.invalidate(notesProvider);
-                    Navigator.pop(context);
-                  },
-                  child: Text("go-back".tr()),
-                ),
+                child: Text("note-detail.empty".tr()),
               ),
             );
           }
 
           return NotedEditor(note: data, infos: infos);
         },
-        error: (error, stackTrace) => Text(error.toString()),
+        error: (error, stackTrace) => Scaffold(
+          appBar: AppBar(),
+          body: Text(error.toString()),
+        ),
         loading: () => const Center(
           child: CircularProgressIndicator(),
         ),

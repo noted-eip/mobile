@@ -354,7 +354,7 @@ class _NotedNoteToolsState extends ConsumerState<NotedNoteTools> {
 
                   if (widgetList == null && mounted) {
                     CustomToast.show(
-                      message: "note-detail.error.recommendations".tr(),
+                      message: "note-detail.error.recommandations".tr(),
                       type: ToastType.error,
                       context: context,
                       gravity: ToastGravity.TOP,
@@ -364,7 +364,7 @@ class _NotedNoteToolsState extends ConsumerState<NotedNoteTools> {
 
                   if (widgetList!.isEmpty && mounted) {
                     CustomToast.show(
-                      message: "note-detail.error.recommendations-empty".tr(),
+                      message: "note-detail.error.recommandations-empty".tr(),
                       type: ToastType.warning,
                       context: context,
                       gravity: ToastGravity.TOP,

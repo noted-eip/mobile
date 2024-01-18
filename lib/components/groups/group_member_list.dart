@@ -11,6 +11,7 @@ import 'package:noted_mobile/data/providers/group_provider.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
 import 'package:noted_mobile/utils/string_extension.dart';
 import 'package:openapi/openapi.dart';
+import 'package:collection/collection.dart';
 
 typedef MemberCallback = void Function(String accountId);
 
@@ -91,13 +92,37 @@ class _GroupMembersListState extends ConsumerState<GroupMembersList> {
     }
   }
 
+  List<V1GroupMember>? members;
+
+  @override
+  void initState() {
+    super.initState();
+    members = widget.members;
+  }
+
+  @override
+  void didUpdateWidget(covariant GroupMembersList oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.members != widget.members) {
+      members = widget.members;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = ref.read(userProvider);
 
-    if (widget.members == null) {
-      return Center(
-        child: Text("group-detail.no-members".tr()),
+    if (members == null || members!.isEmpty) {
+      return RefreshIndicator(
+        displacement: 0,
+        onRefresh: () async {
+          ref.invalidate(groupProvider(widget.groupId));
+        },
+        child: ListView(
+          children: [
+            Center(child: Text("group-detail.no-members".tr())),
+          ],
+        ),
       );
     } else {
       return Container(
@@ -111,9 +136,9 @@ class _GroupMembersListState extends ConsumerState<GroupMembersList> {
           },
           child: ListView.builder(
             padding: EdgeInsets.zero,
-            itemCount: widget.members!.length,
+            itemCount: members!.length,
             itemBuilder: (context, index) {
-              final V1GroupMember member = widget.members![index];
+              final V1GroupMember member = members![index];
               var isMemberAdmin = member.isAdmin;
               List<ActionSlidable> adminActions = [
                 ActionSlidable(
@@ -152,12 +177,14 @@ class _GroupMembersListState extends ConsumerState<GroupMembersList> {
                 ),
               ];
               List<ActionSlidable> userActions = [];
-              bool isActiveUserAdmin = widget.members!
-                  .firstWhere((element) => element.accountId == user.id)
-                  .isAdmin;
+
+              var memberFromList = members!
+                  .firstWhereOrNull((element) => element.accountId == user.id);
+
+              bool isActiveUserAdmin = memberFromList?.isAdmin ?? false;
 
               return GroupMemberCard(
-                memberData: widget.members![index],
+                memberData: members![index],
                 actions: isActiveUserAdmin && !isMemberAdmin
                     ? adminActions
                     : userActions,

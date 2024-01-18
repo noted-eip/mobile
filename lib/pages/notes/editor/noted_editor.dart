@@ -204,53 +204,51 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
             NotedNoteTools(infos: widget.infos, note: widget.note),
         floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
         body: SafeArea(
-          child: Stack(
+          child: Column(
             children: [
-              Column(
-                children: [
-                  SizedBox(
-                    height: kToolbarHeight,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        IconButton(
-                          onPressed: onBackButtonPressed,
-                          icon: const Icon(Icons.arrow_back),
-                        ),
-                        Expanded(
-                          flex: 6,
-                          child: Text(
-                            widget.note.title.capitalize(),
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        SizedBox(
-                          height: 16,
-                          width: 16,
-                          child: isUpdateInProgress
-                              ? LoadingAnimationWidget.flickr(
-                                  leftDotColor: NotedColors.primary,
-                                  rightDotColor: NotedColors.tertiary,
-                                  size: 16,
-                                )
-                              : null,
-                        ),
-                        CommentSectionAppBar(
-                          note: widget.note,
-                          infos: widget.infos,
-                          isReadOnly: isReadOnly,
-                          onCommentChanged: onCommentChanged,
-                        ),
-                      ],
+              Container(
+                constraints: const BoxConstraints(minHeight: kToolbarHeight),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      onPressed: onBackButtonPressed,
+                      icon: const Icon(Icons.arrow_back),
                     ),
-                  ),
-                  Expanded(
-                    child: _buildEditor(context, ref),
-                  ),
-                  if (_isMobile) _buildMountedToolbar(),
-                ],
+                    Expanded(
+                      flex: 6,
+                      child: Text(
+                        widget.note.title.capitalize(),
+                        style: Theme.of(context).textTheme.titleLarge,
+                        maxLines: 3,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    SizedBox(
+                      height: 16,
+                      width: 16,
+                      child: isUpdateInProgress
+                          ? LoadingAnimationWidget.flickr(
+                              leftDotColor: NotedColors.primary,
+                              rightDotColor: NotedColors.tertiary,
+                              size: 16,
+                            )
+                          : null,
+                    ),
+                    CommentSectionAppBar(
+                      note: widget.note,
+                      infos: widget.infos,
+                      isReadOnly: isReadOnly,
+                      onCommentChanged: onCommentChanged,
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(height: 24),
+              Expanded(
+                child: _buildEditor(context, ref),
+              ),
+              if (_isMobile) _buildMountedToolbar(),
             ],
           ),
         ),
@@ -265,7 +263,7 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
 
     _resetTimer();
 
-    _timer = Timer(const Duration(seconds: 2), () async {
+    _timer = Timer(const Duration(seconds: 5), () async {
       V1Note updatedNote = NotedNoteUtility.getV1NoteFromDoc(_doc, widget.note);
 
       try {
@@ -295,6 +293,7 @@ class _NotedEditorState extends ConsumerState<NotedEditor> {
         setState(() {
           isUpdateInProgress = false;
         });
+        debugPrint(e.toString());
       }
     });
   }

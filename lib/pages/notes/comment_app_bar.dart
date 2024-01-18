@@ -104,23 +104,23 @@ class _CommentSectionAppBarState extends ConsumerState<CommentSectionAppBar> {
                       }
                     },
                   ),
-                  if (!isWorkspace)
-                    PopupMenuItem(
-                      child: ListTile(
-                        leading: const Icon(Icons.comment),
-                        title: Text("note.comments".tr()),
-                      ),
-                      onTap: () async {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return const CommentList();
-                            },
-                          ),
-                        );
-                      },
-                    ),
                 ],
+                if (!isWorkspace)
+                  PopupMenuItem(
+                    child: ListTile(
+                      leading: const Icon(Icons.comment),
+                      title: Text("note.comments".tr()),
+                    ),
+                    onTap: () async {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return const CommentList();
+                          },
+                        ),
+                      );
+                    },
+                  ),
               ],
             ),
           ],

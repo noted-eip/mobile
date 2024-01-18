@@ -12,7 +12,7 @@ Stylesheet styleSheet = Stylesheet(
           "padding": const CascadingPadding.symmetric(horizontal: 24),
           "textStyle": const TextStyle(
             color: NotedColors.primary,
-            fontSize: 18,
+            fontSize: 16,
             height: 1.4,
           ),
         };
@@ -22,10 +22,10 @@ Stylesheet styleSheet = Stylesheet(
       const BlockSelector("header1"),
       (doc, docNode) {
         return {
-          "padding": const CascadingPadding.only(bottom: 40),
+          "padding": const CascadingPadding.only(bottom: 14),
           "textStyle": const TextStyle(
             color: Colors.black,
-            fontSize: 38,
+            fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
         };
@@ -35,20 +35,7 @@ Stylesheet styleSheet = Stylesheet(
       const BlockSelector("header2"),
       (doc, docNode) {
         return {
-          "padding": const CascadingPadding.only(bottom: 32),
-          "textStyle": TextStyle(
-            color: Colors.grey.shade900,
-            fontSize: 26,
-            fontWeight: FontWeight.bold,
-          ),
-        };
-      },
-    ),
-    StyleRule(
-      const BlockSelector("header3"),
-      (doc, docNode) {
-        return {
-          "padding": const CascadingPadding.only(bottom: 28),
+          "padding": const CascadingPadding.only(bottom: 12),
           "textStyle": TextStyle(
             color: Colors.grey.shade900,
             fontSize: 22,
@@ -58,10 +45,23 @@ Stylesheet styleSheet = Stylesheet(
       },
     ),
     StyleRule(
+      const BlockSelector("header3"),
+      (doc, docNode) {
+        return {
+          "padding": const CascadingPadding.only(bottom: 10),
+          "textStyle": TextStyle(
+            color: Colors.grey.shade900,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        };
+      },
+    ),
+    StyleRule(
       const BlockSelector("listItem"),
       (doc, docNode) {
         return {
-          "padding": const CascadingPadding.only(bottom: 24),
+          "padding": const CascadingPadding.only(bottom: 10),
         };
       },
     ),

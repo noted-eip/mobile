@@ -35,39 +35,43 @@ class NotedException implements Exception {
     }
   }
 
-  String? _translateError(String error) {
-    switch (error) {
-      case "wrong password or email":
-        return "translate-error.wrongPasswordOrEmail".tr();
-      case "not found":
-        return "translate-error.notFound".tr();
-      case "email: must be a valid email address.":
-        return "translate-error.emailMustBeValid".tr();
-      case "reset-token does not match":
-        return "translate-error.resetTokenDoesNotMatch".tr();
-      case "token: cannot be blank.":
-        return "translate-error.tokenCannotBeBlank".tr();
-      case "password: the length must be between 4 and 20.":
-        return "translate-error.passwordLength".tr();
-      case "validation-token does not match":
-        return "translate-error.validationTokenDoesNotMatch".tr();
-      case "already exists":
-        return "translate-error.alreadyExists".tr();
-      default:
-        if (error.contains("google")) {
-          return "translate-error.google".tr();
-        } else if (error.contains("length must be between 4 and 20")) {
-          return "translate-error.passwordLength".tr();
-        } else if (error.contains("account already validate")) {
-          return "translate-error.accountAlreadyValidate".tr();
-        }
-
-        return null;
+  String _translateError(String error) {
+    if (error.contains("account created with google (no password)")) {
+      return "translate-error.accountCreatedWithGoogle".tr();
+    }
+    // else if (error.contains("google")) {
+    //   print(error);
+    //   return "translate-error.google".tr();
+    // }
+    else if (error.contains("length must be between 4 and 20")) {
+      return "translate-error.passwordLength".tr();
+    } else if (error.contains("account already validate")) {
+      return "translate-error.accountAlreadyValidate".tr();
+    } else if (error.contains("permission denied")) {
+      return "translate-error.permissionDenied".tr();
+    } else if (error.contains("length must be between 1 and 64")) {
+      return "translate-error.lengthMustBeBetween1And64".tr();
+    } else if (error.contains("wrong password or email")) {
+      return "translate-error.wrongPasswordOrEmail".tr();
+    } else if (error.contains("not found")) {
+      return "translate-error.notFound".tr();
+    } else if (error.contains("email: must be a valid email address")) {
+      return "translate-error.emailMustBeValid".tr();
+    } else if (error.contains("reset-token does not match")) {
+      return "translate-error.resetTokenDoesNotMatch".tr();
+    } else if (error.contains("token: cannot be blank")) {
+      return "translate-error.tokenCannotBeBlank".tr();
+    } else if (error.contains("validation-token does not match")) {
+      return "translate-error.validationTokenDoesNotMatch".tr();
+    } else if (error.contains("already exists")) {
+      return "translate-error.alreadyExists".tr();
+    } else {
+      return "translate-error.default".tr();
     }
   }
 
   String _handleError(int statusCode, dynamic error) {
-    return _translateError(error["error"]) ?? error["error"];
+    return _translateError(error["error"]);
   }
 
   @override

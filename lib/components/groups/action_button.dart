@@ -24,11 +24,13 @@ class GroupActionButton extends ConsumerStatefulWidget {
     required this.controller,
     required this.isWorkspace,
     required this.group,
+    required this.noMembers,
     this.inviteMember,
   }) : super(key: key);
 
   final TabController controller;
   final bool isWorkspace;
+  final bool noMembers;
   final V1Group group;
 
   final InviteMemberCallBack? inviteMember;
@@ -179,6 +181,9 @@ class _GroupActionButtonState extends ConsumerState<GroupActionButton> {
         await addNote();
         break;
       case ActionButton.invite:
+        if (widget.noMembers) {
+          break;
+        }
         await invite();
         break;
     }
