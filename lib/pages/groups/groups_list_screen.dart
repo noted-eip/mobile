@@ -33,9 +33,8 @@ class _GroupsListPageState extends ConsumerState<GroupsListPage> {
 
   Widget buildSearchBar() {
     return TextField(
-      decoration: ThemeHelper()
-          .textInputDecoration('', 'my-groups.search'.tr())
-          .copyWith(
+      decoration:
+          ThemeHelper.textInputDecoration('', 'my-groups.search'.tr()).copyWith(
               prefixIcon: const Icon(
                 Icons.search_outlined,
                 color: Colors.grey,

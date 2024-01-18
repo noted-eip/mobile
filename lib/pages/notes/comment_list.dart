@@ -80,7 +80,8 @@ class _CommentListState extends ConsumerState<CommentList> {
                             builder: (context) => CommentSection(
                               blockId: data[index].id,
                               blockContent:
-                                  getBlockTextFromV1Block(data[index]),
+                                  NotedNoteUtility.getBlockTextFromV1Block(
+                                      data[index]),
                             ),
                           ),
                         );
@@ -88,7 +89,8 @@ class _CommentListState extends ConsumerState<CommentList> {
                       child: Card(
                         child: ListTile(
                           title: Text(
-                            getBlockTextFromV1Block(data[index]),
+                            NotedNoteUtility.getBlockTextFromV1Block(
+                                data[index]),
                             maxLines: 3,
                             overflow: TextOverflow.ellipsis,
                           ),

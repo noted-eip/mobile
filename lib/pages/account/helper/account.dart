@@ -22,6 +22,26 @@ class AccountHelper {
     ],
   );
 
+  Future<bool?> changePassword({
+    required WidgetRef ref,
+    required String password,
+    required String resetToken,
+    required String authToken,
+    required String accountId,
+  }) async {
+    try {
+      final isSucces = await ref.read(accountClientProvider).resetPassword(
+            password: password,
+            accountId: accountId,
+            resetToken: resetToken,
+            authToken: authToken,
+          );
+      return isSucces;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<LoginAction?> loginWithGoogle({
     required WidgetRef ref,
     String? code,
@@ -80,42 +100,43 @@ class AccountHelper {
     await _googleSignIn.disconnect();
   }
 
-  void handleNavigation({
+  Future<void> handleNavigation({
     required LoginAction? action,
     required BuildContext context,
     required String email,
     required String password,
-  }) {
+  }) async {
+    print("action $action");
     if (action == null) {
       return;
     }
 
     switch (action) {
       case LoginAction.goHome:
-        Navigator.of(context).pushReplacementNamed('/home');
+        await Navigator.of(context).pushReplacementNamed('/home');
         break;
       case LoginAction.goVerification:
-        Navigator.pushNamed(context, '/register-verification',
-            arguments: Tuple2(
-              email,
-              password,
-            ));
+        if (context.mounted) {
+          await Navigator.pushNamed(context, '/register-verification',
+              arguments: Tuple2(
+                email,
+                password,
+              ));
+        }
         break;
     }
   }
 
-  Future<void> handleSendToken({
+  Future<void> handleReSendToken({
     required Tuple2<String, String> emailPassword,
     required WidgetRef ref,
-    required bool isRegistration,
   }) async {
+    print("resend token");
     try {
-      if (!isRegistration) {
-        await ref.read(accountClientProvider).resendValidateToken(
-              email: emailPassword.item1,
-              password: emailPassword.item2,
-            );
-      }
+      await ref.read(accountClientProvider).resendValidateToken(
+            email: emailPassword.item1,
+            password: emailPassword.item2,
+          );
     } catch (e) {
       rethrow;
     }
@@ -146,11 +167,6 @@ class AccountHelper {
 
     if (!isValidate) {
       btnController.reset();
-
-      await handleSendToken(
-          emailPassword: Tuple2(email, password),
-          ref: ref,
-          isRegistration: isRegistration);
 
       return LoginAction.goVerification;
     } else {

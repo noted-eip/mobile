@@ -22,212 +22,244 @@ class ChangePasswordPage extends ConsumerStatefulWidget {
 class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
   final _formKey = GlobalKey<FormState>();
 
-  final List<bool> _obscureText = [true, true];
+  bool passWordIsObscure = true;
+  bool confirmPasswordIsObscure = true;
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     final RoundedLoadingButtonController btnController =
         RoundedLoadingButtonController();
-    Tuple3? data = ModalRoute.of(context)!.settings.arguments as Tuple3?;
 
-    TextEditingController passwordController = TextEditingController();
-    TextEditingController confirmPasswordController = TextEditingController();
+    Tuple2<Tuple3<dynamic, dynamic, dynamic>, bool> args =
+        ModalRoute.of(context)!.settings.arguments
+            as Tuple2<Tuple3<dynamic, dynamic, dynamic>, bool>;
+    Tuple3<dynamic, dynamic, dynamic> data = args.item1;
+    bool isResetPass = args.item2;
+
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Center(
-        child: SingleChildScrollView(
-          child: SafeArea(
-            child: Container(
-              margin: const EdgeInsets.fromLTRB(32, 0, 32, 0),
-              child: Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(100),
-                      border: Border.all(width: 5, color: Colors.white),
-                      color: Colors.white,
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 20,
-                          offset: Offset(5, 5),
-                        ),
-                      ],
-                    ),
-                    child: const Icon(Icons.key, size: 80, color: Colors.black),
-                  ),
-                  const SizedBox(height: 32),
-                  Container(
-                    alignment: Alignment.topLeft,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'change-password.title'.tr(),
-                          style: const TextStyle(
-                              fontSize: 35,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black54),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Text(
-                          'change-password.description'.tr(),
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black54),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 40.0),
-                  Form(
-                    key: _formKey,
-                    child: Column(
-                      children: <Widget>[
-                        Container(
-                          decoration: ThemeHelper().inputBoxDecorationShaddow(),
-                          child: TextFormField(
-                            controller: passwordController,
-                            obscureText: _obscureText[0],
-                            decoration: ThemeHelper()
-                                .textInputDecoration(
-                                    'signup.password.label'.tr(),
-                                    'signup.password.hint'.tr())
-                                .copyWith(
-                                  prefixIcon: const Icon(
-                                      Icons.lock_outline_rounded,
-                                      color: Colors.grey),
-                                  suffixIcon: IconButton(
-                                    splashColor: Colors.transparent,
-                                    highlightColor: Colors.transparent,
-                                    icon: Icon(
-                                      _obscureText[0]
-                                          ? Icons.visibility_outlined
-                                          : Icons.visibility_off_outlined,
-                                      color: Colors.grey,
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        _obscureText[0] = !_obscureText[0];
-                                      });
-                                    },
-                                  ),
-                                ),
-                            validator: (val) {
-                              if (val!.isEmpty) {
-                                return 'signup.password.validator'.tr();
-                              }
-                              return null;
-                            },
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        forceMaterialTransparency: true,
+      ),
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Center(
+          child: SingleChildScrollView(
+            child: SafeArea(
+              child: Container(
+                margin: const EdgeInsets.fromLTRB(32, 0, 32, 0),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(100),
+                        border: Border.all(width: 5, color: Colors.white),
+                        color: Colors.white,
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 20,
+                            offset: Offset(5, 5),
                           ),
-                        ),
-                        const SizedBox(height: 20.0),
-                        Container(
-                          decoration: ThemeHelper().inputBoxDecorationShaddow(),
-                          child: TextFormField(
-                            controller: confirmPasswordController,
-                            obscureText: _obscureText[1],
-                            decoration: ThemeHelper()
-                                .textInputDecoration(
-                                    'signup.confirmPassword.label'.tr(),
-                                    'signup.confirmPassword.hint'.tr())
-                                .copyWith(
-                                  prefixIcon: const Icon(
-                                      Icons.lock_outline_rounded,
-                                      color: Colors.grey),
-                                  suffixIcon: IconButton(
-                                    splashColor: Colors.transparent,
-                                    highlightColor: Colors.transparent,
-                                    icon: Icon(
-                                      _obscureText[1]
-                                          ? Icons.visibility_outlined
-                                          : Icons.visibility_off_outlined,
-                                      color: Colors.grey,
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        _obscureText[1] = !_obscureText[1];
-                                      });
-                                    },
-                                  ),
-                                ),
-                            validator: (val) {
-                              if (val!.isEmpty) {
-                                return 'signup.confirmPassword.validator'.tr();
-                              }
-                              if (val != passwordController.text) {
-                                return 'signup.confirmPassword.validator2'.tr();
-                              }
-                              return null;
-                            },
+                        ],
+                      ),
+                      child:
+                          const Icon(Icons.key, size: 80, color: Colors.black),
+                    ),
+                    const SizedBox(height: 32),
+                    Container(
+                      alignment: Alignment.topLeft,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'change-password.title'.tr(),
+                            style: const TextStyle(
+                                fontSize: 35,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black54),
                           ),
-                        ),
-                        const SizedBox(height: 40.0),
-                        LoadingButton(
-                          btnController: btnController,
-                          onPressed: () async {
-                            if (_formKey.currentState!.validate()) {
-                              bool res = await changePassword(
-                                password: passwordController.text,
-                                resetToken: data!.item1,
-                                authToken: data.item2,
-                                accountId: data.item3,
-                              );
-
-                              if (res && mounted) {
-                                CustomToast.show(
-                                  message: 'change-password.success'.tr(),
-                                  type: ToastType.success,
-                                  context: context,
-                                  gravity: ToastGravity.TOP,
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            'change-password.description'.tr(),
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black54),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 40.0),
+                    Form(
+                      key: _formKey,
+                      child: Column(
+                        children: <Widget>[
+                          Container(
+                            decoration: ThemeHelper.inputBoxDecorationShaddow(),
+                            child: TextFormField(
+                              controller: passwordController,
+                              obscureText: passWordIsObscure,
+                              decoration: ThemeHelper.textInputDecoration(
+                                      'signup.password.label'.tr(),
+                                      'signup.password.hint'.tr())
+                                  .copyWith(
+                                prefixIcon: const Icon(
+                                    Icons.lock_outline_rounded,
+                                    color: Colors.grey),
+                                suffixIcon: IconButton(
+                                  splashColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  icon: Icon(
+                                    passWordIsObscure
+                                        ? Icons.visibility_outlined
+                                        : Icons.visibility_off_outlined,
+                                    color: Colors.grey,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      passWordIsObscure = !passWordIsObscure;
+                                    });
+                                  },
+                                ),
+                              ),
+                              validator: (val) {
+                                if (val!.isEmpty) {
+                                  return 'signup.password.validator'.tr();
+                                }
+                                return null;
+                              },
+                              textInputAction: TextInputAction.next,
+                            ),
+                          ),
+                          const SizedBox(height: 20.0),
+                          Container(
+                            decoration: ThemeHelper.inputBoxDecorationShaddow(),
+                            child: TextFormField(
+                              controller: confirmPasswordController,
+                              obscureText: confirmPasswordIsObscure,
+                              decoration: ThemeHelper.textInputDecoration(
+                                      'signup.confirmPassword.label'.tr(),
+                                      'signup.confirmPassword.hint'.tr())
+                                  .copyWith(
+                                prefixIcon: const Icon(
+                                    Icons.lock_outline_rounded,
+                                    color: Colors.grey),
+                                suffixIcon: IconButton(
+                                  splashColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  icon: Icon(
+                                    confirmPasswordIsObscure
+                                        ? Icons.visibility_outlined
+                                        : Icons.visibility_off_outlined,
+                                    color: Colors.grey,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      confirmPasswordIsObscure =
+                                          !confirmPasswordIsObscure;
+                                    });
+                                  },
+                                ),
+                              ),
+                              validator: (val) {
+                                if (val!.isEmpty) {
+                                  return 'signup.confirmPassword.validator'
+                                      .tr();
+                                }
+                                if (val != passwordController.text) {
+                                  return 'signup.confirmPassword.validator2'
+                                      .tr();
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 40.0),
+                          LoadingButton(
+                            btnController: btnController,
+                            onPressed: () async {
+                              if (_formKey.currentState!.validate()) {
+                                bool res = await changePassword(
+                                  password: passwordController.text,
+                                  resetToken: data.item1,
+                                  authToken: data.item2,
+                                  accountId: data.item3,
                                 );
-                                btnController.success();
-                                resetButton(btnController);
-                                ref
-                                    .read(trackerProvider)
-                                    .trackPage(TrackPage.login);
-                                Navigator.pushNamedAndRemoveUntil(
-                                    context, '/login', (route) => false);
-                              } else {
-                                btnController.error();
-                                resetButton(btnController);
-                              }
-                            } else {
-                              btnController.error();
-                              resetButton(btnController);
-                            }
-                          },
-                          text: "change-password.button".tr(),
-                        ),
-                        const SizedBox(height: 30.0),
-                        Text.rich(
-                          TextSpan(
-                            children: [
-                              TextSpan(text: "change-password.remember".tr()),
-                              TextSpan(
-                                text: 'change-password.signin'.tr(),
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = () {
+
+                                if (res && mounted) {
+                                  CustomToast.show(
+                                    message: 'change-password.success'.tr(),
+                                    type: ToastType.success,
+                                    context: context,
+                                    gravity: ToastGravity.TOP,
+                                  );
+                                  btnController.success();
+                                  resetButton(btnController);
+                                  if (isResetPass) {
+                                    Navigator.of(context).pop();
+                                    Navigator.of(context).pop();
+                                    Navigator.of(context).pop();
+                                  } else {
                                     ref
                                         .read(trackerProvider)
                                         .trackPage(TrackPage.login);
                                     Navigator.pushNamedAndRemoveUntil(
                                         context, '/login', (route) => false);
-                                  },
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ],
+                                  }
+                                } else {
+                                  btnController.error();
+                                  resetButton(btnController);
+                                }
+                              } else {
+                                btnController.error();
+                                resetButton(btnController);
+                              }
+                            },
+                            text: "change-password.button".tr(),
                           ),
-                        ),
-                      ],
-                    ),
-                  )
-                ],
+                          const SizedBox(height: 30.0),
+                          Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(text: "change-password.remember".tr()),
+                                TextSpan(
+                                  text: isResetPass
+                                      ? "change-password.cancel".tr()
+                                      : 'change-password.signin'.tr(),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () {
+                                      if (isResetPass) {
+                                        Navigator.of(context).pop();
+                                        Navigator.of(context).pop();
+                                        Navigator.of(context).pop();
+                                      } else {
+                                        ref
+                                            .read(trackerProvider)
+                                            .trackPage(TrackPage.login);
+                                        Navigator.pushNamedAndRemoveUntil(
+                                            context,
+                                            '/login',
+                                            (route) => false);
+                                      }
+                                    },
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           ),
@@ -264,5 +296,3 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
     }
   }
 }
-
-// AZERTYUIOPAZERTYUIOPAZERTYUIOPAZERTYUIOPAZERTYUIOPAZERTYUIOP

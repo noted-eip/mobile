@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.noted.notedApp">
    <application
-        android:label="noted_mobile"
+        android:label="Noted"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

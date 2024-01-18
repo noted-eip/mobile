@@ -1,7 +1,56 @@
 import 'package:flutter/material.dart';
 
 class ThemeHelper {
-  InputDecoration textInputDecoration(
+  static void formatCode(TextEditingController textEditingController) {
+    bool allowCommas = false;
+
+    String text = textEditingController.text;
+    String formattedText = '';
+    bool hasPointOrComma = false;
+    int decimalCount = 0;
+
+    for (int i = 0; i < text.length; i++) {
+      if ((text[i] == '.' || (allowCommas)) &&
+          !hasPointOrComma &&
+          decimalCount < 0) {
+        formattedText += '.';
+        hasPointOrComma = true;
+      } else if (RegExp(r'[0-9]').hasMatch(text[i])) {
+        if (!hasPointOrComma && formattedText.length < 4) {
+          formattedText += text[i];
+        } else if (hasPointOrComma && decimalCount < 2) {
+          formattedText += text[i];
+          decimalCount++;
+        }
+      }
+    }
+
+    double numericValue = double.tryParse(formattedText) ?? 0.0;
+
+    if (numericValue > 9999) {
+      formattedText = '9999';
+    }
+
+    if (text != formattedText) {
+      textEditingController.value = textEditingController.value.copyWith(
+        text: formattedText,
+        selection: TextSelection.collapsed(offset: formattedText.length),
+      );
+    }
+  }
+
+  static InputDecoration codeInputDecoration(
+      {String? labelText, String? hintText}) {
+    return InputDecoration(
+      floatingLabelBehavior: FloatingLabelBehavior.always,
+      border: InputBorder.none,
+      hintText: hintText,
+      labelText: labelText,
+      contentPadding: EdgeInsets.zero,
+    );
+  }
+
+  static InputDecoration textInputDecoration(
       [String lableText = "", String hintText = ""]) {
     return InputDecoration(
       labelText: lableText,
@@ -24,7 +73,7 @@ class ThemeHelper {
     );
   }
 
-  InputDecoration textInputProfile(
+  static InputDecoration textInputProfile(
       {String labelText = "",
       String hintText = "",
       Widget? prefixIcon,
@@ -44,7 +93,7 @@ class ThemeHelper {
     );
   }
 
-  BoxDecoration inputBoxDecorationShaddow() {
+  static BoxDecoration inputBoxDecorationShaddow() {
     return BoxDecoration(boxShadow: [
       BoxShadow(
         color: Colors.black.withOpacity(0.1),
@@ -54,7 +103,7 @@ class ThemeHelper {
     ]);
   }
 
-  BoxDecoration buttonBoxDecoration(BuildContext context,
+  static BoxDecoration buttonBoxDecoration(BuildContext context,
       [String color1 = "", String color2 = ""]) {
     Color c1 = Theme.of(context).colorScheme.primary;
     Color c2 = Theme.of(context).colorScheme.secondary;
@@ -82,7 +131,7 @@ class ThemeHelper {
     );
   }
 
-  ButtonStyle buttonStyle() {
+  static ButtonStyle buttonStyle() {
     return ButtonStyle(
       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
         RoundedRectangleBorder(
@@ -95,7 +144,8 @@ class ThemeHelper {
     );
   }
 
-  AlertDialog alartDialog(String title, String content, BuildContext context) {
+  static AlertDialog alartDialog(
+      String title, String content, BuildContext context) {
     return AlertDialog(
       title: Text(title),
       content: Text(content),

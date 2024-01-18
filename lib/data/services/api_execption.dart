@@ -56,6 +56,10 @@ class NotedException implements Exception {
       default:
         if (error.contains("google")) {
           return "translate-error.google".tr();
+        } else if (error.contains("length must be between 4 and 20")) {
+          return "translate-error.passwordLength".tr();
+        } else if (error.contains("account already validate")) {
+          return "translate-error.accountAlreadyValidate".tr();
         }
 
         return null;

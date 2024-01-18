@@ -8,9 +8,10 @@ import 'package:noted_mobile/components/common/loading_button.dart';
 import 'package:noted_mobile/data/clients/tracker_client.dart';
 import 'package:noted_mobile/data/providers/account_provider.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
+import 'package:noted_mobile/utils/color.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
+import 'package:noted_mobile/utils/validator.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
-import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:tuple/tuple.dart';
 
 class ForgotPasswordVerificationPage extends ConsumerStatefulWidget {
@@ -25,167 +26,182 @@ class ForgotPasswordVerificationPageState
     extends ConsumerState<ForgotPasswordVerificationPage> {
   final _formKey = GlobalKey<FormState>();
 
+  TextEditingController textEditingController = TextEditingController();
+  final RoundedLoadingButtonController btnController =
+      RoundedLoadingButtonController();
+
+  @override
+  void initState() {
+    textEditingController.addListener(formatCode);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    textEditingController.removeListener(formatCode);
+    super.dispose();
+  }
+
+  void formatCode() => ThemeHelper.formatCode(textEditingController);
+
   @override
   Widget build(BuildContext context) {
-    TextEditingController textEditingController = TextEditingController();
-    final RoundedLoadingButtonController btnController =
-        RoundedLoadingButtonController();
+    Tuple2<String, bool> args =
+        ModalRoute.of(context)!.settings.arguments as Tuple2<String, bool>;
 
-    String accountId = ModalRoute.of(context)!.settings.arguments as String;
+    String accountId = args.item1;
+    bool isResetPass = args.item2;
 
     return Scaffold(
         backgroundColor: Colors.white,
-        body: Center(
-          child: SingleChildScrollView(
-            child: SafeArea(
-              child: Container(
-                margin: const EdgeInsets.fromLTRB(32, 0, 32, 0),
-                child: Column(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(100),
-                        border: Border.all(width: 5, color: Colors.white),
-                        color: Colors.white,
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 20,
-                            offset: Offset(5, 5),
-                          ),
-                        ],
-                      ),
-                      child:
-                          const Icon(Icons.key, size: 80, color: Colors.black),
-                    ),
-                    const SizedBox(height: 32),
-                    Container(
-                      alignment: Alignment.topLeft,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'forgot.step2.title'.tr(),
-                            style: const TextStyle(
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black54),
-                          ),
-                          const SizedBox(
-                            height: 8,
-                          ),
-                          Text(
-                            'forgot.step2.description'.tr(),
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black54),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 40.0),
-                    Form(
-                      key: _formKey,
-                      child: Column(
-                        children: <Widget>[
-                          PinCodeTextField(
-                            autoFocus: true,
-                            autoDismissKeyboard: true,
-                            keyboardType: TextInputType.number,
-                            length: 4,
-                            obscureText: false,
-                            animationType: AnimationType.fade,
-                            pinTheme: PinTheme(
-                                shape: PinCodeFieldShape.box,
-                                borderRadius: BorderRadius.circular(5),
-                                fieldHeight: 50,
-                                fieldWidth: 40,
-                                activeFillColor: Colors.white,
-                                activeColor:
-                                    Theme.of(context).colorScheme.primary,
-                                inactiveColor:
-                                    Theme.of(context).colorScheme.secondary,
-                                inactiveFillColor: Colors.white,
-                                selectedColor: Colors.blueGrey,
-                                selectedFillColor: Colors.grey),
-                            animationDuration:
-                                const Duration(milliseconds: 300),
-                            enableActiveFill: true,
-                            controller: textEditingController,
-                            onCompleted: (v) {
-                              debugPrint("Completed");
-                            },
-                            onChanged: (value) {
-                              debugPrint(value);
-                            },
-                            beforeTextPaste: (text) {
-                              return true;
-                            },
-                            validator: (val) {
-                              if (val!.length < 4) {
-                                return 'forgot.step2.validator'.tr();
-                              } else {
-                                return null;
-                              }
-                            },
-                            appContext: context,
-                          ),
-                          const SizedBox(height: 50.0),
-                          Text.rich(
-                            TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: "forgot.step2.not-received".tr(),
-                                  style: const TextStyle(
-                                    color: Colors.black38,
-                                  ),
-                                ),
-                                const TextSpan(
-                                  text: ' ',
-                                ),
-                                TextSpan(
-                                  text: 'forgot.step2.resend'.tr(),
-                                  recognizer: TapGestureRecognizer()
-                                    ..onTap = () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return ThemeHelper().alartDialog(
-                                              "forgot.step2.resend-pop-up.title"
-                                                  .tr(),
-                                              "forgot.step2.resend-pop-up.description"
-                                                  .tr(),
-                                              context);
-                                        },
-                                      );
-                                    },
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black),
-                                ),
-                              ],
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          forceMaterialTransparency: true,
+        ),
+        body: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: Center(
+            child: SingleChildScrollView(
+              child: SafeArea(
+                child: Container(
+                  margin: const EdgeInsets.fromLTRB(32, 0, 32, 0),
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(32),
+                          border: Border.all(width: 5, color: Colors.white),
+                          color: Colors.white,
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 20,
+                              offset: Offset(5, 5),
                             ),
-                          ),
-                          const SizedBox(height: 40.0),
-                          LoadingButton(
-                            btnController: btnController,
-                            onPressed: () async {
-                              if (_formKey.currentState!.validate()) {
-                                tokenVerification(textEditingController.text,
-                                    accountId, btnController);
-                              } else {
-                                btnController.error();
-                                resetButton(btnController);
-                              }
-                            },
-                            text: 'forgot.step2.button'.tr(),
-                          ),
-                        ],
+                          ],
+                        ),
+                        child: const Icon(Icons.key,
+                            size: 80, color: Colors.black),
                       ),
-                    )
-                  ],
+                      const SizedBox(height: 50),
+                      Container(
+                        alignment: Alignment.topLeft,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'forgot.step2.title'.tr(),
+                              style: const TextStyle(
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black54),
+                            ),
+                            const SizedBox(
+                              height: 8,
+                            ),
+                            Text(
+                              'forgot.step2.description'.tr(),
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black54),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 40.0),
+                      Form(
+                        key: _formKey,
+                        child: Column(
+                          children: <Widget>[
+                            TextFormField(
+                              controller: textEditingController,
+                              autofocus: true,
+                              decoration: ThemeHelper.codeInputDecoration(
+                                hintText: "_ _ _ _",
+                                labelText: 'forgot.step2.code.label'.tr(),
+                              ),
+                              cursorHeight: 40,
+                              style: const TextStyle(
+                                fontSize: 40,
+                                fontWeight: FontWeight.bold,
+                                color: NotedColors.primary,
+                              ),
+                              validator: (val) =>
+                                  NotedValidator.validateToken(val),
+                              textInputAction: TextInputAction.done,
+                              keyboardType: TextInputType.number,
+                              onChanged: (value) {
+                                if (value.length == 4) {
+                                  FocusScope.of(context).unfocus();
+                                }
+                              },
+                              onEditingComplete: () {
+                                FocusScope.of(context).unfocus();
+                              },
+                            ),
+                            const SizedBox(height: 30.0),
+                            Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: "forgot.step2.not-received".tr(),
+                                    style: const TextStyle(
+                                      color: Colors.black38,
+                                    ),
+                                  ),
+                                  const TextSpan(
+                                    text: ' ',
+                                  ),
+                                  TextSpan(
+                                    text: 'forgot.step2.resend'.tr(),
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return ThemeHelper.alartDialog(
+                                                "forgot.step2.resend-pop-up.title"
+                                                    .tr(),
+                                                "forgot.step2.resend-pop-up.description"
+                                                    .tr(),
+                                                context);
+                                          },
+                                        );
+                                      },
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 40.0),
+                            LoadingButton(
+                              animateOnTap: true,
+                              btnController: btnController,
+                              onPressed: () async {
+                                if (_formKey.currentState!.validate()) {
+                                  _formKey.currentState!.save();
+                                  await tokenVerification(
+                                      textEditingController.text,
+                                      accountId,
+                                      btnController,
+                                      isResetPass);
+                                } else {
+                                  btnController.error();
+                                  resetButton(btnController);
+                                }
+                              },
+                              text: 'forgot.step2.button'.tr(),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -194,15 +210,17 @@ class ForgotPasswordVerificationPageState
   }
 
   Future<void> tokenVerification(String token, String accountId,
-      RoundedLoadingButtonController controller) async {
+      RoundedLoadingButtonController controller, bool isResetPass) async {
     try {
       final Tuple3? resetToken = await ref
           .read(accountClientProvider)
           .verifyToken(token: token, accountId: accountId);
 
       if (resetToken != null && mounted) {
+        Tuple2<Tuple3<dynamic, dynamic, dynamic>, bool> args =
+            Tuple2(resetToken, isResetPass);
         ref.read(trackerProvider).trackPage(TrackPage.changePassword);
-        Navigator.pushNamed(context, '/change-password', arguments: resetToken);
+        Navigator.pushNamed(context, '/change-password', arguments: args);
       }
     } catch (e) {
       if (mounted) {

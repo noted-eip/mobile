@@ -30,9 +30,8 @@ class LatestsFilesList extends ConsumerStatefulWidget {
 class _LatestsFilesListState extends ConsumerState<LatestsFilesList> {
   Widget buildSearchBar() {
     return TextField(
-      decoration: ThemeHelper()
-          .textInputDecoration('', 'my-notes.search'.tr())
-          .copyWith(
+      decoration:
+          ThemeHelper.textInputDecoration('', 'my-notes.search'.tr()).copyWith(
               prefixIcon: const Icon(
                 Icons.search_outlined,
                 color: Colors.grey,

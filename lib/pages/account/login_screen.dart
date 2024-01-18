@@ -50,7 +50,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
         if (!mounted) return;
 
-        AccountHelper().handleNavigation(
+        await AccountHelper().handleNavigation(
           action: loginRes,
           context: context,
           email: email,
@@ -117,15 +117,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     children: [
                       TextFormField(
                         controller: _emailController,
-                        decoration: ThemeHelper()
-                            .textInputDecoration('signin.email.label'.tr(),
+                        decoration: ThemeHelper.textInputDecoration(
+                                'signin.email.label'.tr(),
                                 'signin.email.hint'.tr())
                             .copyWith(
-                              prefixIcon: const Icon(
-                                Icons.mail_outline,
-                                color: Colors.grey,
-                              ),
-                            ),
+                          prefixIcon: const Icon(
+                            Icons.mail_outline,
+                            color: Colors.grey,
+                          ),
+                        ),
                         validator: (val) =>
                             NotedValidator.validateEmail(val?.trim()),
                         textInputAction: TextInputAction.next,
@@ -136,41 +136,33 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           keyboardType: TextInputType.visiblePassword,
                           controller: _passwordController,
                           obscureText: _obscureText,
-                          decoration: ThemeHelper()
-                              .textInputDecoration(
-                                'signin.password.label'.tr(),
-                                'signin.password.hint'.tr(),
-                              )
-                              .copyWith(
-                                prefixIcon: const Icon(
-                                    Icons.lock_outline_rounded,
-                                    color: Colors.grey),
-                                suffixIcon: IconButton(
-                                  splashColor: Colors.transparent,
-                                  highlightColor: Colors.transparent,
-                                  icon: Icon(
-                                    _obscureText
-                                        ? Icons.visibility_outlined
-                                        : Icons.visibility_off_outlined,
-                                    color: Colors.grey,
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      _obscureText = !_obscureText;
-                                    });
-                                  },
-                                ),
+                          decoration: ThemeHelper.textInputDecoration(
+                            'signin.password.label'.tr(),
+                            'signin.password.hint'.tr(),
+                          ).copyWith(
+                            prefixIcon: const Icon(Icons.lock_outline_rounded,
+                                color: Colors.grey),
+                            suffixIcon: IconButton(
+                              splashColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              icon: Icon(
+                                _obscureText
+                                    ? Icons.visibility_outlined
+                                    : Icons.visibility_off_outlined,
+                                color: Colors.grey,
                               ),
+                              onPressed: () {
+                                setState(() {
+                                  _obscureText = !_obscureText;
+                                });
+                              },
+                            ),
+                          ),
                           validator: (val) =>
                               NotedValidator.validatePassword(val?.trim()),
                           textInputAction: TextInputAction.done,
-                          onEditingComplete: () async {
+                          onEditingComplete: () {
                             FocusScope.of(context).unfocus();
-                            btnController.start();
-                            await handleLogin(
-                              _emailController.text.trim(),
-                              _passwordController.text.trim(),
-                            );
                           }),
                       const SizedBox(height: 16.0),
                       Container(

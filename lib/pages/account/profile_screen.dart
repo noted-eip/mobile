@@ -18,6 +18,7 @@ import 'package:noted_mobile/utils/color.dart';
 import 'package:noted_mobile/utils/language.dart';
 import 'package:noted_mobile/utils/string_extension.dart';
 import 'package:noted_mobile/utils/theme_helper.dart';
+import 'package:noted_mobile/utils/validator.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 class ProfilePage extends ConsumerStatefulWidget {
@@ -46,10 +47,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   void updateAccount() async {
     if (nameController.text != ref.read(userProvider).name &&
         nameController.text.length >= 4) {
-      if (kDebugMode) {
-        print("name changed");
-      }
-
       try {
         final Account? updatedAccount = await ref
             .read(accountClientProvider)
@@ -64,7 +61,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
           Future.delayed(const Duration(seconds: 2), () {
             CustomToast.show(
-              message: "Account updated successfully",
+              message: "profil.success".tr(),
               type: ToastType.success,
               context: context,
               gravity: ToastGravity.BOTTOM,
@@ -76,7 +73,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         } else {
           if (mounted) {
             CustomToast.show(
-              message: "An error occured while updating your account",
+              message: "profil.error".tr(),
               type: ToastType.error,
               context: context,
               gravity: ToastGravity.BOTTOM,
@@ -108,16 +105,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       }
     }
 
-    if (passwordController.text == confirmPasswordController.text &&
-        passwordController.text.isNotEmpty) {
-      if (kDebugMode) {
-        print("password changed");
-      }
-      _btnControllerSave.reset();
-    }
-    if (kDebugMode) {
-      print("noting changed");
-    }
     Future.delayed(const Duration(seconds: 1), () {
       _btnControllerSave.reset();
     });
@@ -132,12 +119,11 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           content: "profil.delete-account-description".tr(),
           onConfirm: () async {
             try {
-              bool res = true;
+              bool res = await ref.read(accountClientProvider).deleteAccount();
 
-              Future.delayed(const Duration(milliseconds: 2000), () {});
-              // bool res = await ref.read(accountClientProvider).deleteAccount();
+              if (!mounted) return;
 
-              if (res == true) {}
+              Navigator.pop(context, res);
             } catch (e) {
               if (mounted) {
                 CustomToast.show(
@@ -147,6 +133,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   gravity: ToastGravity.BOTTOM,
                 );
               }
+              Navigator.pop(context, false);
             }
           },
         );
@@ -155,9 +142,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
     if (resDiag != null && resDiag) {
       if (mounted) {
-        Future.delayed(const Duration(milliseconds: 500), () {
+        CustomToast.show(
+          message: "profil.delete-account-success".tr(),
+          type: ToastType.success,
+          context: context,
+          gravity: ToastGravity.BOTTOM,
+        );
+        Future.microtask(() {
           ref.read(mainScreenProvider).setItem(MyMenuItems.home);
-          ref.read(trackerProvider).trackPage(TrackPage.login);
           Navigator.pushNamedAndRemoveUntil(context, '/login', (r) => false);
         });
       }
@@ -238,7 +230,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                       children: [
                                         TextFormField(
                                           decoration:
-                                              ThemeHelper().textInputProfile(
+                                              ThemeHelper.textInputProfile(
                                             labelText: "profil.name".tr(),
                                             hintText: "profil.name-hint".tr(),
                                             prefixIcon:
@@ -254,21 +246,16 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                                   value.length >= 4;
                                             });
                                           },
-                                          validator: (value) {
-                                            if (value!.isEmpty) {
-                                              return "profil.name-empty".tr();
-                                            } else if (value.length < 4) {
-                                              return "profil.name-length".tr();
-                                            }
-                                            return null;
-                                          },
+                                          validator: (value) =>
+                                              NotedValidator.validateName(
+                                                  value),
                                         ),
                                         const SizedBox(
                                           height: 16,
                                         ),
                                         TextFormField(
                                           decoration:
-                                              ThemeHelper().textInputProfile(
+                                              ThemeHelper.textInputProfile(
                                             labelText: "profil.email".tr(),
                                             hintText: "profil.email-hint".tr(),
                                             prefixIcon: const Icon(Icons.email),
@@ -276,112 +263,27 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                           enabled: false,
                                           controller: emailController,
                                         ),
-                                        const SizedBox(
-                                          height: 16,
-                                        ),
-                                        TextFormField(
-                                          decoration:
-                                              ThemeHelper().textInputProfile(
-                                            labelText: "profil.password".tr(),
-                                            hintText: "••••",
-                                            prefixIcon: const Icon(Icons.lock),
-                                            suffixIcon: IconButton(
-                                              splashColor: Colors.transparent,
-                                              highlightColor:
-                                                  Colors.transparent,
-                                              icon: Icon(
-                                                isPasswordVisible
-                                                    ? Icons.visibility_outlined
-                                                    : Icons
-                                                        .visibility_off_outlined,
-                                                color: Colors.grey,
-                                              ),
-                                              onPressed: () {
-                                                setState(() {
-                                                  isPasswordVisible =
-                                                      !isPasswordVisible;
-                                                });
-                                              },
-                                            ),
-                                          ),
-                                          obscureText: isPasswordVisible,
-                                          controller: passwordController,
-                                          onChanged: (value) {
-                                            setState(() {
-                                              isValid = value.length >= 4 &&
-                                                  value ==
-                                                      confirmPasswordController
-                                                          .text;
-                                            });
-                                          },
-                                          validator: (value) {
-                                            if (value!.isEmpty) {
-                                              return null;
-                                            } else if (value.length < 4) {
-                                              return "profil.password-length"
-                                                  .tr();
-                                            }
-                                            return null;
-                                          },
-                                        ),
-                                        const SizedBox(
-                                          height: 16,
-                                        ),
-                                        TextFormField(
-                                          decoration:
-                                              ThemeHelper().textInputProfile(
-                                            labelText:
-                                                "profil.confirm-password".tr(),
-                                            hintText: "••••",
-                                            prefixIcon: const Icon(Icons.lock),
-                                            suffixIcon: IconButton(
-                                              splashColor: Colors.transparent,
-                                              highlightColor:
-                                                  Colors.transparent,
-                                              icon: Icon(
-                                                isConfirmPasswordVisible
-                                                    ? Icons.visibility_outlined
-                                                    : Icons
-                                                        .visibility_off_outlined,
-                                                color: Colors.grey,
-                                              ),
-                                              onPressed: () {
-                                                setState(() {
-                                                  isConfirmPasswordVisible =
-                                                      !isConfirmPasswordVisible;
-                                                });
-                                              },
-                                            ),
-                                          ),
-                                          onChanged: (value) {
-                                            setState(() {
-                                              isValid = value ==
-                                                      passwordController.text &&
-                                                  value.length >= 4;
-                                            });
-                                          },
-                                          validator: (value) {
-                                            if (value!.isEmpty) {
-                                              return null;
-                                            } else if (value.length < 4) {
-                                              return "profil.password-length"
-                                                  .tr();
-                                            } else if (value !=
-                                                passwordController.text) {
-                                              return "profil.password-no-match"
-                                                  .tr();
-                                            }
-                                            return null;
-                                          },
-                                          obscureText: isConfirmPasswordVisible,
-                                          controller: confirmPasswordController,
-                                        ),
                                       ],
                                     ),
                                   ),
                                 ],
                               ),
                             ),
+                          ),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pushNamed(
+                                context, '/forgot-password',
+                                arguments: true),
+                            child: Text(
+                              'profil.edit-password'.tr(),
+                              style: const TextStyle(color: Colors.redAccent),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 16,
                           ),
                           LoadingButton(
                             color: isValid
@@ -481,7 +383,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   height: 32,
                 ),
                 TextField(
-                  decoration: ThemeHelper().textInputProfile(
+                  decoration: ThemeHelper.textInputProfile(
                     labelText: "profil.name".tr(),
                     hintText: "profil.name-hint".tr(),
                     prefixIcon: const Icon(Icons.person),
@@ -493,7 +395,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   height: 16,
                 ),
                 TextField(
-                  decoration: ThemeHelper().textInputProfile(
+                  decoration: ThemeHelper.textInputProfile(
                     labelText: "profil.email".tr(),
                     hintText: "profil.email-hint".tr(),
                     prefixIcon: const Icon(Icons.email),

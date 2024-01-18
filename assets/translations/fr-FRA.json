@@ -23,7 +23,6 @@
             "label" : "Nom",
             "hint" : "Entrez votre nom",
             "validator": "Veuillez entrer un nom"
-
         },
         "email" : {
             "label" : "Email",
@@ -44,11 +43,13 @@
         "button" : "S'inscrire",
         "other" : "Ou inscrivez-vous avec",
         "signin" : "Vous avez déjà un compte ?",
-        "signinButton" : "Se connecter"
+        "signinButton" : "Se connecter",
+        "success" : "Votre compte a été créé avec succès !"
     },
     "forgot" : {
         "step1": {
             "title" : "Mot de passe oublié ?",
+            "title2" : "Modifier le mot de passe",
             "description" : "Entrez votre adresse email associée à votre compte.",
             "description2" : "Nous vous enverrons un code de vérification pour réinitialiser votre mot de passe.",
             "email" : {
@@ -63,9 +64,14 @@
         "step2": {
             "title": "Code de vérification",
             "description": "Entrez le code de vérification envoyé à votre adresse email.",
+            "code": {
+                "label": "Code de vérification",
+                "hint": "Entrez le code de vérification"
+            },
             "not-received": "Vous n'avez pas reçu le code ?",
             "validator": "Veuillez entrer un code valide",
             "resend": "Renvoyer",
+            "resend-success": "Code de vérification renvoyé avec succès !",
             "resend-pop-up": {
                 "title": "Envoyé avec succès",
                 "description": "Nous vous avons envoyé un nouveau code de vérification à votre adresse email.",
@@ -150,9 +156,11 @@
         "button": "Enregistrer",
         "close": "Fermer",
         "delete-account": "Supprimer le compte",
-        "delete-account-description": "Êtes-vous sûr de vouloir supprimer votre compte ?"
-
-
+        "delete-account-description": "Êtes-vous sûr de vouloir supprimer votre compte ?",
+        "delete-account-success": "Le compte a été supprimé avec succès !",
+        "success": "Le profil a été mis à jour avec succès !",
+        "error": "Une erreur s'est produite pendant la mise à jour du profil ! Veuillez réessayer.",
+        "edit-password": "Modifier le mot de passe"
     },
     "note-detail": {
         "quiz": "Quiz",
@@ -350,7 +358,8 @@
         "error": "Le mot de passe n'a pas pu être changé !",
         "button": "Changer le mot de passe",
         "remember": "Vous vous souvenez de votre mot de passe ?",
-        "signin": "Se connecter"
+        "signin": "Se connecter",
+        "cancel": "Retour aux réglages"
     },
     "workspace-description": "Un endroit rien que pour vous.",
     "go-back": "Retour",
@@ -362,6 +371,7 @@
         "tokenCannotBeBlank": "Le code de vérification ne peut pas être vide !",
         "passwordLength": "Le mot de passe doit contenir entre 4 et 20 caractères !",
         "validationTokenDoesNotMatch": "Le code de vérification est incorrect !",
-        "alreadyExists": "Déja existant !"
+        "alreadyExists": "Déja existant !",
+        "accountAlreadyValidate": "Le compte a déjà été validé !"
     }
 }

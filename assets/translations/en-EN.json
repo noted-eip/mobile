@@ -43,11 +43,13 @@
         "button": "Sign up",
         "other": "Or sign up with",
         "signin": "Already have an account?",
-        "signinButton": "Sign in"
+        "signinButton": "Sign in",
+        "success" : "Account created successfully!"
     },
     "forgot": {
         "step1": {
             "title": "Forgot password?",
+            "title2" : "Edit password",
             "description": "Enter your email address associated with your account.",
             "description2": "We will send you a verification code to reset your password.",
             "email": {
@@ -64,7 +66,12 @@
             "description": "Enter the verification code sent to your email address.",
             "not-received": "Didn't receive the code?",
             "validator": "Please enter a valid code",
+            "code": {
+                "label": "Verification code",
+                "hint": "Enter the verification code sent to your email address"
+            },
             "resend": "Resend",
+            "resend-success": "Verification code sent successfully!",
             "resend-pop-up": {
                 "title": "Sent successfully",
                 "description": "We have sent you a new verification code to your email address.",
@@ -148,7 +155,11 @@
         "button": "Save",
         "close": "Close",
         "delete-account": "Delete account",
-        "delete-account-description": "Are you sure you want to delete your account?"
+        "delete-account-description": "Are you sure you want to delete your account?",
+        "delete-account-success": "Account deleted successfully!",
+        "success": "Profile updated successfully!",
+        "error": "An error occurred while updating your profile! Please try again.",
+        "edit-password": "Edit password"
     },
     "note-detail": {
         "quiz": "Quiz",
@@ -343,7 +354,8 @@
         "error": "Password could not be changed!",
         "button": "Change password",
         "remember": "Remember your password?",
-        "signin": "Sign in"
+        "signin": "Sign in",
+        "cancel": "Back to settings"
     },
      "workspace-description": "Welcome to your workspace! A space just for you.",
      "go-back": "Go back",
@@ -355,6 +367,7 @@
         "tokenCannotBeBlank": "Verification code cannot be blank!",
         "passwordLength": "Password must be between 4 and 20 characters!",
         "validationTokenDoesNotMatch": "Verification code is incorrect!",
-        "alreadyExists": "Already exists!"
+        "alreadyExists": "Already exists!",
+        "accountAlreadyValidate": "Account already validated!"
     }
 }

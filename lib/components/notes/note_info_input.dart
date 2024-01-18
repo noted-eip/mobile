@@ -66,7 +66,7 @@ class _NoteInfosInputState extends ConsumerState<NoteInfosInput> {
             children: [
               TextFormField(
                 controller: widget.titleController,
-                decoration: ThemeHelper().textInputDecoration(
+                decoration: ThemeHelper.textInputDecoration(
                     'my-notes.create-note-modal.name-label'.tr(),
                     'my-notes.create-note-modal.name-hint'.tr()),
                 validator: (val) {

@@ -47,10 +47,7 @@ class _NoteDetailState extends ConsumerState<NoteDetail> {
             );
           }
 
-          return NotedEditor(
-            note: data,
-            infos: infos,
-          );
+          return NotedEditor(note: data, infos: infos);
         },
         error: (error, stackTrace) => Text(error.toString()),
         loading: () => const Center(

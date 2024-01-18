@@ -50,7 +50,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
 
         if (loginRes != null && mounted) {
           CustomToast.show(
-            message: "Compte créé avec succès !",
+            message: "signup.success".tr(),
             type: ToastType.success,
             context: context,
             gravity: ToastGravity.BOTTOM,
@@ -69,7 +69,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
 
             if (!mounted) return;
 
-            AccountHelper().handleNavigation(
+            await AccountHelper().handleNavigation(
               action: loginRes,
               context: context,
               password: password,
@@ -166,22 +166,19 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                           ),
                           const SizedBox(height: 32),
                           Container(
-                            decoration:
-                                ThemeHelper().inputBoxDecorationShaddow(),
+                            decoration: ThemeHelper.inputBoxDecorationShaddow(),
                             child: TextFormField(
                               autofocus: true,
                               controller: _nameController,
-                              decoration: ThemeHelper()
-                                  .textInputDecoration(
-                                    'signup.name.label'.tr(),
-                                    'signup.name.hint'.tr(),
-                                  )
-                                  .copyWith(
-                                    prefixIcon: const Icon(
-                                      Icons.person_outline,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
+                              decoration: ThemeHelper.textInputDecoration(
+                                'signup.name.label'.tr(),
+                                'signup.name.hint'.tr(),
+                              ).copyWith(
+                                prefixIcon: const Icon(
+                                  Icons.person_outline,
+                                  color: Colors.grey,
+                                ),
+                              ),
                               validator: (val) =>
                                   NotedValidator.validateName(val?.trim()),
                               textInputAction: TextInputAction.next,
@@ -189,21 +186,18 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                           ),
                           const SizedBox(height: 20.0),
                           Container(
-                            decoration:
-                                ThemeHelper().inputBoxDecorationShaddow(),
+                            decoration: ThemeHelper.inputBoxDecorationShaddow(),
                             child: TextFormField(
                               controller: _emailController,
-                              decoration: ThemeHelper()
-                                  .textInputDecoration(
-                                    'signup.email.label'.tr(),
-                                    'signup.email.hint'.tr(),
-                                  )
-                                  .copyWith(
-                                    prefixIcon: const Icon(
-                                      Icons.mail_outline,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
+                              decoration: ThemeHelper.textInputDecoration(
+                                'signup.email.label'.tr(),
+                                'signup.email.hint'.tr(),
+                              ).copyWith(
+                                prefixIcon: const Icon(
+                                  Icons.mail_outline,
+                                  color: Colors.grey,
+                                ),
+                              ),
                               validator: (val) =>
                                   NotedValidator.validateEmail(val?.trim()),
                               textInputAction: TextInputAction.next,
@@ -212,46 +206,37 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                           ),
                           const SizedBox(height: 20.0),
                           Container(
-                            decoration:
-                                ThemeHelper().inputBoxDecorationShaddow(),
+                            decoration: ThemeHelper.inputBoxDecorationShaddow(),
                             child: TextFormField(
                               controller: _passwordController,
                               obscureText: _obscureText,
-                              decoration: ThemeHelper()
-                                  .textInputDecoration(
-                                    "signup.password.label".tr(),
-                                    "signup.password.hint".tr(),
-                                  )
-                                  .copyWith(
-                                    prefixIcon: const Icon(
-                                        Icons.lock_outline_rounded,
-                                        color: Colors.grey),
-                                    suffixIcon: IconButton(
-                                      splashColor: Colors.transparent,
-                                      highlightColor: Colors.transparent,
-                                      icon: Icon(
-                                        _obscureText
-                                            ? Icons.visibility_outlined
-                                            : Icons.visibility_off_outlined,
-                                        color: Colors.grey,
-                                      ),
-                                      onPressed: () {
-                                        setState(() {
-                                          _obscureText = !_obscureText;
-                                        });
-                                      },
-                                    ),
+                              decoration: ThemeHelper.textInputDecoration(
+                                "signup.password.label".tr(),
+                                "signup.password.hint".tr(),
+                              ).copyWith(
+                                prefixIcon: const Icon(
+                                    Icons.lock_outline_rounded,
+                                    color: Colors.grey),
+                                suffixIcon: IconButton(
+                                  splashColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  icon: Icon(
+                                    _obscureText
+                                        ? Icons.visibility_outlined
+                                        : Icons.visibility_off_outlined,
+                                    color: Colors.grey,
                                   ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _obscureText = !_obscureText;
+                                    });
+                                  },
+                                ),
+                              ),
                               validator: (val) =>
                                   NotedValidator.validatePassword(val?.trim()),
-                              onEditingComplete: () async {
+                              onEditingComplete: () {
                                 FocusScope.of(context).unfocus();
-                                btnController.start();
-                                await createAccount(
-                                    _nameController.text.trim(),
-                                    _emailController.text.trim(),
-                                    _passwordController.text.trim(),
-                                    btnController);
                               },
                               textInputAction: TextInputAction.done,
                             ),

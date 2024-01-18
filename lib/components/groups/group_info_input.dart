@@ -67,7 +67,7 @@ class _GroupInfosInputState extends ConsumerState<GroupInfosInput> {
             children: [
               TextFormField(
                 controller: widget.titleController,
-                decoration: ThemeHelper().textInputDecoration(
+                decoration: ThemeHelper.textInputDecoration(
                     'my-groups.create-group-modal.name-label'.tr(),
                     'my-groups.create-group-modal.name-hint'.tr()),
                 validator: (val) {
@@ -83,7 +83,7 @@ class _GroupInfosInputState extends ConsumerState<GroupInfosInput> {
                 minLines: 1,
                 maxLines: 3,
                 controller: widget.descriptionController,
-                decoration: ThemeHelper().textInputDecoration(
+                decoration: ThemeHelper.textInputDecoration(
                   'my-groups.create-group-modal.description-label'.tr(),
                   'my-groups.create-group-modal.description-hint'.tr(),
                 ),

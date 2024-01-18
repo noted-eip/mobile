@@ -10,8 +10,11 @@ import 'package:noted_mobile/data/clients/tracker_client.dart';
 import 'package:noted_mobile/data/models/account/account.dart';
 import 'package:noted_mobile/data/providers/account_provider.dart';
 import 'package:noted_mobile/data/providers/provider_list.dart';
+import 'package:noted_mobile/pages/account/helper/account.dart';
+import 'package:noted_mobile/utils/color.dart';
 import 'package:noted_mobile/utils/string_extension.dart';
-import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:noted_mobile/utils/theme_helper.dart';
+import 'package:noted_mobile/utils/validator.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:tuple/tuple.dart';
 
@@ -31,7 +34,7 @@ class _RegistrationVerificationPageState
       RoundedLoadingButtonController();
 
   Timer? countdownTimer;
-  Duration myDuration = const Duration(seconds: 30);
+  Duration myDuration = const Duration(seconds: 5);
 
   void _startTimer() {
     _resetTimer();
@@ -47,7 +50,7 @@ class _RegistrationVerificationPageState
       countdownTimer!.cancel();
     }
 
-    setState(() => myDuration = const Duration(seconds: 30));
+    setState(() => myDuration = const Duration(seconds: 5));
   }
 
   void _setCountDown() {
@@ -71,13 +74,17 @@ class _RegistrationVerificationPageState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _startTimer();
     });
+    textEditingController.addListener(formatCode);
   }
 
   @override
   void dispose() {
     countdownTimer?.cancel();
+    textEditingController.removeListener(formatCode);
     super.dispose();
   }
+
+  void formatCode() => ThemeHelper.formatCode(textEditingController);
 
   @override
   Widget build(BuildContext context) {
@@ -91,6 +98,7 @@ class _RegistrationVerificationPageState
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
+          forceMaterialTransparency: true,
           backgroundColor: Colors.white,
           elevation: 0,
           leading: IconButton(
@@ -99,161 +107,148 @@ class _RegistrationVerificationPageState
               },
               icon: const Icon(Icons.arrow_back, color: Colors.black)),
         ),
-        body: Center(
-          child: SingleChildScrollView(
-            child: SafeArea(
-              child: Container(
-                margin: const EdgeInsets.fromLTRB(32, 0, 32, 0),
-                child: Column(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(100),
-                        border: Border.all(width: 5, color: Colors.white),
-                        color: Colors.white,
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 20,
-                            offset: Offset(5, 5),
-                          ),
-                        ],
+        body: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: Center(
+            child: SingleChildScrollView(
+              child: SafeArea(
+                child: Container(
+                  margin: const EdgeInsets.fromLTRB(32, 0, 32, 0),
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(100),
+                          border: Border.all(width: 5, color: Colors.white),
+                          color: Colors.white,
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 20,
+                              offset: Offset(5, 5),
+                            ),
+                          ],
+                        ),
+                        child: const Icon(Icons.key,
+                            size: 80, color: Colors.black),
                       ),
-                      child:
-                          const Icon(Icons.key, size: 80, color: Colors.black),
-                    ),
-                    const SizedBox(height: 32),
-                    Container(
-                      alignment: Alignment.topLeft,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'forgot.step2.title'.tr(),
-                            style: const TextStyle(
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black54),
-                          ),
-                          const SizedBox(
-                            height: 8,
-                          ),
-                          Text(
-                            'forgot.step2.description'.tr(),
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black54),
-                          ),
-                        ],
+                      const SizedBox(height: 32),
+                      Container(
+                        alignment: Alignment.topLeft,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'forgot.step2.title'.tr(),
+                              style: const TextStyle(
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black54),
+                            ),
+                            const SizedBox(
+                              height: 8,
+                            ),
+                            Text(
+                              'forgot.step2.description'.tr(),
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black54),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 40.0),
-                    Form(
-                      key: _formKey,
-                      child: Column(
-                        children: <Widget>[
-                          PinCodeTextField(
-                            autoFocus: true,
-                            autoDismissKeyboard: true,
-                            keyboardType: TextInputType.number,
-                            length: 4,
-                            obscureText: false,
-                            animationType: AnimationType.fade,
-                            pinTheme: PinTheme(
-                                shape: PinCodeFieldShape.box,
-                                borderRadius: BorderRadius.circular(5),
-                                fieldHeight: 50,
-                                fieldWidth: 40,
-                                activeFillColor: Colors.white,
-                                activeColor:
-                                    Theme.of(context).colorScheme.primary,
-                                inactiveColor:
-                                    Theme.of(context).colorScheme.secondary,
-                                inactiveFillColor: Colors.white,
-                                selectedColor: Colors.blueGrey,
-                                selectedFillColor: Colors.grey),
-                            animationDuration:
-                                const Duration(milliseconds: 300),
-                            enableActiveFill: true,
-                            controller: textEditingController,
-                            onCompleted: (v) {
-                              debugPrint("Completed");
-                            },
-                            onChanged: (value) {
-                              debugPrint(value);
-                            },
-                            beforeTextPaste: (text) {
-                              return true;
-                            },
-                            validator: (val) {
-                              if (val!.length < 4) {
-                                return 'forgot.step2.validator'.tr();
-                              } else {
-                                return null;
-                              }
-                            },
-                            appContext: context,
-                          ),
-                          const SizedBox(height: 50.0),
-                          Text.rich(
-                            TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: "forgot.step2.not-received".tr(),
-                                  style: const TextStyle(
-                                    color: Colors.black38,
+                      const SizedBox(height: 40.0),
+                      Form(
+                        key: _formKey,
+                        child: Column(
+                          children: <Widget>[
+                            TextFormField(
+                              controller: textEditingController,
+                              autofocus: true,
+                              decoration: ThemeHelper.codeInputDecoration(
+                                hintText: "_ _ _ _",
+                                labelText: 'forgot.step2.code.label'.tr(),
+                              ),
+                              cursorHeight: 40,
+                              style: const TextStyle(
+                                fontSize: 40,
+                                fontWeight: FontWeight.bold,
+                                color: NotedColors.primary,
+                              ),
+                              validator: (val) =>
+                                  NotedValidator.validateToken(val),
+                              textInputAction: TextInputAction.done,
+                              keyboardType: TextInputType.number,
+                              onChanged: (value) {
+                                if (value.length == 4) {
+                                  FocusScope.of(context).unfocus();
+                                }
+                              },
+                              onEditingComplete: () {
+                                FocusScope.of(context).unfocus();
+                              },
+                            ),
+                            const SizedBox(height: 50.0),
+                            Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: "forgot.step2.not-received".tr(),
+                                    style: const TextStyle(
+                                      color: Colors.black38,
+                                    ),
                                   ),
-                                ),
-                                const TextSpan(
-                                  text: ' ',
-                                ),
-                                TextSpan(
-                                  text: 'forgot.step2.resend'.tr(),
-                                  recognizer: TapGestureRecognizer()
-                                    ..onTap = () async {
-                                      _startTimer();
+                                  const TextSpan(
+                                    text: ' ',
+                                  ),
+                                  TextSpan(
+                                    text: 'forgot.step2.resend'.tr(),
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () async {
+                                        if (isResend) {
+                                          return;
+                                        }
+                                        _startTimer();
 
-                                      if (isResend) {
-                                        return;
-                                      }
-                                      await handleResentToken(
-                                        emailPassword: emailPassword,
-                                      );
-                                    },
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color:
-                                        isResend ? Colors.grey : Colors.black,
+                                        await handleResentToken(
+                                          emailPassword: emailPassword,
+                                        );
+                                      },
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color:
+                                          isResend ? Colors.grey : Colors.black,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 40.0),
-                          Text(
-                            isResend ? '$hours:$minutes:$seconds' : '',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
+                            const SizedBox(height: 40.0),
+                            Text(
+                              isResend ? '$hours:$minutes:$seconds' : '',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 40.0),
-                          LoadingButton(
-                            btnController: btnController,
-                            onPressed: () async {
-                              await handleVerification(
-                                emailPassword: emailPassword,
-                                token: textEditingController.text,
-                              );
-                            },
-                            text: 'forgot.step2.button'.tr(),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
+                            const SizedBox(height: 40.0),
+                            LoadingButton(
+                              btnController: btnController,
+                              onPressed: () async {
+                                await handleVerification(
+                                  emailPassword: emailPassword,
+                                  token: textEditingController.text,
+                                );
+                              },
+                              text: 'forgot.step2.button'.tr(),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -283,7 +278,8 @@ class _RegistrationVerificationPageState
             if (loginRes) {
               ref.read(trackerProvider).trackPage(TrackPage.home);
               if (mounted) {
-                Navigator.of(context).pushReplacementNamed('/home');
+                Navigator.of(context)
+                    .pushNamedAndRemoveUntil('/home', (route) => false);
               }
             }
           } catch (e) {
@@ -319,10 +315,11 @@ class _RegistrationVerificationPageState
     required Tuple2<String, String> emailPassword,
   }) async {
     try {
-      await ref.read(accountClientProvider).resendValidateToken(
-            email: emailPassword.item1,
-            password: emailPassword.item2,
-          );
+      await AccountHelper().handleReSendToken(
+        emailPassword: emailPassword,
+        ref: ref,
+      );
+      print('resend success');
       if (mounted) {
         CustomToast.show(
           message: 'forgot.step2.resend-success'.tr(),
@@ -332,6 +329,7 @@ class _RegistrationVerificationPageState
         );
       }
     } catch (e) {
+      print('resend failed');
       if (mounted) {
         CustomToast.show(
           message: e.toString().capitalize(),

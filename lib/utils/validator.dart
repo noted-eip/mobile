@@ -10,6 +10,14 @@ import 'package:easy_localization/easy_localization.dart';
 // code confirmation : 4 chiffres -> forgot pass et validation account
 
 class NotedValidator {
+  static String? validateToken(String? value) {
+    if (value!.length < 4) {
+      return 'forgot.step2.validator'.tr();
+    } else {
+      return null;
+    }
+  }
+
   static String? validateName(String? value) {
     print("validateName");
     if (value == null || value.isEmpty) {

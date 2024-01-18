@@ -152,14 +152,12 @@ class _InviteFieldState extends ConsumerState<InviteField> {
     return TextFormField(
       autofocus: true,
       controller: widget.controller,
-      decoration: ThemeHelper()
-          .textInputDecoration(
-            'my-groups.create-group-modal.invite-label'.tr(),
-            'my-groups.create-group-modal.invite-hint'.tr(),
-          )
-          .copyWith(
-            suffixIcon: suffixIcon,
-          ),
+      decoration: ThemeHelper.textInputDecoration(
+        'my-groups.create-group-modal.invite-label'.tr(),
+        'my-groups.create-group-modal.invite-hint'.tr(),
+      ).copyWith(
+        suffixIcon: suffixIcon,
+      ),
       validator: (v) {
         bool isEmailValidReg = RegExp(r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
             .hasMatch(widget.controller.text);

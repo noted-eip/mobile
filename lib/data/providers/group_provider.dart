@@ -56,6 +56,19 @@ final groupProvider =
   return group;
 });
 
+final workspaceProvider = FutureProvider<Group?>((ref) async {
+  final account = ref.watch(userProvider);
+
+  final grouplist =
+      await ref.watch(groupClientProvider).listGroups(accountId: account.id);
+
+  var workspace = grouplist?.firstWhere((group) =>
+      group.data.workspaceAccountId != null &&
+      group.data.workspaceAccountId != "");
+
+  return workspace;
+});
+
 final groupMemberProvider =
     FutureProvider.family<V1GroupMember?, String>((ref, groupId) async {
   final account = ref.watch(userProvider);
